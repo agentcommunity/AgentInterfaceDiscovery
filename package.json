@@ -1,0 +1,10 @@
+{
+	"devDependencies": {
+		"@types/node": "^24.0.3",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.8.3"
+	},
+	"bin": {
+		"aid-gen": "packages/core/bin/aid-gen.ts"
+	}
+}
