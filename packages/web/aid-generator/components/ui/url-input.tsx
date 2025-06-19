@@ -72,14 +72,9 @@ export function UrlInput({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value
-    // If user deletes the protocol, allow it
-    if (inputValue.startsWith("https://") && !rawValue.startsWith("https://")) {
-      setInputValue(rawValue)
-      onChange(unformatValue(rawValue))
-      return
-    }
 
-    const formatted = formatValue(rawValue)
+    // Always enforce https:// prefix (unless field is emptied)
+    const formatted = rawValue === "" ? "" : formatValue(rawValue)
     setInputValue(formatted)
     onChange(unformatValue(formatted))
   }

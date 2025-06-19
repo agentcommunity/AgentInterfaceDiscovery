@@ -170,8 +170,10 @@ export const aidGeneratorConfigSchema: z.ZodType<AidGeneratorConfig> = z.object(
   domain: z
     .string()
     .min(1, "Domain is required")
-    .regex(/^[a-z0-9.-]+$/i, "Domain must contain only letters, numbers, dots, and hyphens")
-    .refine((val) => !val.includes("://"), "Domain should not include protocol"),
+    .regex(
+      /^(https?:\/\/)?[a-z0-9.-]+$/i,
+      "Domain must be a bare domain or start with http(s):// and contain only letters, numbers, dots, and hyphens",
+    ),
   env: z.string().optional(),
   metadata: z
     .object({
