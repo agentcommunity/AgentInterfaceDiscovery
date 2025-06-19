@@ -1,0 +1,180 @@
+import { z } from "zod"
+import type { ExecutionConfig } from "@aid/core"
+
+const authPlacementSchema = z.object({
+  in: z.enum(["header", "query", "cli_arg"]),
+  key: z.string().min(1, "Key is required for placement"),
+  format: z.string().optional(),
+})
+
+const credentialItemSchema = z.object({
+  key: z.string().min(1, "Key is required for credential"),
+  description: z.string().min(1, "Description is required for credential"),
+})
+
+const baseOAuthSchema = z.object({
+  description: z.string().min(1, "Description is required"),
+  credentials: z.array(credentialItemSchema).optional(),
+  placement: authPlacementSchema.optional(),
+  // No `oauth` property here, it will be in the specific schemas
+})
+
+const authConfigSchema = z.discriminatedUnion("scheme", [
+  z.object({ scheme: z.literal("none") }),
+  z.object({
+    scheme: z.literal("pat"),
+    description: z.string().min(1, "Description is required"),
+    tokenUrl: z.string().url().optional().or(z.literal("")),
+    credentials: z.array(credentialItemSchema).optional(),
+    placement: authPlacementSchema,
+  }),
+  z.object({
+    scheme: z.literal("apikey"),
+    description: z.string().min(1, "Description isrequired"),
+    tokenUrl: z.string().url().optional().or(z.literal("")),
+    credentials: z.array(credentialItemSchema).optional(),
+    placement: authPlacementSchema,
+  }),
+  z.object({
+    scheme: z.literal("basic"),
+    description: z.string().min(1, "Description is required"),
+    credentials: z.array(credentialItemSchema).optional(),
+    placement: authPlacementSchema,
+  }),
+  baseOAuthSchema.extend({
+    scheme: z.literal("oauth2_device"),
+    oauth: z.object({
+      deviceAuthorizationEndpoint: z.string().url("Must be a valid URL"),
+      tokenEndpoint: z.string().url("Must be a valid URL"),
+      scopes: z.array(z.string()).optional(),
+      clientId: z.string().optional(),
+    }),
+  }),
+  baseOAuthSchema.extend({
+    scheme: z.literal("oauth2_code"),
+    oauth: z.object({
+      authorizationEndpoint: z.string().url("Must be a valid URL"),
+      tokenEndpoint: z.string().url("Must be a valid URL"),
+      scopes: z.array(z.string()).optional(),
+      clientId: z.string().optional(),
+    }),
+  }),
+  baseOAuthSchema.extend({
+    scheme: z.literal("oauth2_service"),
+    oauth: z.object({
+      tokenEndpoint: z.string().url("Must be a valid URL"),
+      scopes: z.array(z.string()).optional(),
+      clientId: z.string().optional(),
+    }),
+  }),
+  z.object({
+    scheme: z.literal("mtls"),
+    description: z.string().min(1, "Description is required"),
+  }),
+  z.object({
+    scheme: z.literal("custom"),
+    description: z.string().min(1, "Description is required"),
+  }),
+])
+
+const executionConfigSchema: z.ZodType<ExecutionConfig> = z.object({
+  command: z.string().min(1, "Command is required"),
+  args: z.array(z.string()).min(1, "At least one argument is required"),
+  platformOverrides: z.record(z.lazy(() => executionConfigSchema)).optional(),
+})
+
+const baseImplementationSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  protocol: z.string().min(1, "Protocol is required"),
+  type: z.enum(["remote", "local"]),
+  tags: z.array(z.string()).optional(),
+  status: z.enum(["active", "deprecated"]).optional(),
+  revocationURL: z.string().url().optional().or(z.literal("")),
+  authentication: authConfigSchema,
+  certificate: z
+    .object({
+      source: z.enum(["file", "enrollment"]),
+      enrollmentEndpoint: z.string().url().optional(),
+    })
+    .optional(),
+  configuration: z
+    .array(
+      z.object({
+        key: z.string().min(1, "Key is required"),
+        description: z.string().min(1, "Description is required"),
+        type: z.enum(["string", "boolean", "integer"]),
+        defaultValue: z.union([z.string(), z.boolean(), z.number()]).optional(),
+        secret: z.boolean().optional(),
+      }),
+    )
+    .optional(),
+  requiredPaths: z
+    .array(
+      z.object({
+        key: z.string().min(1, "Key is required"),
+        description: z.string().min(1, "Description is required"),
+        type: z.enum(["file", "directory"]).optional(),
+      }),
+    )
+    .optional(),
+  platformOverrides: z.record(z.lazy(() => executionConfigSchema)).optional(),
+})
+
+const implementationConfigSchema = z
+  .discriminatedUnion("type", [
+    baseImplementationSchema.extend({
+      type: z.literal("remote"),
+      uri: z.string().url("Must be a valid HTTPS URL"),
+    }),
+    baseImplementationSchema.extend({
+      type: z.literal("local"),
+      package: z.object({
+        manager: z.string().min(1, "Package manager is required"),
+        identifier: z.string().min(1, "Package identifier is required"),
+        digest: z.string().optional(),
+      }),
+      execution: executionConfigSchema,
+    }),
+  ])
+  .refine(
+    (data) => {
+      if (data.type === "remote") {
+        const needsPlacement = [
+          "pat",
+          "apikey",
+          "basic",
+          "oauth2_device",
+          "oauth2_code",
+          "oauth2_service",
+        ].includes(data.authentication.scheme)
+        if (needsPlacement) {
+          return "placement" in data.authentication && data.authentication.placement !== undefined
+        }
+      }
+      return true
+    },
+    {
+      message: "Authentication Placement is required for this remote authentication scheme",
+      path: ["authentication", "placement"],
+    },
+  )
+
+export const aidGeneratorConfigSchema = z.object({
+  schemaVersion: z.literal("1"),
+  serviceName: z.string().min(1, "Service name is required"),
+  domain: z
+    .string()
+    .min(1, "Domain is required")
+    .regex(/^[a-z0-9.-]+$/i, "Domain must contain only letters, numbers, dots, and hyphens")
+    .refine((val) => !val.includes("://"), "Domain should not include protocol"),
+  env: z.string().optional(),
+  metadata: z
+    .object({
+      contentVersion: z.string().optional(),
+      documentation: z.string().url({ message: "Documentation must be a valid URL" }).optional().or(z.literal("")),
+      revocationURL: z.string().url({ message: "Revocation URL must be a valid URL" }).optional().or(z.literal("")),
+    })
+    .optional(),
+  implementations: z.array(implementationConfigSchema).min(1, "At least one implementation is required"),
+  signature: z.unknown().optional(),
+})

@@ -1,0 +1,20 @@
+{
+    "schemaVersion": "1",
+    "serviceName": "Hello World Service",
+    "domain": "example.com",
+    "metadata": {
+      "documentation": "https://example.com/docs"
+    },
+    "implementations": [
+      {
+        "type": "remote",
+        "name": "Simple API",
+        "protocol": "mcp",
+        "uri": "https://api.example.com/v1",
+        "authentication": {
+          "scheme": "none"
+        }
+      }
+    ]
+  }
+  
