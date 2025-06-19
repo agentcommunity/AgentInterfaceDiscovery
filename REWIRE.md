@@ -22,6 +22,7 @@ The primary goal was to eliminate code duplication and prevent future divergence
 
 ### d. Schema & Validation Hardening
 - **Aligned Zod Schemas:** The Zod validation schemas in `web/lib/schemas.ts` were updated to strictly match the `core` types. This involved making previously optional fields (like `description` in `AuthConfig` and `tokenEndpoint` in `OAuthAuth`) required, which resolved critical type mismatches between the form validation and the final data model.
+- **Version Compatibility:** Updated Zod and @hookform/resolvers to compatible versions (zod@3.22.4 and @hookform/resolvers@3.3.4) to resolve type conflicts and ensure proper form validation.
 
 ### e. Full Spec-Compliance and UI Hardening
 Following the initial refactoring, a second phase of work was undertaken to make the generator fully compliant with the AID v1 specification.
@@ -85,6 +86,17 @@ A significant refactoring of the implementation form was completed to improve ma
   - Consolidated and organized imports
   - Removed unused dependencies
   - Fixed linter errors and type definitions
+
+### h. Recent Improvements and Bug Fixes
+- **Quote Escaping:** Fixed unescaped quotes in form descriptions and tooltips using proper HTML entities (`&quot;`)
+- **Unused Code Cleanup:** Removed unused imports and functions across components:
+  - Removed unused `Textarea` imports from `basic-info-section.tsx` and `config-variables-section.tsx`
+  - Removed unused `handleSelectChange` function from `basic-info-section.tsx`
+- **Template String Formatting:** Improved template string placeholder formatting in form fields for better readability
+- **Build System:** Fixed build errors and type mismatches by:
+  - Updating to compatible versions of Zod and @hookform/resolvers
+  - Properly escaping all quotes in text content
+  - Ensuring proper type definitions across components
 
 This refactoring sets the foundation for future UX improvements including:
 - Progressive disclosure of advanced options
