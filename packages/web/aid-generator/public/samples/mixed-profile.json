@@ -1,7 +1,7 @@
 {
     "schemaVersion": "1",
     "serviceName": "Multi-Implementation Service",
-    "domain": "service.example.com",
+    "domain": "https://service.example.com",
     "metadata": {
       "documentation": "https://service.example.com/docs",
       "revocationURL": "https://service.example.com/revoke"

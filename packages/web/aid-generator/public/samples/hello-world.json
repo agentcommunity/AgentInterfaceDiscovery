@@ -1,7 +1,7 @@
 {
     "schemaVersion": "1",
     "serviceName": "Hello World Service",
-    "domain": "example.com",
+    "domain": "https://example.com",
     "metadata": {
       "documentation": "https://example.com/docs"
     },
