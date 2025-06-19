@@ -129,6 +129,23 @@ This refactoring sets the foundation for future UX improvements including:
   - Proper separation of development and production dependencies
   - Added Node.js engine requirements for better version compatibility
 
+### j. Vercel Monorepo Deployment (PNPM)
+
+After several iterations the web app now deploys cleanly to Vercel using **pnpm workspaces**.  The critical lessons:
+
+| Key Choice | Final Setting | Why It Matters |
+|------------|--------------|----------------|
+| **Root Directory** | (empty / repo root) | Lets pnpm see `pnpm-workspace.yaml` and resolve `workspace:` links. |
+| **Install Command** | `pnpm install --frozen-lockfile` | Single workspace-wide install so devDependencies (TypeScript, Tailwind, etc.) are present for the web-app build. |
+| **Build Command** | `pnpm --filter aid-generator run build` | Re-uses workspace install; avoids a second per-package `pnpm install` that drops devDeps. |
+| **Output Directory** | `packages/web/aid-generator/.next` | Explicit but optional—keeps logs tidy. |
+| **Cache Strategy** | "Clear cache & redeploy" after switching from npm→pnpm | Removes conflicting `node_modules`. |
+| **Path Alias** | Added `@ → packages/web/aid-generator` via `next.config.js` | Fixes `@/components/...` imports during production build. |
+
+With these tweaks the pipeline is
+`git push → Vercel clones → pnpm install (root) → Next build (filtered) → deploy`,
+and the site ships with full Tailwind styling.
+
 ---
 
 ## 3. Why This Architecture? (Educational Notes)

@@ -1,4 +1,4 @@
 {
   "framework": "nextjs",
-  "installCommand": "pnpm install"
+  "installCommand": "pnpm install --recursive --frozen-lockfile"
 } 
