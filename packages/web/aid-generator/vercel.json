@@ -1,5 +1,0 @@
-{
-  "framework": "nextjs",
-  "buildCommand": "pnpm --filter aid-generator run build",
-  "outputDirectory": ".next"
-} 
