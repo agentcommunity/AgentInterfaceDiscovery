@@ -1,10 +1,25 @@
 {
-	"devDependencies": {
-		"@types/node": "^24.0.3",
-		"ts-node": "^10.9.2",
-		"typescript": "^5.8.3"
+	"name": "agentinterfacediscovery-monorepo",
+	"version": "0.0.0",
+	"private": true,
+	"description": "A monorepo for the Agent Interface Discovery (AID) specification and tools.",
+	"packageManager": "pnpm@8.15.5",
+	"scripts": {
+	  "build": "pnpm --recursive run build",
+	  "dev": "pnpm --filter aid-generator run dev",
+	  "lint": "pnpm --recursive run lint",
+	  "test": "pnpm --recursive run test"
 	},
-	"bin": {
-		"aid-gen": "packages/core/bin/aid-gen.ts"
-	}
-}
+	"devDependencies": {
+	  "@types/node": "^20.11.20", 
+	  "typescript": "^5.3.3" 
+	},
+	"keywords": [
+	  "ai",
+	  "agent",
+	  "discovery",
+	  "dns"
+	],
+	"author": "Agent Community",
+	"license": "MIT"
+  }

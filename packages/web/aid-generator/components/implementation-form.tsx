@@ -11,6 +11,7 @@ import { BasicInfoSection } from "./form-sections/implementation-parts/basic-inf
 import { TagsSection } from "./form-sections/implementation-parts/tags-section"
 import { LocalPackageSection } from "./form-sections/implementation-parts/local-package-section"
 import { AuthenticationSection } from "./form-sections/implementation-parts/authentication-section"
+import { ConfigVariablesSection } from "./form-sections/implementation-parts/config-variables-section"
 
 interface ImplementationFormProps {
   form: UseFormReturn<AidGeneratorConfig>
@@ -65,6 +66,11 @@ export function ImplementationForm({ form, index }: ImplementationFormProps) {
         {implementationType === "local" && (
           <LocalPackageSection form={form} index={index} />
         )}
+
+        <Separator />
+
+        {/* Configuration Variables */}
+        <ConfigVariablesSection form={form} index={index} />
 
         <Separator />
 
