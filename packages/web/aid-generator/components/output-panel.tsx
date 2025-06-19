@@ -66,8 +66,8 @@ export function OutputPanel({ output, domain, errorCount }: OutputPanelProps) {
   }
 
   return (
-    <div className="h-full">
-      <div className="flex justify-between items-center p-6 pb-3">
+    <div className="flex flex-col h-full">
+      <div className="flex justify-between items-center pb-3">
         <div className="flex items-center gap-2">
           {errorCount > 0 && (
             <Badge variant="destructive" className="text-sm flex items-center gap-1">
@@ -86,96 +86,88 @@ export function OutputPanel({ output, domain, errorCount }: OutputPanelProps) {
         </Button>
       </div>
 
-      <Tabs defaultValue="manifest" className="w-full">
-        <TabsList className="mx-6 grid w-[calc(100%-3rem)] grid-cols-4">
+      <Tabs defaultValue="manifest" className="flex flex-col flex-1">
+        <TabsList className="grid grid-cols-4 gap-2 mb-4">
           <TabsTrigger value="manifest">Manifest</TabsTrigger>
           <TabsTrigger value="dns">DNS Record</TabsTrigger>
           <TabsTrigger value="dig">dig Command</TabsTrigger>
           <TabsTrigger value="curl">curl Command</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="manifest" className="px-6 pb-6 mt-4">
-          <div className="space-y-4 flex flex-col h-full">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold">aid.json</h3>
-                <p className="text-sm text-muted-foreground">
-                  Place this file at https://{domain}/.well-known/aid.json
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="ghost" size="sm" onClick={() => copyToClipboard(output.manifest, "Manifest JSON")}>
-                  <Copy className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => downloadFile(output.manifest, "aid.json", "application/json")}
-                >
-                  <Download className="h-4 w-4" />
-                </Button>
-              </div>
+        <TabsContent value="manifest" className="flex-1 flex flex-col space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">aid.json</h3>
+              <p className="text-sm text-muted-foreground">
+                Place this file at https://{domain}/.well-known/aid.json
+              </p>
             </div>
-            <pre className="bg-muted p-4 rounded-md overflow-auto text-sm font-mono flex-1">
-              <code>{output.manifest}</code>
-            </pre>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="dns" className="px-6 pb-6 mt-4">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold">DNS TXT Record</h3>
-                <p className="text-sm text-muted-foreground">Add this TXT record to your DNS zone</p>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="ghost" size="sm" onClick={() => copyToClipboard(output.txt, "DNS TXT record")}>
-                  <Copy className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => downloadFile(output.txt, "aid.txt", "text/plain")}>
-                  <Download className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm font-mono">
-              <code>{output.txt}</code>
-            </pre>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="dig" className="px-6 pb-6 mt-4">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold">Test DNS Record</h3>
-                <p className="text-sm text-muted-foreground">Use this command to verify your DNS record is live</p>
-              </div>
-              <Button variant="ghost" size="sm" onClick={() => copyToClipboard(output.digCommand, "dig command")}>
+            <div className="flex gap-2">
+              <Button variant="ghost" size="sm" onClick={() => copyToClipboard(output.manifest, "Manifest JSON")}>
                 <Copy className="h-4 w-4" />
               </Button>
-            </div>
-            <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm font-mono">
-              <code>{output.digCommand}</code>
-            </pre>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="curl" className="px-6 pb-6 mt-4">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold">Test Manifest</h3>
-                <p className="text-sm text-muted-foreground">Use this command to verify your manifest is accessible</p>
-              </div>
-              <Button variant="ghost" size="sm" onClick={() => copyToClipboard(output.curlCommand, "curl command")}>
-                <Copy className="h-4 w-4" />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => downloadFile(output.manifest, "aid.json", "application/json")}
+              >
+                <Download className="h-4 w-4" />
               </Button>
             </div>
-            <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm font-mono">
-              <code>{output.curlCommand}</code>
-            </pre>
           </div>
+          <pre className="bg-muted p-4 rounded-md overflow-auto text-sm font-mono flex-1">
+            <code>{output.manifest}</code>
+          </pre>
+        </TabsContent>
+
+        <TabsContent value="dns" className="space-y-4 flex-1 flex flex-col">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">DNS TXT Record</h3>
+              <p className="text-sm text-muted-foreground">Add this TXT record to your DNS zone</p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="ghost" size="sm" onClick={() => copyToClipboard(output.txt, "DNS TXT record")}>
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => downloadFile(output.txt, "aid.txt", "text/plain")}>
+                <Download className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm font-mono flex-1">
+            <code>{output.txt}</code>
+          </pre>
+        </TabsContent>
+
+        <TabsContent value="dig" className="space-y-4 flex-1 flex flex-col">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">Test DNS Record</h3>
+              <p className="text-sm text-muted-foreground">Use this command to verify your DNS record is live</p>
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => copyToClipboard(output.digCommand, "dig command")}>
+              <Copy className="h-4 w-4" />
+            </Button>
+          </div>
+          <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm font-mono flex-1">
+            <code>{output.digCommand}</code>
+          </pre>
+        </TabsContent>
+
+        <TabsContent value="curl" className="space-y-4 flex-1 flex flex-col">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">Test Manifest</h3>
+              <p className="text-sm text-muted-foreground">Use this command to verify your manifest is accessible</p>
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => copyToClipboard(output.curlCommand, "curl command")}>
+              <Copy className="h-4 w-4" />
+            </Button>
+          </div>
+          <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm font-mono flex-1">
+            <code>{output.curlCommand}</code>
+          </pre>
         </TabsContent>
       </Tabs>
     </div>

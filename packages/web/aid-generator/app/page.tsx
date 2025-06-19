@@ -111,7 +111,7 @@ export default function GeneratorPage() {
 
         <div className="space-y-6">
           <h2 className="text-2xl font-bold tracking-tight">Output</h2>
-          <div className="p-6 border rounded-lg bg-card text-card-foreground shadow-sm h-[70vh] flex flex-col">
+          <div className="p-6 border rounded-lg bg-card text-card-foreground shadow-sm flex flex-col">
             <OutputPanel
               output={output}
               domain={domain || "example.com"}
