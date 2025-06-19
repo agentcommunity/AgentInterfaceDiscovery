@@ -1,2 +1,2 @@
 export { buildManifest, buildTxtRecord } from './common';
-export * from './types';
+export * from './types'; 

@@ -1,9 +1,5 @@
 import { z } from "zod"
-import type {
-  AidGeneratorConfig,
-  ImplementationConfig,
-  ExecutionConfig,
-} from "@aid/core"
+import type { AidGeneratorConfig } from "@aid/core"
 
 const authPlacementSchema = z.object({
   in: z.enum(["header", "query", "cli_arg"]),
@@ -20,7 +16,6 @@ const baseOAuthSchema = z.object({
   description: z.string().min(1, "Description is required"),
   credentials: z.array(credentialItemSchema).optional(),
   placement: authPlacementSchema.optional(),
-  // No `oauth` property here, it will be in the specific schemas
 })
 
 const authConfigSchema = z.discriminatedUnion("scheme", [
@@ -48,7 +43,7 @@ const authConfigSchema = z.discriminatedUnion("scheme", [
   baseOAuthSchema.extend({
     scheme: z.literal("oauth2_device"),
     oauth: z.object({
-      deviceAuthorizationEndpoint: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+      deviceAuthorizationEndpoint: z.string().url("Must be a valid URL"),
       tokenEndpoint: z.string().url("Must be a valid URL"),
       scopes: z.array(z.string()).optional(),
       clientId: z.string().optional(),
@@ -57,7 +52,7 @@ const authConfigSchema = z.discriminatedUnion("scheme", [
   baseOAuthSchema.extend({
     scheme: z.literal("oauth2_code"),
     oauth: z.object({
-      authorizationEndpoint: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+      authorizationEndpoint: z.string().url("Must be a valid URL"),
       tokenEndpoint: z.string().url("Must be a valid URL"),
       scopes: z.array(z.string()).optional(),
       clientId: z.string().optional(),
@@ -80,6 +75,12 @@ const authConfigSchema = z.discriminatedUnion("scheme", [
     description: z.string().min(1, "Description is required"),
   }),
 ])
+
+type ExecutionConfig = {
+  command: string;
+  args: string[];
+  platformOverrides?: Record<string, ExecutionConfig>;
+};
 
 const executionConfigSchema: z.ZodType<ExecutionConfig> = z.object({
   command: z.string().min(1, "Command is required"),
@@ -163,7 +164,7 @@ const implementationConfigSchema = z
     },
   )
 
-export const aidGeneratorConfigSchema = z.object({
+export const aidGeneratorConfigSchema: z.ZodType<AidGeneratorConfig> = z.object({
   schemaVersion: z.literal("1"),
   serviceName: z.string().min(1, "Service name is required"),
   domain: z

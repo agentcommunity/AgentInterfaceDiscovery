@@ -39,6 +39,27 @@ Following the initial refactoring, a second phase of work was undertaken to make
   - `platformOverrides` for OS-specific execution
 - **Security Notice:** A security warning was added to the UI, which appears when a user configures a `local` implementation, advising them of client-side security responsibilities as per the spec.
 
+### f. Browser and Node.js Code Separation
+A critical architectural improvement was made to properly separate browser-safe code from Node.js-specific functionality:
+
+- **New `common.ts` Module:** Created a new file containing only browser-safe functions:
+  - Moved `buildManifest` and `buildTxtRecord` from `generator.ts`
+  - These functions have no dependencies on Node.js built-ins like `fs`
+
+- **Restructured Core Files:**
+  - `generator.ts`: Now only contains Node.js specific code (file I/O operations)
+  - `browser.ts`: Updated to only export from `common.ts` and `types.ts`
+  - `index.ts`: Exports everything for Node.js environments
+  - Removed `node.ts` as its functionality is now properly organized in other modules
+
+- **Fixed Build Issues:**
+  - Resolved the `Can't resolve 'fs'` error in Next.js builds
+  - Ensured proper tree-shaking of Node.js code in browser bundles
+  - Updated Zod schemas to exactly match core types
+  - Fixed TypeScript errors related to OAuth type definitions
+
+This separation ensures that browser bundles remain lean and don't include Node.js-specific code, while still maintaining full functionality in Node.js environments.
+
 ---
 
 ## 3. Why This Architecture? (Educational Notes)
