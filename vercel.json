@@ -1,6 +1,7 @@
 {
   "buildCommand": "cd packages/web/aid-generator && pnpm install && pnpm run build",
   "outputDirectory": "packages/web/aid-generator/.next",
-  "installCommand": "npm i -g pnpm@8.15.5 && pnpm install",
-  "framework": "nextjs"
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "version": 3
 } 
