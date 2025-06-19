@@ -22,9 +22,5 @@
 	  "dns"
 	],
 	"author": "Agent Community",
-	"license": "MIT",
-	"engines": {
-	  "node": ">=18.17.0",
-	  "pnpm": ">=8.15.5"
-	}
-  }
+	"license": "MIT"
+}
