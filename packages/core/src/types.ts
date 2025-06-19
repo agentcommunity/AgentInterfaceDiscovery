@@ -15,11 +15,14 @@ export interface AidGeneratorConfig {
     /** Primary domain – used for _agent.<domain> TXT record generation. */
     domain: string;
   
+    /** Environment indicator for the endpoint (e.g. "prod", "dev"). */
+    env?: string;
+  
     /** Extra metadata exactly as in the spec. All are optional. */
     metadata?: {
       contentVersion?: string;
       documentation?: string;
-      revocationUrl?: string;      // lower-case “l” – spec-accurate
+      revocationURL?: string;
     };
   
     /** At least one concrete implementation. */
@@ -44,7 +47,7 @@ export interface AidGeneratorConfig {
     protocol: string;                         // e.g. "mcp", "a2a"
     tags?: string[];
     status?: "active" | "deprecated";
-    revocationUrl?: string;
+    revocationURL?: string;
   
     /** Optional per-platform overrides (non-spec helper). */
     platformOverrides?: Record<string, ExecutionConfig>;
@@ -93,9 +96,9 @@ export interface AidGeneratorConfig {
     | TokenAuth<"pat">
     | TokenAuth<"apikey">
     | BasicAuth
-    | OAuthAuth<"oauth2_device">
-    | OAuthAuth<"oauth2_code">
-    | OAuthAuth<"oauth2_service">
+    | OAuth2DeviceAuth
+    | OAuth2CodeAuth
+    | OAuth2ServiceAuth
     | { scheme: "mtls"; description: string }
     | { scheme: "custom"; description: string };
   
@@ -120,20 +123,45 @@ export interface AidGeneratorConfig {
   
   /* -- OAuth family ------------------------------------------------- */
   
-  interface OAuthAuth<
-    T extends "oauth2_device" | "oauth2_code" | "oauth2_service"
-  > {
-    scheme: T;
+  interface BaseOAuthAuth {
     description: string;
+    credentials?: CredentialItem[];
+    /**
+     * Describes how the final token is applied to requests.
+     * **Required** for remote implementations to instruct the client on how to use the token.
+     * This business rule is typically enforced by a validation layer (e.g., Zod schema)
+     * rather than the static type system.
+     */
+    placement?: AuthPlacement;
+  }
+  
+  export interface OAuth2DeviceAuth extends BaseOAuthAuth {
+    scheme: "oauth2_device";
     oauth: {
-      authorizationEndpoint?: string;
-      deviceAuthorizationEndpoint?: string;
+      deviceAuthorizationEndpoint: string;
       tokenEndpoint: string;
       scopes?: string[];
       clientId?: string;
     };
-    credentials?: CredentialItem[];
-    placement?: AuthPlacement;
+  }
+  
+  export interface OAuth2CodeAuth extends BaseOAuthAuth {
+    scheme: "oauth2_code";
+    oauth: {
+      authorizationEndpoint: string;
+      tokenEndpoint: string;
+      scopes?: string[];
+      clientId?: string;
+    };
+  }
+  
+  export interface OAuth2ServiceAuth extends BaseOAuthAuth {
+    scheme: "oauth2_service";
+    oauth: {
+      tokenEndpoint: string;
+      scopes?: string[];
+      clientId?: string;
+    };
   }
   
   /* -- Auth helpers ------------------------------------------------- */

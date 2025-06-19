@@ -44,7 +44,7 @@ export interface AidGeneratorConfig {
   metadata?: {
     contentVersion?: string;
     documentation?: string;
-    revocationUrl?: string;
+    revocationURL?: string;
   };
   implementations: ImplementationConfig[];
   signature?: unknown;          // For future JWS signing

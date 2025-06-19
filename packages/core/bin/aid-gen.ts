@@ -2,7 +2,7 @@
 import { readFileSync } from "fs";
 import path from "path";
 import { AidGeneratorConfig } from "../src/types";
-import { writeManifest, writeTxtSnippet } from "../src/generator";
+import { writeManifest, writeTxtSnippet } from "../src/node";
 
 function usage() {
   console.error(`Usage: aid-gen <config.json> [outDir]`);
