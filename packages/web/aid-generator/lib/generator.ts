@@ -1,1 +1,1 @@
-export { buildManifest, buildTxtRecord } from "@aid/core/browser"
+export { buildManifest, buildTxtRecord } from "@aid/core"

@@ -1,5 +1,9 @@
 import { z } from "zod"
-import type { ExecutionConfig } from "@aid/core"
+import type {
+  AidGeneratorConfig,
+  ImplementationConfig,
+  ExecutionConfig,
+} from "@aid/core"
 
 const authPlacementSchema = z.object({
   in: z.enum(["header", "query", "cli_arg"]),
@@ -44,7 +48,7 @@ const authConfigSchema = z.discriminatedUnion("scheme", [
   baseOAuthSchema.extend({
     scheme: z.literal("oauth2_device"),
     oauth: z.object({
-      deviceAuthorizationEndpoint: z.string().url("Must be a valid URL"),
+      deviceAuthorizationEndpoint: z.string().url("Must be a valid URL").optional().or(z.literal("")),
       tokenEndpoint: z.string().url("Must be a valid URL"),
       scopes: z.array(z.string()).optional(),
       clientId: z.string().optional(),
@@ -53,7 +57,7 @@ const authConfigSchema = z.discriminatedUnion("scheme", [
   baseOAuthSchema.extend({
     scheme: z.literal("oauth2_code"),
     oauth: z.object({
-      authorizationEndpoint: z.string().url("Must be a valid URL"),
+      authorizationEndpoint: z.string().url("Must be a valid URL").optional().or(z.literal("")),
       tokenEndpoint: z.string().url("Must be a valid URL"),
       scopes: z.array(z.string()).optional(),
       clientId: z.string().optional(),
