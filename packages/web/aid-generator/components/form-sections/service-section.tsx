@@ -13,6 +13,7 @@ interface ServiceSectionProps {
   hasErrors: boolean
 }
 
+
 export function ServiceSection({ form, hasErrors }: ServiceSectionProps) {
   return (
     <div className="space-y-4">
