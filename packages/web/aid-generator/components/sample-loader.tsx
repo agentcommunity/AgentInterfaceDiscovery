@@ -16,6 +16,7 @@ import type { AidGeneratorConfig } from "@aid/core"
 
 // Define the samples to be loaded from the public directory
 const sampleFiles = [
+  { name: "Empty Template", path: "empty.json" },
   { name: "Hello World", path: "hello-world.json" },
   { name: "Auth0 MCP", path: "auth0-mcp.json" },
   { name: "Mixed Profile", path: "mixed-profile.json" },
