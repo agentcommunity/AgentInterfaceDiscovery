@@ -104,6 +104,31 @@ This refactoring sets the foundation for future UX improvements including:
 - "Add..." button pattern for list management
 - Improved form navigation and validation feedback
 
+### i. Build System and Dependency Modernization
+- **Next.js Configuration:** Converted `next.config.ts` to `next.config.js` to comply with Next.js requirements, as TypeScript configuration files are not supported.
+- **Font System Update:** 
+  - Replaced Geist fonts with widely available Google Fonts alternatives
+  - Using Inter for sans-serif text and JetBrains Mono for monospace
+  - Updated font CSS variables for consistency
+- **Package Version Alignment:**
+  - Updated to stable, existing versions of key dependencies:
+    - Next.js 14.1.0 (from non-existent 15.3.4)
+    - React 18.2.0 (from non-existent 19.0.0)
+    - ESLint 8.57.0 (from non-existent 9.0)
+    - Tailwind CSS 3.4.1 (from non-existent 4.0)
+  - Removed deprecated or unnecessary dependencies:
+    - Removed `@eslint/eslintrc`
+    - Removed `@tailwindcss/postcss`
+    - Removed `tw-animate-css`
+- **CSS Modernization:**
+  - Replaced direct CSS imports with proper Tailwind directives
+  - Updated global CSS structure to follow Tailwind best practices
+  - Improved dark mode handling
+- **Build Performance:**
+  - Streamlined build dependencies
+  - Proper separation of development and production dependencies
+  - Added Node.js engine requirements for better version compatibility
+
 ---
 
 ## 3. Why This Architecture? (Educational Notes)

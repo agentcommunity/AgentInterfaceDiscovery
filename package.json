@@ -21,5 +21,8 @@
 	  "dns"
 	],
 	"author": "Agent Community",
-	"license": "MIT"
+	"license": "MIT",
+	"engines": {
+	  "node": ">=18.17.0"
+	}
   }
