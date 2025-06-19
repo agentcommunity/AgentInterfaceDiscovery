@@ -9,7 +9,7 @@
 	  "dev": "pnpm --filter aid-generator run dev",
 	  "lint": "pnpm --recursive run lint",
 	  "test": "pnpm --recursive run test",
-	  "vercel-build": "cd packages/web/aid-generator && pnpm install && pnpm run build"
+	  "vercel-build": "pnpm --filter aid-generator run build"
 	},
 	"devDependencies": {
 	  "@types/node": "^20.11.20", 
