@@ -1,7 +1,7 @@
 "use client"
 
 import type { UseFormReturn } from "react-hook-form"
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { HelpCircle } from "lucide-react"
@@ -120,7 +120,7 @@ export function BasicInfoSection({ form, index }: BasicInfoSectionProps) {
         />
         <FormField
           control={form.control}
-          name={`implementations.${index}.revocationURL` as any}
+          name={`implementations.${index}.revocationURL`}
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-2">

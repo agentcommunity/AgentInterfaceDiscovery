@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import type { UseFormReturn } from "react-hook-form"
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
@@ -313,7 +312,7 @@ export function AuthenticationSection({ form, index }: AuthenticationSectionProp
               ) : (
                 <div className="text-center py-6 text-muted-foreground border-2 border-dashed rounded-lg">
                   <p>No credentials defined yet.</p>
-                  <p className="text-sm">Click "Add Credential" to define authentication prompts.</p>
+                  <p className="text-sm">Click &quot;Add Credential&quot; to define authentication prompts.</p>
                 </div>
               )}
             </div>
@@ -398,17 +397,17 @@ export function AuthenticationSection({ form, index }: AuthenticationSectionProp
                         <TooltipContent>
                           <p>OAuth scopes to request, one per line</p>
                           <p className="text-xs text-muted-foreground mt-1">
-                            Use ${"{"}config.VAR{"}"} for user-configurable scopes
+                            Use &quot;${'{'}config.VAR{'}'}&quot; for user-configurable scopes
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Examples: read:*, write:users, ${"{"}config.AUTH0_MCP_SCOPES{"}"}
+                            Examples: read:*, write:users, &quot;${'{'}config.AUTH0_MCP_SCOPES{'}'}&quot;
                           </p>
                         </TooltipContent>
                       </Tooltip>
                     </FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="read:*&#10;${config.AUTH0_MCP_SCOPES}"
+                        placeholder={`read:*\n\${config.AUTH0_MCP_SCOPES}`}
                         value={Array.isArray(field.value) ? field.value.join("\n") : ""}
                         onChange={(e) => {
                           const values = e.target.value.split("\n").filter(Boolean)
@@ -418,7 +417,7 @@ export function AuthenticationSection({ form, index }: AuthenticationSectionProp
                       />
                     </FormControl>
                     <FormDescription>
-                      One scope per line. Use ${"{"}config.VARIABLE_NAME{"}"} for configuration substitution.
+                      One scope per line. Use &quot;${'{'}config.VARIABLE_NAME{'}'}&quot; for configuration substitution.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
