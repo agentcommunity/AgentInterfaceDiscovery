@@ -99,7 +99,7 @@ export function OutputPanel({ output, domain, errorCount }: OutputPanelProps) {
             <div>
               <h3 className="text-lg font-semibold">aid.json</h3>
               <p className="text-sm text-muted-foreground">
-                Place this file at https://{domain}/.well-known/aid.json
+                Place this file at {domain}/.well-known/aid.json
               </p>
             </div>
             <div className="flex gap-2">
