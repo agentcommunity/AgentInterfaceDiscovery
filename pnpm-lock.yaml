@@ -11,6 +11,15 @@ importers:
       '@types/node':
         specifier: ^20.11.20
         version: 20.19.1
+      autoprefixer:
+        specifier: ^10.4.17
+        version: 10.4.21(postcss@8.5.6)
+      postcss:
+        specifier: ^8.4.35
+        version: 8.5.6
+      tailwindcss:
+        specifier: ^3.4.1
+        version: 3.4.17
       typescript:
         specifier: ^5.3.3
         version: 5.8.3
@@ -105,21 +114,12 @@ importers:
       '@types/react-dom':
         specifier: ^18
         version: 18.3.7(@types/react@18.3.23)
-      autoprefixer:
-        specifier: ^10.4.17
-        version: 10.4.21(postcss@8.5.6)
       eslint:
         specifier: ^8.57.0
         version: 8.57.1
       eslint-config-next:
         specifier: 14.1.0
         version: 14.1.0(eslint@8.57.1)(typescript@5.8.3)
-      postcss:
-        specifier: ^8.4.35
-        version: 8.5.6
-      tailwindcss:
-        specifier: ^3.4.1
-        version: 3.4.17
       typescript:
         specifier: ^5.3.3
         version: 5.8.3
