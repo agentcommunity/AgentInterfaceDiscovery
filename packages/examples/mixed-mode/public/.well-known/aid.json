@@ -10,7 +10,7 @@
       "type": "remote",
       "name": "Cloud API",
       "protocol": "mcp",
-      "uri": "https://api.mixed.agentcommunity.org/v1",
+      "uri": "https://api.mixed.aid.agentcommunity.org/v1",
       "authentication": {
         "scheme": "pat",
         "description": "API Key for the cloud service.",

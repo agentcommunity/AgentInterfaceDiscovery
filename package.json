@@ -5,22 +5,25 @@
 	"description": "A monorepo for the Agent Interface Discovery (AID) specification and tools.",
 	"packageManager": "pnpm@8.15.5",
 	"scripts": {
-	  "build": "pnpm --recursive run build",
-	  "dev": "pnpm --filter aid-generator run dev",
-	  "lint": "pnpm --recursive run lint",
-	  "test": "pnpm --recursive run test"
+		"build": "pnpm --recursive run build",
+		"dev": "pnpm --filter aid-generator run dev",
+		"lint": "pnpm --recursive run lint",
+		"test": "pnpm --recursive run test"
 	},
 	"devDependencies": {
-	  "@types/node": "^20.11.20", 
-	  "typescript": "^5.3.3" 
+		"@types/node": "^20.11.20",
+		"typescript": "^5.3.3"
 	},
 	"keywords": [
-	  "ai",
-	  "agent",
-	  "discovery",
-	  "dns"
+		"ai",
+		"agent",
+		"discovery",
+		"dns"
 	],
 	"author": "Agent Community",
-	"license": "MIT"
-  }
-  
+	"license": "MIT",
+	"dependencies": {
+		"react-markdown": "^10.1.0",
+		"remark-gfm": "^4.0.1"
+	}
+}

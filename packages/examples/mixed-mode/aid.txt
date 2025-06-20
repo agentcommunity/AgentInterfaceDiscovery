@@ -1,1 +1,1 @@
-_agent.mixed.agentcommunity.org. 3600 IN TXT "v=aid1;uri=https://api.mixed.agentcommunity.org/v1;proto=mcp;auth=pat;config=https://mixed.agentcommunity.org/.well-known/aid.json"
+_agent.mixed.aid.agentcommunity.org. 3600 IN TXT "v=aid1;uri=https://api.mixed.aid.agentcommunity.org/v1;proto=mcp;auth=pat;config=https://mixed.aid.agentcommunity.org/.well-known/aid.json"

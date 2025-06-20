@@ -12,7 +12,7 @@
       "type": "remote",
       "name": "Secure API",
       "protocol": "mcp",
-      "uri": "https://api.edge.agentcommunity.org/v2",
+      "uri": "https://api.edge-case.aid.agentcommunity.org/v2",
       "authentication": {
         "scheme": "mtls",
         "description": "Requires client certificate for authentication."

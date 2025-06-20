@@ -10,7 +10,7 @@
       "type": "remote",
       "name": "Primary API Endpoint",
       "protocol": "mcp",
-      "uri": "https://api.simple.agentcommunity.org/v1",
+      "uri": "https://api.simple.aid.agentcommunity.org/v1",
       "authentication": {
         "scheme": "pat",
         "description": "API Key provided by the service.",

@@ -22,6 +22,35 @@ async function buildExamples() {
           const configContent = await fs.readFile(configPath, "utf-8");
           const config = JSON.parse(configContent) as AidGeneratorConfig;
 
+          // Dynamically set the domain based on the folder name
+          if (config.domain) {
+            const originalDomain = config.domain;
+            let newDomain: string;
+
+            if (dirent.name === "landing-mcp") {
+              newDomain = "agentcommunity.org";
+            } else {
+              const name = dirent.name
+                .replace(/-remote$/, "")
+                .replace(/-mode$/, "");
+              newDomain = `${name}.aid.agentcommunity.org`;
+            }
+
+            config.domain = newDomain;
+
+            if (config.implementations) {
+              config.implementations = config.implementations.map((impl) => {
+                if (impl.type === "remote" && impl.uri) {
+                  return {
+                    ...impl,
+                    uri: impl.uri.replace(originalDomain, newDomain),
+                  };
+                }
+                return impl;
+              });
+            }
+          }
+
           // The manifest goes into a Vercel/Next.js-friendly public directory
           const manifestOutDir = path.join(examplePath, "public", ".well-known");
           const packageJsonPath = path.join(examplePath, "package.json");
