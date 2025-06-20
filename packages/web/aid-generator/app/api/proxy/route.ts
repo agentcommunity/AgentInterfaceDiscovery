@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   try {
     const response = await fetch(url.toString(), {
       headers: {
-        'Accept': 'application/json',
+        'Accept': 'application/dns-json',
       },
     });
 
