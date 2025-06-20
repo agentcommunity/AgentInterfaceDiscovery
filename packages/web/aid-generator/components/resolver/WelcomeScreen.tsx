@@ -24,10 +24,11 @@ export function WelcomeScreen({ handleExampleClick }: WelcomeScreenProps) {
         Enter a domain to discover its Agent Interface Definition.
       </p>
       <div className="flex flex-wrap gap-2 justify-center mt-4">
-        <Button variant="outline" size="sm" onClick={() => handleExampleClick('simple.agentcommunity.org')}>simple</Button>
-        <Button variant="outline" size="sm" onClick={() => handleExampleClick('auth0.agentcommunity.org')}>auth0-mcp</Button>
-        <Button variant="outline" size="sm" onClick={() => handleExampleClick('mixed-mode.agentcommunity.org')}>mixed-mode</Button>
-        <Button variant="outline" size="sm" onClick={() => handleExampleClick('multi-remote.agentcommunity.org')}>multi-remote</Button>
+        <Button variant="outline" size="sm" onClick={() => handleExampleClick('simple.aid.agentcommunity.org')}>simple</Button>
+        <Button variant="outline" size="sm" onClick={() => handleExampleClick('edge-case.aid.agentcommunity.org')}>landing</Button>
+        <Button variant="outline" size="sm" onClick={() => handleExampleClick('mixed.aid.agentcommunity.org')}>mixed-mode</Button>
+        <Button variant="outline" size="sm" onClick={() => handleExampleClick('multi.aid.agentcommunity.org')}>multi-remote</Button>
+        <Button variant="outline" size="sm" onClick={() => handleExampleClick('auth0.aid.agentcommunity.org')}>auth0-mcp</Button>
       </div>
     </motion.div>
   );
