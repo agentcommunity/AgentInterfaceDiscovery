@@ -1,0 +1,1 @@
+_agent.simple.agentcommunity.org. 3600 IN TXT "v=aid1;uri=https://api.simple.agentcommunity.org/v1;proto=mcp;auth=pat"

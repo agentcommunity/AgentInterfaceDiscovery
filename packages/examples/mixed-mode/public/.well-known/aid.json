@@ -1,0 +1,49 @@
+{
+  "name": "Mixed Mode Service",
+  "metadata": {
+    "contentVersion": "2025-06-20",
+    "documentation": "https://agentcommunity.org/docs/mixed"
+  },
+  "schemaVersion": "1",
+  "implementations": [
+    {
+      "type": "remote",
+      "name": "Cloud API",
+      "protocol": "mcp",
+      "uri": "https://api.mixed.agentcommunity.org/v1",
+      "authentication": {
+        "scheme": "pat",
+        "description": "API Key for the cloud service.",
+        "placement": {
+          "in": "header",
+          "key": "Authorization",
+          "format": "Bearer {token}"
+        }
+      }
+    },
+    {
+      "type": "local",
+      "name": "Management CLI",
+      "tags": [
+        "cli",
+        "admin"
+      ],
+      "protocol": "none",
+      "package": {
+        "manager": "npx",
+        "identifier": "@mixed/cli"
+      },
+      "execution": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@mixed/cli",
+          "status"
+        ]
+      },
+      "authentication": {
+        "scheme": "none"
+      }
+    }
+  ]
+}

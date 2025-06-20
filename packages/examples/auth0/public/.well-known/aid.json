@@ -1,0 +1,92 @@
+{
+  "name": "Auth0 MCP Server",
+  "metadata": {
+    "contentVersion": "2025-06-18",
+    "documentation": "https://github.com/auth0/auth0-mcp-server"
+  },
+  "schemaVersion": "1",
+  "implementations": [
+    {
+      "type": "local",
+      "name": "Auth0 MCP (run)",
+      "tags": [
+        "local",
+        "tools"
+      ],
+      "protocol": "mcp",
+      "package": {
+        "manager": "npx",
+        "identifier": "@auth0/auth0-mcp-server"
+      },
+      "execution": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@auth0/auth0-mcp-server",
+          "run",
+          "${config.TOOLS_FLAG}",
+          "${config.READ_ONLY_FLAG}"
+        ]
+      },
+      "authentication": {
+        "scheme": "oauth2_device",
+        "description": "Device flow starts on first run",
+        "oauth": {
+          "deviceAuthorizationEndpoint": "https://auth0.com/oauth/device/code",
+          "tokenEndpoint": "https://auth0.com/oauth/token",
+          "scopes": [
+            "${config.AUTH0_MCP_SCOPES}"
+          ]
+        }
+      },
+      "configuration": [
+        {
+          "key": "AUTH0_MCP_SCOPES",
+          "description": "Scopes to request during init",
+          "type": "string",
+          "defaultValue": "read:*"
+        },
+        {
+          "key": "TOOLS_FLAG",
+          "description": "Custom --tools pattern (leave empty for all)",
+          "type": "string"
+        },
+        {
+          "key": "READ_ONLY_FLAG",
+          "description": "Set to --read-only for RO mode",
+          "type": "string"
+        },
+        {
+          "key": "DEBUG",
+          "description": "Enable verbose logs",
+          "type": "boolean",
+          "defaultValue": false,
+          "secret": false
+        }
+      ]
+    },
+    {
+      "type": "local",
+      "name": "Auth0 MCP (init)",
+      "tags": [
+        "setup"
+      ],
+      "protocol": "none",
+      "package": {
+        "manager": "npx",
+        "identifier": "@auth0/auth0-mcp-server"
+      },
+      "execution": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@auth0/auth0-mcp-server",
+          "init"
+        ]
+      },
+      "authentication": {
+        "scheme": "none"
+      }
+    }
+  ]
+}

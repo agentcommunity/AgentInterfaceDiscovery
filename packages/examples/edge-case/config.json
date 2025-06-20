@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "1",
+  "serviceName": "Edge Case Service",
+  "domain": "edge.agentcommunity.org",
+  "env": "staging",
+  "metadata": {
+    "documentation": "https://agentcommunity.org/docs/edge",
+    "revocationURL": "https://api.edge.agentcommunity.org/revoke"
+  },
+  "implementations": [
+    {
+      "type": "remote",
+      "name": "Secure API",
+      "protocol": "mcp",
+      "uri": "https://api.edge.agentcommunity.org/v2",
+      "authentication": {
+        "scheme": "mtls",
+        "description": "Requires client certificate for authentication."
+      },
+      "certificate": {
+        "source": "enrollment",
+        "enrollmentEndpoint": "https://api.edge.agentcommunity.org/v2/enroll"
+      },
+      "status": "active",
+      "revocationURL": "https://api.edge.agentcommunity.org/v2/revoke-impl"
+    },
+    {
+      "type": "local",
+      "name": "Admin Tool",
+      "protocol": "none",
+      "status": "deprecated",
+      "package": {
+        "manager": "pip",
+        "identifier": "edge-admin-tool"
+      },
+      "execution": {
+        "command": "python",
+        "args": ["-m", "edge_admin_tool"],
+        "platformOverrides": {
+          "windows": {
+            "command": "edge-admin-tool.exe",
+            "args": []
+          }
+        }
+      },
+      "authentication": {
+        "scheme": "none"
+      }
+    }
+  ]
+} 
