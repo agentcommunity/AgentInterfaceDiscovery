@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import { useState, useRef, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { resolveDomain, getImplementations, ActionableImplementation } from '@/lib/resolver';
+import { getImplementations, resolveDomain, ResolutionStep, ActionableImplementation } from "@aid/core/browser";
 import { cn } from '@/lib/utils';
 import { AidManifest } from '@aid/core';
 
@@ -12,6 +12,8 @@ import { WelcomeScreen } from '@/components/resolver/WelcomeScreen';
 import { ChatMessage, ChatMessageProps } from '@/components/resolver/ChatMessage';
 import { ResolverInput } from '@/components/resolver/ResolverInput';
 import { ActionableProfile } from '@/components/resolver/ActionableProfile';
+import { CopyButton } from "@/components/resolver/CopyButton";
+import { useSearchParams } from "next/navigation";
 
 export default function ResolverPage() {
     const [inputValue, setInputValue] = useState('');

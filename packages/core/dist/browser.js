@@ -14,8 +14,6 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildTxtRecord = exports.buildManifest = void 0;
-var common_1 = require("./common");
-Object.defineProperty(exports, "buildManifest", { enumerable: true, get: function () { return common_1.buildManifest; } });
-Object.defineProperty(exports, "buildTxtRecord", { enumerable: true, get: function () { return common_1.buildTxtRecord; } });
 __exportStar(require("./types"), exports);
+__exportStar(require("./schemas"), exports);
+__exportStar(require("./resolver"), exports);

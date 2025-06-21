@@ -1,41 +1,26 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { buildManifest, buildTxtRecord } from "@aid/core"
-import { aidGeneratorConfigSchema } from "@/lib/schemas"
-import type { AidGeneratorConfig } from "@aid/core"
-import { z } from "zod"
+import { NextRequest, NextResponse } from 'next/server';
+import { ZodError } from 'zod';
+import { aidGeneratorConfigSchema, buildManifest, buildTxtRecord } from '@aid/core';
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    // Parse and validate the request body
-    const body = await request.json()
-    const config = aidGeneratorConfigSchema.parse(body) as AidGeneratorConfig
+    const body = await req.json();
+    const config = aidGeneratorConfigSchema.parse(body);
 
-    // Generate the manifest and TXT record
-    const manifest = buildManifest(config)
-    const manifestJson = JSON.stringify(manifest, null, 2)
-    const txtRecord = buildTxtRecord(config)
+    const manifest = buildManifest(config);
+    const txtRecord = buildTxtRecord(config);
 
     return NextResponse.json({
-      manifest: manifestJson,
-      txt: txtRecord,
-    })
+      manifest: JSON.stringify(manifest, null, 2),
+      txtRecord: txtRecord,
+    });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      // Zod validation error
-      return NextResponse.json(
-        {
-          error: "Validation failed",
-          errors: error.issues.map((issue) => ({
-            path: issue.path.join("."),
-            message: issue.message,
-          })),
-        },
-        { status: 422 },
-      )
+    if (error instanceof ZodError) {
+      return NextResponse.json({ error: error.issues }, { status: 400 });
     }
-
-    console.error("Generation error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    
+    console.error('Internal Server Error:', error);
+    return NextResponse.json({ error: 'An unexpected error occurred.' }, { status: 500 });
   }
 }
 

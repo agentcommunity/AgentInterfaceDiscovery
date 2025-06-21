@@ -1,9 +1,13 @@
 {
   "name": "@aid/core",
   "version": "1.0.0",
-  "private": true,
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "description": "Core library for Agent Interface Discovery (AID) types, generators, and resolvers.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -18,11 +22,13 @@
   },
   "scripts": {
     "build": "tsc",
+    "dev": "tsc --watch",
     "build:examples": "ts-node scripts/build-examples.ts"
   },
   "devDependencies": {
-    "@types/node": "^20.11.24",
-    "ts-node": "^10.9.2",
     "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
   }
 } 

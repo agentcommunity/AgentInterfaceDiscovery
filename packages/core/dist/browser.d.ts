@@ -1,2 +1,3 @@
-export { buildManifest, buildTxtRecord } from './common';
-export * from './types';
+export * from "./types";
+export * from "./schemas";
+export * from "./resolver";

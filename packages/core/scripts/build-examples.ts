@@ -1,7 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
-import { AidGeneratorConfig, ImplementationConfig } from "../src/types";
-import { writeManifest, writeTxtSnippet } from "../src/generator";
+import { AidGeneratorConfig, ImplementationConfig, buildManifest, buildTxtRecord } from "../src/index";
 
 const examplesDir = path.resolve(__dirname, "../../../packages/examples");
 const CORE_EXAMPLES = ['simple', 'multi', 'edge-case', 'mixed'];
@@ -22,7 +21,7 @@ async function buildExamples() {
 
     // First pass: process all configs and store them.
     for (const dirent of exampleDirs) {
-      if (!dirent.isDirectory() || dirent.name === 'public') continue;
+      if (!dirent.isDirectory() || dirent.name === 'public' || dirent.name === 'node_modules') continue;
 
       const exampleName = dirent.name;
       const examplePath = path.join(examplesDir, exampleName);
@@ -81,14 +80,14 @@ async function buildExamples() {
       const publicOutDir = path.join(examplesDir, "public", exampleName);
       const manifestOutDir = path.join(publicOutDir, ".well-known");
       
-      const [manifestPath, txtPath] = await Promise.all([
-        writeManifest(finalConfig, manifestOutDir),
-        writeTxtSnippet(finalConfig, publicOutDir),
-      ]);
+      const manifest = buildManifest(finalConfig);
+      const txtRecord = buildTxtRecord(finalConfig);
 
-      const examplePath = path.join(examplesDir, exampleName);
-      console.log(`  ✓ Wrote manifest to ${path.relative(examplePath, manifestPath)}`);
-      console.log(`  ✓ Wrote TXT record to ${path.relative(examplePath, txtPath)}`);
+      await fs.mkdir(manifestOutDir, { recursive: true });
+      await fs.writeFile(path.join(manifestOutDir, "aid.json"), JSON.stringify(manifest, null, 2), "utf-8");
+      await fs.writeFile(path.join(publicOutDir, "aid.txt"), txtRecord + "\n", "utf-8");
+
+      console.log(`  ✓ Wrote manifest and TXT record for ${exampleName}`);
 
       // Add rewrite rule for Vercel, skipping the main landing page
       if (exampleName !== 'landing-mcp') {

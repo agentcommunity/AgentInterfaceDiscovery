@@ -1,5 +1,5 @@
 import { z } from "zod"
-import type { AidGeneratorConfig } from "@aid/core"
+import type { AidGeneratorConfig, ImplementationConfig, ExecutionConfig } from "./types"
 
 const authPlacementSchema = z.object({
   in: z.enum(["header", "query", "cli_arg"]),
@@ -76,12 +76,6 @@ const authConfigSchema = z.discriminatedUnion("scheme", [
   }),
 ])
 
-type ExecutionConfig = {
-  command: string;
-  args: string[];
-  platformOverrides?: Record<string, ExecutionConfig>;
-};
-
 const executionConfigSchema: z.ZodType<ExecutionConfig> = z.object({
   command: z.string().min(1, "Command is required"),
   args: z.array(z.string()).min(1, "At least one argument is required"),
@@ -125,7 +119,7 @@ const baseImplementationSchema = z.object({
   platformOverrides: z.record(z.lazy(() => executionConfigSchema)).optional(),
 })
 
-const implementationConfigSchema = z
+const implementationConfigSchema: z.ZodType<ImplementationConfig> = z
   .discriminatedUnion("type", [
     baseImplementationSchema.extend({
       type: z.literal("remote"),
@@ -142,7 +136,7 @@ const implementationConfigSchema = z
     }),
   ])
   .refine(
-    (data) => {
+    (data: ImplementationConfig) => {
       if (data.type === "remote") {
         const needsPlacement = [
           "pat",
@@ -184,4 +178,4 @@ export const aidGeneratorConfigSchema: z.ZodType<AidGeneratorConfig> = z.object(
     .optional(),
   implementations: z.array(implementationConfigSchema).min(1, "At least one implementation is required"),
   signature: z.unknown().optional(),
-})
+}) 

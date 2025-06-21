@@ -2,7 +2,7 @@
 
 This directory contains canonical examples of `AidGeneratorConfig` files and serves as a standalone Vercel project for hosting their generated `aid.json` manifests.
 
-Each subdirectory (e.g., `/auth0`, `/simple-remote`) contains only a `config.json` file. All other artifacts (`aid.json`, `aid.txt`) are **generated automatically** and placed in the top-level `public` directory.
+Each subdirectory (e.g., `/auth0`, `/simple`) contains only a `config.json` file. All other artifacts (`aid.json`, `aid.txt`) are **generated automatically** by the `build:examples` script, which uses the canonical `@aid/core` library.
 
 ## Hosting Architecture
 
@@ -20,32 +20,16 @@ pnpm --filter @aid/core build:examples
 
 This script will:
 1. Find all `config.json` files within `packages/examples`.
-2. Generate an `aid.json` and an `aid.txt` for each config.
-3. Place the generated files into `packages/examples/public/[example-name]/`.
+2. Assemble the final configuration objects (including aggregating the `landing-mcp` profile).
+3. Call the canonical `buildManifest` and `buildTxtRecord` functions from `@aid/core`.
+4. Place the generated files into `packages/examples/public/[example-name]/`.
+5. Automatically generate the `vercel.json` file.
 
-## Deployment and Adding New Examples
+## Deployment
 
-Follow these steps to deploy the project and add new examples in the future.
+This directory is a Vercel-ready project. To deploy:
 
-### Step 1: Deploy to Vercel
-
-1.  Create a new project in your Vercel dashboard.
-2.  Connect it to your forked Git repository.
-3.  During setup, set the **Root Directory** to `packages/examples`. Vercel will automatically detect the `vercel.json` and use the `public` directory for serving files.
-4.  Deploy the project.
-
-### Step 2: Configure Domains
-
-1.  In the Vercel project's settings, go to the **Domains** tab.
-2.  Add the custom domains for each example (e.g., `simple.aid.agentcommunity.org`).
-3.  Configure the necessary DNS records with your domain registrar.
-
-### Step 3: Adding a New Example
-
-Adding a new example is simple:
-
-1.  **Create a New Directory**: Add a new directory inside `packages/examples` (e.g., `new-example`). The name of this directory will become the subdomain.
-2.  **Add Configuration**: Create a `config.json` file inside the new directory.
-3.  **Run the Generator**: From the monorepo root, run `pnpm --filter @aid/core build:examples`. This will create the `public/new-example` directory, populate it with artifacts, and automatically update `vercel.json` with the new route.
-4.  **Add the Domain**: Add the new subdomain (e.g., `new-example.aid.agentcommunity.org`) to your Vercel project's domain list and configure its DNS.
-5.  **Commit and Push**: Commit your changes (`config.json` and the newly generated files in `public`, and the updated `vercel.json`). Vercel will automatically deploy the changes. 
+1.  Create a new Vercel project pointing to the monorepo root.
+2.  Set the **Root Directory** in Vercel's settings to `packages/examples`.
+3.  Add your custom domains (e.g., `simple.aid.agentcommunity.org`) to the project.
+4.  Commit and push changes to trigger a deployment. 
