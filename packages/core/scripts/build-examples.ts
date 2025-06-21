@@ -52,7 +52,7 @@ async function buildExamples() {
           }
 
           // The manifest goes into a Vercel/Next.js-friendly public directory
-          const manifestOutDir = path.join(examplePath, "public", ".well-known");
+          const manifestOutDir = path.join(examplesDir, "public", dirent.name, ".well-known");
           
           const [manifestPath, txtPath] = await Promise.all([
             writeManifest(config, manifestOutDir),

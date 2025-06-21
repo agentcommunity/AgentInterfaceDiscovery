@@ -1,0 +1,25 @@
+{
+  "name": "Simple Remote API",
+  "metadata": {
+    "contentVersion": "2025-06-21",
+    "documentation": "https://agentcommunity.org/docs/simple"
+  },
+  "schemaVersion": "1",
+  "implementations": [
+    {
+      "type": "remote",
+      "name": "Primary API Endpoint",
+      "protocol": "mcp",
+      "uri": "https://api.simple.aid.agentcommunity.org/v1",
+      "authentication": {
+        "scheme": "pat",
+        "description": "API Key provided by the service.",
+        "placement": {
+          "in": "header",
+          "key": "Authorization",
+          "format": "Bearer {token}"
+        }
+      }
+    }
+  ]
+}
