@@ -1,77 +1,110 @@
 import { promises as fs } from "fs";
 import path from "path";
-import { AidGeneratorConfig } from "../src/types";
+import { AidGeneratorConfig, ImplementationConfig } from "../src/types";
 import { writeManifest, writeTxtSnippet } from "../src/generator";
 
 const examplesDir = path.resolve(__dirname, "../../../packages/examples");
+const CORE_EXAMPLES = ['simple', 'multi', 'edge-case', 'mixed'];
+
+interface VercelRewrite {
+  source: string;
+  has: [{ type: "host"; value: string }];
+  destination: string;
+}
 
 async function buildExamples() {
+  const vercelRewrites: VercelRewrite[] = [];
+  const processedConfigs = new Map<string, AidGeneratorConfig>();
+
   try {
     const exampleDirs = await fs.readdir(examplesDir, { withFileTypes: true });
     console.log(`Found ${exampleDirs.length} potential examples. Building...`);
 
+    // First pass: process all configs and store them.
     for (const dirent of exampleDirs) {
-      if (dirent.isDirectory()) {
-        const examplePath = path.join(examplesDir, dirent.name);
-        const configPath = path.join(examplePath, "config.json");
+      if (!dirent.isDirectory() || dirent.name === 'public') continue;
 
-        try {
-          await fs.access(configPath);
-          console.log(`\nBuilding example: ${dirent.name}`);
-          
-          const configContent = await fs.readFile(configPath, "utf-8");
-          const config = JSON.parse(configContent) as AidGeneratorConfig;
+      const exampleName = dirent.name;
+      const examplePath = path.join(examplesDir, exampleName);
+      const configPath = path.join(examplePath, "config.json");
 
-          // Dynamically set the domain based on the folder name
-          if (config.domain) {
-            const originalDomain = config.domain;
-            let newDomain: string;
+      try {
+        await fs.access(configPath);
+        const configContent = await fs.readFile(configPath, "utf-8");
+        const config = JSON.parse(configContent) as AidGeneratorConfig;
+        
+        let newDomain: string;
+        if (exampleName === "landing-mcp") {
+          newDomain = "agentcommunity.org";
+        } else {
+          newDomain = `${exampleName}.aid.agentcommunity.org`;
+        }
+        
+        const originalDomain = config.domain;
+        config.domain = newDomain;
 
-            if (dirent.name === "landing-mcp") {
-              newDomain = "agentcommunity.org";
-            } else {
-              const name = dirent.name
-                .replace(/-remote$/, "")
-                .replace(/-mode$/, "");
-              newDomain = `${name}.aid.agentcommunity.org`;
+        if (config.implementations) {
+          config.implementations = config.implementations.map((impl) => {
+            if (impl.type === "remote" && impl.uri && originalDomain) {
+              return { ...impl, uri: impl.uri.replace(originalDomain, newDomain) };
             }
-
-            config.domain = newDomain;
-
-            if (config.implementations) {
-              config.implementations = config.implementations.map((impl) => {
-                if (impl.type === "remote" && impl.uri) {
-                  return {
-                    ...impl,
-                    uri: impl.uri.replace(originalDomain, newDomain),
-                  };
-                }
-                return impl;
-              });
-            }
-          }
-
-          // The manifest goes into a Vercel/Next.js-friendly public directory
-          const manifestOutDir = path.join(examplesDir, "public", dirent.name, ".well-known");
-          
-          const [manifestPath, txtPath] = await Promise.all([
-            writeManifest(config, manifestOutDir),
-            writeTxtSnippet(config, examplePath),
-          ]);
-
-          console.log(`  ✓ Wrote manifest to ${path.relative(examplePath, manifestPath)}`);
-          console.log(`  ✓ Wrote TXT record to ${path.relative(examplePath, txtPath)}`);
-
-        } catch (error: any) {
-          if (error.code === 'ENOENT') {
-            // This is expected if a directory doesn't have a config.json
-          } else {
-            console.error(`\n✗ Error building example: ${dirent.name}`);
-            console.error(error);
-          }
+            return impl;
+          });
+        }
+        processedConfigs.set(exampleName, config);
+      } catch (error: any) {
+        if (error.code !== 'ENOENT') {
+          console.error(`\n✗ Error reading config for example: ${exampleName}`);
+          console.error(error);
         }
       }
     }
+
+    // Second pass: generate artifacts and Vercel config
+    for (const [exampleName, config] of processedConfigs.entries()) {
+      console.log(`\nBuilding example: ${exampleName}`);
+      
+      let finalConfig = { ...config, implementations: [...config.implementations || []] };
+
+      // If this is the landing page, aggregate the core examples.
+      if (exampleName === 'landing-mcp') {
+        const coreImplementations: ImplementationConfig[] = [];
+        for (const coreName of CORE_EXAMPLES) {
+          const coreConfig = processedConfigs.get(coreName);
+          if (coreConfig?.implementations) {
+            coreImplementations.push(...coreConfig.implementations);
+          }
+        }
+        finalConfig.implementations.push(...coreImplementations);
+      }
+
+      const publicOutDir = path.join(examplesDir, "public", exampleName);
+      const manifestOutDir = path.join(publicOutDir, ".well-known");
+      
+      const [manifestPath, txtPath] = await Promise.all([
+        writeManifest(finalConfig, manifestOutDir),
+        writeTxtSnippet(finalConfig, publicOutDir),
+      ]);
+
+      const examplePath = path.join(examplesDir, exampleName);
+      console.log(`  ✓ Wrote manifest to ${path.relative(examplePath, manifestPath)}`);
+      console.log(`  ✓ Wrote TXT record to ${path.relative(examplePath, txtPath)}`);
+
+      // Add rewrite rule for Vercel, skipping the main landing page
+      if (exampleName !== 'landing-mcp') {
+        vercelRewrites.push({
+          source: "/.well-known/aid.json",
+          has: [{ type: "host", value: config.domain }],
+          destination: `/${exampleName}/.well-known/aid.json`,
+        });
+      }
+    }
+
+    const vercelConfig = { rewrites: vercelRewrites };
+    const vercelConfigPath = path.join(examplesDir, "vercel.json");
+    await fs.writeFile(vercelConfigPath, JSON.stringify(vercelConfig, null, 2), "utf-8");
+    console.log(`\n✓ Wrote vercel.json with ${vercelRewrites.length} rewrite rules.`);
+
     console.log("\n✅ All examples built successfully.");
   } catch (error) {
     console.error("Fatal error during example build process:", error);

@@ -60,6 +60,132 @@
       "tags": [
         "deprecated"
       ]
+    },
+    {
+      "type": "remote",
+      "name": "Primary API Endpoint",
+      "protocol": "mcp",
+      "uri": "https://api.simple.aid.agentcommunity.org/v1",
+      "authentication": {
+        "scheme": "pat",
+        "description": "API Key provided by the service.",
+        "placement": {
+          "in": "header",
+          "key": "Authorization",
+          "format": "Bearer {token}"
+        }
+      }
+    },
+    {
+      "type": "remote",
+      "name": "US-West Datacenter",
+      "protocol": "mcp",
+      "uri": "https://api.us-west.multi.aid.agentcommunity.org/v1",
+      "authentication": {
+        "scheme": "pat",
+        "description": "API Key for US-West region.",
+        "placement": {
+          "in": "header",
+          "key": "Authorization",
+          "format": "Bearer {token}"
+        }
+      }
+    },
+    {
+      "type": "remote",
+      "name": "EU-Central Datacenter",
+      "protocol": "mcp",
+      "uri": "https://api.eu-central.multi.aid.agentcommunity.org/v1",
+      "authentication": {
+        "scheme": "pat",
+        "description": "API Key for EU-Central region.",
+        "placement": {
+          "in": "header",
+          "key": "Authorization",
+          "format": "Bearer {token}"
+        }
+      }
+    },
+    {
+      "type": "remote",
+      "name": "Secure API",
+      "protocol": "mcp",
+      "uri": "https://api.edge-case.aid.agentcommunity.org/v2",
+      "authentication": {
+        "scheme": "mtls",
+        "description": "Requires client certificate for authentication."
+      },
+      "certificate": {
+        "source": "enrollment",
+        "enrollmentEndpoint": "https://api.edge.agentcommunity.org/v2/enroll"
+      },
+      "status": "active",
+      "revocationURL": "https://api.edge.agentcommunity.org/v2/revoke-impl"
+    },
+    {
+      "type": "local",
+      "name": "Admin Tool",
+      "protocol": "none",
+      "status": "deprecated",
+      "package": {
+        "manager": "pip",
+        "identifier": "edge-admin-tool"
+      },
+      "execution": {
+        "command": "python",
+        "args": [
+          "-m",
+          "edge_admin_tool"
+        ],
+        "platformOverrides": {
+          "windows": {
+            "command": "edge-admin-tool.exe",
+            "args": []
+          }
+        }
+      },
+      "authentication": {
+        "scheme": "none"
+      }
+    },
+    {
+      "type": "remote",
+      "name": "Cloud API",
+      "protocol": "mcp",
+      "uri": "https://api.mixed.aid.agentcommunity.org/v1",
+      "authentication": {
+        "scheme": "pat",
+        "description": "API Key for the cloud service.",
+        "placement": {
+          "in": "header",
+          "key": "Authorization",
+          "format": "Bearer {token}"
+        }
+      }
+    },
+    {
+      "type": "local",
+      "name": "Management CLI",
+      "tags": [
+        "cli",
+        "admin"
+      ],
+      "protocol": "none",
+      "package": {
+        "manager": "npx",
+        "identifier": "@mixed/cli"
+      },
+      "execution": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@mixed/cli",
+          "status"
+        ]
+      },
+      "authentication": {
+        "scheme": "none"
+      }
     }
   ]
 }

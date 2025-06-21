@@ -2,28 +2,53 @@
   "rewrites": [
     {
       "source": "/.well-known/aid.json",
-      "has": [{ "type": "host", "value": "auth0.aid.agentcommunity.org" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "auth0.aid.agentcommunity.org"
+        }
+      ],
       "destination": "/auth0/.well-known/aid.json"
     },
     {
       "source": "/.well-known/aid.json",
-      "has": [{ "type": "host", "value": "edge-case.aid.agentcommunity.org" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "edge-case.aid.agentcommunity.org"
+        }
+      ],
       "destination": "/edge-case/.well-known/aid.json"
     },
     {
       "source": "/.well-known/aid.json",
-      "has": [{ "type": "host", "value": "mixed.aid.agentcommunity.org" }],
-      "destination": "/mixed-mode/.well-known/aid.json"
+      "has": [
+        {
+          "type": "host",
+          "value": "mixed.aid.agentcommunity.org"
+        }
+      ],
+      "destination": "/mixed/.well-known/aid.json"
     },
     {
       "source": "/.well-known/aid.json",
-      "has": [{ "type": "host", "value": "multi-remote.aid.agentcommunity.org" }],
-      "destination": "/multi-remote/.well-known/aid.json"
+      "has": [
+        {
+          "type": "host",
+          "value": "multi.aid.agentcommunity.org"
+        }
+      ],
+      "destination": "/multi/.well-known/aid.json"
     },
     {
       "source": "/.well-known/aid.json",
-      "has": [{ "type": "host", "value": "simple.aid.agentcommunity.org" }],
-      "destination": "/simple-remote/.well-known/aid.json"
+      "has": [
+        {
+          "type": "host",
+          "value": "simple.aid.agentcommunity.org"
+        }
+      ],
+      "destination": "/simple/.well-known/aid.json"
     }
   ]
-} 
+}
