@@ -1,0 +1,8 @@
+{
+  "name": "aid-examples-host",
+  "private": true,
+  "description": "A Vercel project to host all AID example manifests.",
+  "scripts": {
+    "build": "echo 'No build step required, files are static.' && exit 0"
+  }
+} 

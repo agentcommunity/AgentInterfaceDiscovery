@@ -53,17 +53,10 @@ async function buildExamples() {
 
           // The manifest goes into a Vercel/Next.js-friendly public directory
           const manifestOutDir = path.join(examplePath, "public", ".well-known");
-          const packageJsonPath = path.join(examplePath, "package.json");
           
-          const packageJsonContent = {
-            name: `aid-example-${dirent.name}`,
-            private: true,
-          };
-
           const [manifestPath, txtPath] = await Promise.all([
             writeManifest(config, manifestOutDir),
             writeTxtSnippet(config, examplePath),
-            fs.writeFile(packageJsonPath, JSON.stringify(packageJsonContent, null, 2), "utf-8"),
           ]);
 
           console.log(`  ✓ Wrote manifest to ${path.relative(examplePath, manifestPath)}`);
