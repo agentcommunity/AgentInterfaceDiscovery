@@ -132,7 +132,7 @@ A key feature of the build process is the automation of examples:
 - It validates and cleans each configuration. This includes:
   - Removing non-standard properties (like a top-level `name`).
   - Correcting common mistakes, such as converting full URLs in the `domain` field to a bare domain.
-- The cleaned configs are copied to the `web/aid-generator/public/samples` directory for use in the UI.
+- The cleaned configs are copied to the `packages/web/aid-generator/public/samples` directory for use in the UI.
 - It also generates an `index.json`, which the UI's "Load Sample" dropdown uses to dynamically populate its list.
 - This ensures the web UI is always synchronized with the canonical examples.
 
