@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { buildManifest, AidGeneratorConfig } from '@aid/core';
 
 // These are the special domains for our examples that rely on Vercel rewrites.
 const exampleDomains = [
@@ -34,19 +35,23 @@ export async function GET(request: NextRequest) {
 
     try {
         console.log(`[PROXY] DEV MODE: Attempting to read local file: ${filePath}`);
-        const data = await fs.readFile(filePath, 'utf-8');
-        console.log(`[PROXY] DEV MODE: Successfully read local file for ${domainName}.`);
+        const fileContent = await fs.readFile(filePath, 'utf-8');
+        const generatorConfig = JSON.parse(fileContent) as AidGeneratorConfig;
+        
+        // Convert the generator config to a published manifest on the fly
+        const manifest = buildManifest(generatorConfig);
+        console.log(`[PROXY] DEV MODE: Successfully converted and serving manifest for ${domainName}.`);
 
-        return new NextResponse(data, {
+        return new NextResponse(JSON.stringify(manifest, null, 2), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
         });
     } catch (error: any) {
-        console.error(`[PROXY] DEV MODE ERROR: Could not load local sample for ${url.hostname}.`, {
+        console.error(`[PROXY] DEV MODE ERROR: Could not load or convert local sample for ${url.hostname}.`, {
              path: filePath,
              error: error.message 
         });
-        return NextResponse.json({ error: `Could not load local sample file for development: ${error.message}` }, { status: 404 });
+        return NextResponse.json({ error: `Could not load or convert local sample file for development: ${error.message}` }, { status: 404 });
     }
   }
   // --- End of dev-only logic ---

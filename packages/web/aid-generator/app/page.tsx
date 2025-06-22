@@ -64,21 +64,48 @@ export default function GeneratorPage() {
       })),
     }
     reset(mergedConfig)
+
+    // HACK: setValue is needed because react-hook-form's reset doesn't
+    // always correctly update the controlled value of the field, especially
+    // after complex state changes. This ensures the UI reflects the loaded sample.
+    form.setValue("serviceName", mergedConfig.serviceName)
+    form.setValue("domain", mergedConfig.domain)
+
+    // Manually trigger output generation after loading a sample
+    try {
+      const manifest = buildManifest(mergedConfig);
+      const txtRecord = buildTxtRecord(mergedConfig);
+      setOutput({
+        manifest: JSON.stringify(manifest, null, 2),
+        txtRecord,
+      });
+    } catch (e) {
+      // If the sample is invalid for some reason, clear the output
+      // This might happen with partial/old sample files.
+      setOutput(null);
+      console.error("Failed to build manifest from sample:", e)
+    }
   }
 
   useEffect(() => {
-    if (formState.isValid) {
+    const subscription = watch((value, { name, type }) => {
       const formValues = form.getValues();
-      const manifest = buildManifest(formValues);
-      const txtRecord = buildTxtRecord(formValues);
-      setOutput({ 
-        manifest: JSON.stringify(manifest, null, 2), 
-        txtRecord 
-      });
-    } else {
-      setOutput(null);
-    }
-  }, [debouncedForm, formState.isValid]);
+      try {
+        const manifest = buildManifest(formValues);
+        const txtRecord = buildTxtRecord(formValues);
+        setOutput({
+          manifest: JSON.stringify(manifest, null, 2),
+          txtRecord,
+        });
+      } catch (error) {
+        // In case buildManifest fails with invalid partial data,
+        // we can clear the output or handle it gracefully.
+        // For now, let's allow it to clear so we know there's a build issue.
+        setOutput(null)
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form, watch]);
 
   return (
     <div className="container mx-auto p-4 md:p-8">

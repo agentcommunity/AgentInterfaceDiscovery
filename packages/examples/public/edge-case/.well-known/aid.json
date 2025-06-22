@@ -40,8 +40,7 @@
         ],
         "platformOverrides": {
           "windows": {
-            "command": "edge-admin-tool.exe",
-            "args": []
+            "command": "edge-admin-tool.exe"
           }
         }
       },

@@ -3,7 +3,7 @@ import path from "path";
 import { AidGeneratorConfig, ImplementationConfig, buildManifest, buildTxtRecord } from "../src/index";
 
 const examplesDir = path.resolve(__dirname, "../../../packages/examples");
-const webSamplesDir = path.resolve(__dirname, "../../../web/aid-generator/public/samples");
+const webSamplesDir = path.resolve(__dirname, "../../../packages/web/aid-generator/public/samples");
 const CORE_EXAMPLES = ['simple', 'multi', 'edge-case', 'mixed'];
 
 interface VercelRewrite {

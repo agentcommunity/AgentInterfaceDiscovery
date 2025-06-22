@@ -1,55 +1,65 @@
 {
-    "schemaVersion": "1",
-    "serviceName": "Agent Community Hub",
-    "domain": "agentcommunity.org",
-    "metadata": {
-      "documentation": "https://agentcommunity.org/docs"
+  "schemaVersion": "1",
+  "serviceName": "Agent Community Hub",
+  "domain": "agentcommunity.org",
+  "metadata": {
+    "documentation": "https://agentcommunity.org/docs"
+  },
+  "implementations": [
+    {
+      "type": "remote",
+      "name": "Primary Public API",
+      "protocol": "mcp",
+      "uri": "https://api.agentcommunity.org/v1",
+      "authentication": {
+        "scheme": "pat",
+        "description": "API Key provided by the service.",
+        "placement": {
+          "in": "header",
+          "key": "Authorization",
+          "format": "Bearer {token}"
+        }
+      },
+      "tags": [
+        "production",
+        "api"
+      ]
     },
-    "implementations": [
-      {
-        "type": "remote",
-        "name": "Primary Public API",
-        "protocol": "mcp",
-        "uri": "https://api.agentcommunity.org/v1",
-        "authentication": {
-          "scheme": "pat",
-          "description": "API Key provided by the service.",
-          "placement": {
-            "in": "header",
-            "key": "Authorization",
-            "format": "Bearer {token}"
-          }
-        },
-        "tags": ["production", "api"]
+    {
+      "type": "local",
+      "name": "Community CLI",
+      "protocol": "none",
+      "package": {
+        "manager": "npx",
+        "identifier": "@agentcommunity/cli"
       },
-      {
-        "type": "local",
-        "name": "Community CLI",
-        "protocol": "none",
-        "package": {
-          "manager": "npx",
-          "identifier": "@agentcommunity/cli"
-        },
-        "execution": {
-          "command": "npx",
-          "args": [
-            "-y",
-            "@agentcommunity/cli"
-          ]
-        },
-        "authentication": { "scheme": "none" },
-        "tags": ["cli", "tools"]
+      "execution": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@agentcommunity/cli"
+        ]
       },
-      {
-        "type": "remote",
-        "name": "Legacy API (Deprecated)",
-        "protocol": "mcp",
-        "status": "deprecated",
-        "uri": "https://api.agentcommunity.org/v0",
-        "authentication": {
-          "scheme": "none"
-        },
-        "tags": ["deprecated"]
-      }
-    ]
-  } 
+      "authentication": {
+        "scheme": "none"
+      },
+      "tags": [
+        "cli",
+        "tools"
+      ]
+    },
+    {
+      "type": "remote",
+      "name": "Legacy API (Deprecated)",
+      "protocol": "mcp",
+      "status": "deprecated",
+      "uri": "https://api.agentcommunity.org/v0",
+      "authentication": {
+        "scheme": "none"
+      },
+      "tags": [
+        "deprecated"
+      ]
+    }
+  ]
+}

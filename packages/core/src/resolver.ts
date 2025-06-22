@@ -1,4 +1,4 @@
-import { aidGeneratorConfigSchema } from './schemas';
+import { aidGeneratorConfigSchema, aidManifestSchema } from './schemas';
 import { AidManifest, AuthConfig, UserConfigurableItem, AuthPlacement, CertificateConfig, RequiredPathItem } from './types';
 
 export type ResolutionStep = 
@@ -136,7 +136,7 @@ export async function* resolveDomain(domain: string, options?: { manifestProxy?:
         yield { type: 'validation_start' };
         try {
             const manifestJson = JSON.parse(manifestContent);
-            aidGeneratorConfigSchema.parse(manifestJson);
+            aidManifestSchema.parse(manifestJson);
             yield { type: 'validation_success', data: { manifest: manifestJson as AidManifest } };
         } catch (error: any) {
             yield { type: 'validation_error', error: error.message };

@@ -53,9 +53,15 @@ function buildTxtRecord(cfg, manifestPath = "/.well-known/aid.json", ttl = 3600)
         parts.push(`env=${cfg.env}`);
     }
     const implementations = cfg.implementations ?? [];
+    // An extended profile is needed if there's more than one implementation,
+    // or if the single implementation is complex (local, or remote with extra config).
+    const isComplex = implementations.length > 1 ||
+        (implementations.length === 1 && implementations[0].type === "local") ||
+        (implementations.length === 1 && (implementations[0].configuration ||
+            implementations[0].requiredPaths ||
+            implementations[0].certificate ||
+            implementations[0].platformOverrides));
     // Find a primary remote implementation to use for TXT hints.
-    // The spec says `uri` and `proto` are required if *any* remote implementation exists.
-    // We'll pick the first one.
     const primaryRemote = implementations.find((impl) => impl.type === "remote");
     if (primaryRemote) {
         parts.push(`uri=${primaryRemote.uri}`);
@@ -64,16 +70,7 @@ function buildTxtRecord(cfg, manifestPath = "/.well-known/aid.json", ttl = 3600)
             parts.push(`auth=${primaryRemote.authentication.scheme}`);
         }
     }
-    // An extended profile is needed if there's more than one implementation,
-    // or if the single implementation is complex (local, or remote with extra config).
-    const needsManifest = implementations.length > 1 ||
-        (implementations.length === 1 && implementations[0].type === "local") ||
-        (primaryRemote &&
-            (primaryRemote.configuration ||
-                primaryRemote.requiredPaths ||
-                primaryRemote.certificate ||
-                primaryRemote.platformOverrides));
-    if (needsManifest && domain) {
+    if (isComplex && domain) {
         const manifestUrl = `https://${domain}${manifestPath}`;
         parts.push(`config=${manifestUrl}`);
     }

@@ -35,7 +35,10 @@
       },
       "execution": {
         "command": "python",
-        "args": ["-m", "edge_admin_tool"],
+        "args": [
+          "-m",
+          "edge_admin_tool"
+        ],
         "platformOverrides": {
           "windows": {
             "command": "edge-admin-tool.exe",
@@ -48,4 +51,4 @@
       }
     }
   ]
-} 
+}

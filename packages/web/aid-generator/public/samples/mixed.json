@@ -24,7 +24,10 @@
     {
       "type": "local",
       "name": "Management CLI",
-      "tags": ["cli", "admin"],
+      "tags": [
+        "cli",
+        "admin"
+      ],
       "protocol": "none",
       "package": {
         "manager": "npx",
@@ -43,4 +46,4 @@
       }
     }
   ]
-} 
+}

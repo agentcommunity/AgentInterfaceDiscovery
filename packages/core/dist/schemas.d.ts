@@ -45,3 +45,42 @@ export declare const aidGeneratorConfigSchema: z.ZodObject<{
     } | undefined;
     signature?: unknown;
 }>;
+export declare const aidManifestSchema: z.ZodObject<{
+    schemaVersion: z.ZodLiteral<"1">;
+    metadata: z.ZodOptional<z.ZodObject<{
+        contentVersion: z.ZodOptional<z.ZodString>;
+        documentation: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
+        revocationURL: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
+    }, "strip", z.ZodTypeAny, {
+        contentVersion?: string | undefined;
+        documentation?: string | undefined;
+        revocationURL?: string | undefined;
+    }, {
+        contentVersion?: string | undefined;
+        documentation?: string | undefined;
+        revocationURL?: string | undefined;
+    }>>;
+    implementations: z.ZodArray<z.ZodType<ImplementationConfig, z.ZodTypeDef, ImplementationConfig>, "many">;
+    signature: z.ZodOptional<z.ZodUnknown>;
+    name: z.ZodString;
+}, "strip", z.ZodTypeAny, {
+    schemaVersion: "1";
+    implementations: ImplementationConfig[];
+    name: string;
+    metadata?: {
+        contentVersion?: string | undefined;
+        documentation?: string | undefined;
+        revocationURL?: string | undefined;
+    } | undefined;
+    signature?: unknown;
+}, {
+    schemaVersion: "1";
+    implementations: ImplementationConfig[];
+    name: string;
+    metadata?: {
+        contentVersion?: string | undefined;
+        documentation?: string | undefined;
+        revocationURL?: string | undefined;
+    } | undefined;
+    signature?: unknown;
+}>;

@@ -69,7 +69,7 @@ async function* resolveDomain(domain, options) {
         yield { type: 'validation_start' };
         try {
             const manifestJson = JSON.parse(manifestContent);
-            schemas_1.aidGeneratorConfigSchema.parse(manifestJson);
+            schemas_1.aidManifestSchema.parse(manifestJson);
             yield { type: 'validation_success', data: { manifest: manifestJson } };
         }
         catch (error) {

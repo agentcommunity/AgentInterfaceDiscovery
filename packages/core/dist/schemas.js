@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.aidGeneratorConfigSchema = void 0;
+exports.aidManifestSchema = exports.aidGeneratorConfigSchema = void 0;
 const zod_1 = require("zod");
 const authPlacementSchema = zod_1.z.object({
     in: zod_1.z.enum(["header", "query", "cli_arg"]),
@@ -162,4 +162,7 @@ exports.aidGeneratorConfigSchema = zod_1.z.object({
         .optional(),
     implementations: zod_1.z.array(implementationConfigSchema).min(1, "At least one implementation is required"),
     signature: zod_1.z.unknown().optional(),
+});
+exports.aidManifestSchema = exports.aidGeneratorConfigSchema.omit({ serviceName: true, domain: true, env: true }).extend({
+    name: zod_1.z.string().min(1, "Name is required"),
 });
