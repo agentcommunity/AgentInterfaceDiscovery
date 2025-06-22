@@ -1,4 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { promises as fs } from 'fs';
+import path from 'path';
+
+// These are the special domains for our examples that rely on Vercel rewrites.
+const exampleDomains = [
+    'auth0.aid.agentcommunity.org',
+    'edge-case.aid.agentcommunity.org',
+    'landing-mcp.aid.agentcommunity.org',
+    'mixed.aid.agentcommunity.org',
+    'multi.aid.agentcommunity.org',
+    'simple.aid.agentcommunity.org'
+];
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -14,6 +26,31 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     return NextResponse.json({ error: 'Invalid URL provided' }, { status: 400 });
   }
+
+  // --- Development-only local rewrite for examples ---
+  if (process.env.NODE_ENV === 'development' && exampleDomains.includes(url.hostname)) {
+    const domainName = url.hostname.split('.')[0];
+    const filePath = path.resolve('./public/samples', `${domainName}.json`);
+
+    try {
+        console.log(`[PROXY] DEV MODE: Attempting to read local file: ${filePath}`);
+        const data = await fs.readFile(filePath, 'utf-8');
+        console.log(`[PROXY] DEV MODE: Successfully read local file for ${domainName}.`);
+
+        return new NextResponse(data, {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' }
+        });
+    } catch (error: any) {
+        console.error(`[PROXY] DEV MODE ERROR: Could not load local sample for ${url.hostname}.`, {
+             path: filePath,
+             error: error.message 
+        });
+        return NextResponse.json({ error: `Could not load local sample file for development: ${error.message}` }, { status: 404 });
+    }
+  }
+  // --- End of dev-only logic ---
+
 
   // Basic security measure: only proxy http and https protocols
   if (url.protocol !== 'https:' && url.protocol !== 'http:') {

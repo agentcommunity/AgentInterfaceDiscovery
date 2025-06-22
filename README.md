@@ -325,6 +325,12 @@ pnpm -F @aid/core exec ts-node bin/aid-gen.ts ../examples/auth0/config.json ../.
 pnpm -F aid-generator dev
 ```
 
+### Local Development Server & Proxy
+
+The example domains (e.g., `auth0.aid.agentcommunity.org`) are configured with rewrite rules on Vercel to serve their corresponding manifest files from the `/public/samples` directory. These domains will not resolve on a local machine.
+
+To enable seamless local development, the Next.js application includes a proxy at `packages/web/aid-generator/app/api/proxy/route.ts`. In a development environment, this proxy intercepts requests for the known example domains and serves the correct local JSON file, simulating the Vercel rewrites and preventing DNS errors.
+
 ## Integration
 
 ### As a Library

@@ -26,7 +26,7 @@ export function ResolverInput({
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, delay: hasStarted ? 0 : 1 }}
-      className="w-full max-w-2xl px-4 flex-shrink-0 sticky bottom-4"
+      className="w-full max-w-2xl px-4 flex-shrink-0"
     >
       <form onSubmit={submitForm} className="relative w-full">
         <div className="relative group">

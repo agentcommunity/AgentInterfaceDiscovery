@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { getImplementations, resolveDomain, ResolutionStep, ActionableImplementation } from "@aid/core/browser";
+import { getImplementations, resolveDomain, ActionableImplementation } from "@aid/core/browser";
 import { cn } from '@/lib/utils';
 import { AidManifest } from '@aid/core';
 
@@ -12,7 +12,8 @@ import { WelcomeScreen } from '@/components/resolver/WelcomeScreen';
 import { ChatMessage, ChatMessageProps } from '@/components/resolver/ChatMessage';
 import { ResolverInput } from '@/components/resolver/ResolverInput';
 import { ActionableProfile } from '@/components/resolver/ActionableProfile';
-import { CopyButton } from "@/components/resolver/CopyButton";
+import { Codeblock } from '@/components/resolver/Codeblock';
+import { ExamplePicker } from '@/components/resolver/ExamplePicker';
 import { useSearchParams } from "next/navigation";
 
 export default function ResolverPage() {
@@ -29,7 +30,7 @@ export default function ResolverPage() {
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [chatHistory]);
+    }, [chatHistory, finalImplementations]);
 
     const handleReset = () => {
         setHasStarted(false);
@@ -44,68 +45,77 @@ export default function ResolverPage() {
         setIsStreaming(true);
         if (!hasStarted) setHasStarted(true);
 
-        // Reset previous results
         setFinalDomain(null);
         setFinalManifest(null);
         setFinalImplementations(null);
 
-        // Start with the user's message
-        const newHistory: ChatMessageProps[] = [{ role: 'user', content: domain }];
-        setChatHistory(newHistory);
+        const userMessage: ChatMessageProps = { role: 'user', content: domain };
         
-        // Prepare assistant message
-        const assistantMessage: ChatMessageProps = { role: 'assistant', content: '' };
-        const updatedHistory = [...newHistory, assistantMessage];
-        setChatHistory(updatedHistory);
+        const assistantResponseContent: React.ReactNode[] = [];
+        const assistantMessage: ChatMessageProps = { role: 'assistant', content: assistantResponseContent };
+        
+        let currentHistory: ChatMessageProps[] = [userMessage, assistantMessage];
+        setChatHistory(currentHistory);
+        
+        const addAssistantNode = (node: React.ReactNode) => {
+            assistantResponseContent.push(node);
+            setChatHistory([userMessage, { ...assistantMessage, content: [...assistantResponseContent] }]);
+        };
         
         let tempManifest: AidManifest | null = null;
         let tempImplementations: ActionableImplementation[] | null = null;
         let tempDomain: string | null = null;
-
         const proxyPath = '/api/proxy';
+        
         for await (const step of resolveDomain(domain, { manifestProxy: proxyPath })) {
-            let message = '';
+            let node: React.ReactNode = null;
+            const key = `${step.type}-${Date.now()}`;
+
             switch (step.type) {
                 case 'dns_query':
-                    message = `Querying DNS for \`${step.data.recordName}\`...`;
+                    node = <p key={key} className="m-0">Querying DNS for <code>{step.data.recordName}</code>...</p>;
                     break;
                 case 'dns_success':
-                    message = `✅ Found TXT Record:\n\`\`\`\n${step.data.txtRecord}\n\`\`\``;
+                    node = (
+                        <div key={key}>
+                            <p className="m-0">✅ Found TXT Record:</p>
+                            <Codeblock content={step.data.txtRecord} />
+                        </div>
+                    );
                     break;
                 case 'dns_error':
-                    message = `❌ DNS Error: ${step.error}`;
-                    break;
-                case 'inline_profile':
-                    message = `ℹ️ TXT record is an inline profile.`;
+                    node = <p key={key} className="m-0 text-red-500">❌ DNS Error: {step.error}</p>;
                     break;
                 case 'manifest_fetch':
-                    message = `Fetching manifest from \`${step.data.manifestUrl}\`...`;
+                    node = <p key={key} className="m-0">Fetching manifest from <code>{step.data.manifestUrl}</code>...</p>;
                     break;
                 case 'manifest_success':
-                    message = '✅ Manifest received.';
+                    node = <p key={key} className="m-0">✅ Manifest received.</p>;
                     break;
                 case 'manifest_error':
-                    message = `❌ Manifest Error: ${step.error}`;
+                    node = <p key={key} className="m-0 text-red-500">❌ Manifest Error: {step.error}</p>;
                     break;
                 case 'validation_start':
-                    message = 'Validating manifest against schema...';
+                    node = <p key={key} className="m-0">Validating manifest against schema...</p>;
                     break;
                 case 'validation_success':
                     tempManifest = step.data.manifest;
-                    message = '✅ Manifest is valid! Preparing summary...';
+                    node = <p key={key} className="m-0">✅ Manifest is valid! Preparing summary...</p>;
                     break;
                 case 'validation_error':
-                    message = `❌ Validation Error: ${step.error}`;
+                    node = <p key={key} className="m-0 text-red-500">❌ Validation Error: {step.error}</p>;
                     break;
                 case 'actionable_profile':
                     tempImplementations = step.data.implementations;
                     tempDomain = step.data.domain;
-                    message = '✅ Inline profile parsed! Preparing summary...';
+                    node = <p key={key} className="m-0">✅ Inline profile parsed! Preparing summary...</p>;
                     break;
             }
-            assistantMessage.content += `\n- ${message}`;
-            setChatHistory([...updatedHistory]);
-            await new Promise(resolve => setTimeout(resolve, 50));
+
+            if (node) {
+                 addAssistantNode(node);
+            }
+            await new Promise(resolve => setTimeout(resolve, 150));
         }
 
         if (tempManifest) {
@@ -135,42 +145,37 @@ export default function ResolverPage() {
     return (
         <div className="flex flex-col h-[calc(100vh-80px)] bg-background text-foreground">
             <ResolverHeader hasStarted={hasStarted} onReset={handleReset} />
-
-            <main className={cn(
-                "flex flex-col flex-grow items-center w-full relative",
-                hasStarted ? 'justify-end' : 'justify-center'
-            )}>
-
-                <div className="absolute top-0 left-0 w-full h-full overflow-y-auto p-4 md:p-6">
+            <main className="flex flex-col flex-grow w-full items-center">
+                <div className={cn(
+                    "w-full flex-grow overflow-y-auto p-4 md:p-6",
+                    !hasStarted && "flex flex-col justify-center items-center"
+                )}>
                     <AnimatePresence>
-                        {!hasStarted && (
-                           <WelcomeScreen handleExampleClick={handleExampleClick} />
-                        )}
-                        {hasStarted && (
-                            <div className="w-full max-w-3xl mx-auto space-y-4">
-                                {chatHistory.map((msg, index) => (
-                                    <ChatMessage key={index} role={msg.role} content={msg.content} />
-                                ))}
-                                {finalImplementations && finalDomain && (
-                                     <ActionableProfile 
-                                        domain={finalDomain}
-                                        manifest={finalManifest}
-                                        implementations={finalImplementations}
-                                    />
-                                )}
-                                <div ref={chatEndRef} />
-                            </div>
-                        )}
+                        {!hasStarted && <WelcomeScreen />}
                     </AnimatePresence>
+                    {hasStarted && (
+                        <div className="w-full max-w-3xl mx-auto space-y-4">
+                            {chatHistory.map((msg, index) => (
+                                <ChatMessage key={index} role={msg.role} content={msg.content} />
+                            ))}
+                            {finalImplementations && finalDomain && (
+                                <ActionableProfile domain={finalDomain} manifest={finalManifest} implementations={finalImplementations} />
+                            )}
+                            <div ref={chatEndRef} />
+                        </div>
+                    )}
                 </div>
                 
-                <ResolverInput 
-                    inputValue={inputValue}
-                    setInputValue={setInputValue}
-                    isStreaming={isStreaming}
-                    hasStarted={hasStarted}
-                    submitForm={submitForm}
-                />
+                <div className="sticky bottom-0 pb-4 w-full flex flex-col items-center bg-background/80 backdrop-blur-sm pt-2">
+                    <ResolverInput 
+                        inputValue={inputValue}
+                        setInputValue={setInputValue}
+                        isStreaming={isStreaming}
+                        hasStarted={hasStarted}
+                        submitForm={submitForm}
+                    />
+                    <ExamplePicker handleExampleClick={handleExampleClick} />
+                </div>
             </main>
         </div>
     );

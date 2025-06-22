@@ -2,13 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
-interface WelcomeScreenProps {
-  handleExampleClick: (domain: string) => void;
-}
-
-export function WelcomeScreen({ handleExampleClick }: WelcomeScreenProps) {
+export function WelcomeScreen() {
   return (
     <motion.div
       layout
@@ -21,15 +16,8 @@ export function WelcomeScreen({ handleExampleClick }: WelcomeScreenProps) {
         <Sparkles size={24} /> AID Resolver
       </h2>
       <p className="text-muted-foreground mb-8">
-        Enter a domain to discover its Agent Interface Definition.
+        Enter a domain to discover its Agent Interface Definition, or select an example below.
       </p>
-      <div className="flex flex-wrap gap-2 justify-center mt-4">
-        <Button variant="outline" size="sm" onClick={() => handleExampleClick('simple.aid.agentcommunity.org')}>simple</Button>
-        <Button variant="outline" size="sm" onClick={() => handleExampleClick('edge-case.aid.agentcommunity.org')}>landing</Button>
-        <Button variant="outline" size="sm" onClick={() => handleExampleClick('mixed.aid.agentcommunity.org')}>mixed-mode</Button>
-        <Button variant="outline" size="sm" onClick={() => handleExampleClick('multi.aid.agentcommunity.org')}>multi-remote</Button>
-        <Button variant="outline" size="sm" onClick={() => handleExampleClick('auth0.aid.agentcommunity.org')}>auth0-mcp</Button>
-      </div>
     </motion.div>
   );
 } 

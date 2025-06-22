@@ -1,30 +1,38 @@
 [
   {
-    "name": "Auth0",
-    "path": "auth0.json"
-  },
-  {
     "name": "Edge Case",
-    "path": "edge-case.json"
-  },
-  {
-    "name": "Empty",
-    "path": "empty.json"
+    "path": "edge-case.json",
+    "domain": "edge-case.aid.agentcommunity.org",
+    "type": "example"
   },
   {
     "name": "Landing Mcp",
-    "path": "landing-mcp.json"
+    "path": "landing-mcp.json",
+    "domain": "agentcommunity.org",
+    "type": "example"
   },
   {
     "name": "Mixed",
-    "path": "mixed.json"
+    "path": "mixed.json",
+    "domain": "mixed.aid.agentcommunity.org",
+    "type": "example"
   },
   {
     "name": "Multi",
-    "path": "multi.json"
+    "path": "multi.json",
+    "domain": "multi.aid.agentcommunity.org",
+    "type": "example"
   },
   {
     "name": "Simple",
-    "path": "simple.json"
+    "path": "simple.json",
+    "domain": "simple.aid.agentcommunity.org",
+    "type": "example"
+  },
+  {
+    "name": "Auth0",
+    "path": "auth0.json",
+    "domain": "auth0.aid.agentcommunity.org",
+    "type": "showcase"
   }
 ]

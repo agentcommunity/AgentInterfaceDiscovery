@@ -1,12 +1,10 @@
 # AID Resolver Playground: Reference Implementation
 
-This directory contains a complete, best-practices reference implementation for an **Agent Interface Discovery (AID) Client**. It is built on top of the canonical `@aid/core` library.
+This directory contains a complete, best-practices reference implementation for an **Agent Interface Discovery (AID) Client**. It is built on top of the canonical `@aid/core` library to provide a polished, interactive, and developer-friendly UI for exploring AID-enabled domains.
 
 ## Architecture
 
-The implementation is broken into two key parts: the **core resolver engine** (which lives in `@aid/core`) and the **React UI components** in this directory (`components/resolver/` and `app/resolve/page.tsx`).
-
-The `lib/resolver.ts` and `lib/generator.ts` files in this application are now simple pass-throughs, re-exporting the canonical functions from `@aid/core/browser`. This ensures the UI is always using the spec-compliant, authoritative logic.
+The implementation is broken into two key parts: the **core resolver engine** (which lives in `@aid/core`) and a suite of **React UI components** in this directory that render the resolution process.
 
 ### 1. The Core Resolver Engine (`@aid/core/resolver.ts`)
 
@@ -18,14 +16,21 @@ This is the heart of any AID client. It's a framework-agnostic module that could
 
 ### 2. The React UI (`page.tsx` & Components)
 
-The UI is built to be a direct reflection of the data provided by the core resolver engine. It calls `resolveDomain` (imported via the local `lib` file, which re-exports from `@aid/core`) and consumes the stream of events to render the chat history and the final `ActionableProfile`.
+The UI is designed to be a highly interactive and clear representation of the data provided by the core resolver engine. It calls `resolveDomain` and consumes the stream of events to render a conversational history of the process and a detailed, multi-format final profile.
+
+-   **`page.tsx`**: The main page orchestrates the UI. It manages state, calls the `resolveDomain` generator, and dynamically builds a chat history by rendering a new `ChatMessage` for each step yielded by the resolver.
+-   **`ChatMessage.tsx`**: A flexible component that can render either simple markdown strings or complex React components (like a `Codeblock`), allowing for a rich, mixed-media chat log.
+-   **`Codeblock.tsx`**: A dedicated component for displaying formatted code, TXT records, or JSON. It includes a header and a one-click copy button.
+-   **`ActionableProfile.tsx`**: This component acts as a container for the final results. It uses a `ViewToggle` to allow the user to switch between a user-friendly "Preview" and the raw `aid.json` manifest.
+-   **`ImplementationCard.tsx`**: In "Preview" mode, one of these cards is rendered for each implementation found. It clearly displays the execution command/URI, authentication details, and any required configuration or paths in a structured, easy-to-digest format.
+
+**Note on Local Development:** The example domains (e.g., `simple.aid.agentcommunity.org`) rely on Vercel rewrite rules in production to point to the correct manifest files. These domains will not resolve on a local machine. To handle this, the `/api/proxy` route in this application intercepts these requests during development and serves the appropriate local sample file from `/public/samples`, simulating the production environment.
 
 ## Implementation Guide for Your Own Client
 
 To build your own AID client, you should depend directly on the `@aid/core` package.
 
 1.  **Use the Resolver Engine**: Import and use `resolveDomain` from `@aid/core/resolver` to handle the discovery logic.
-2.  **Get the Actionable Profile**: On a `validation_success` step, use `getImplementations` to generate an `ActionableImplementation[]` array.
-3.  **Build Your UI Dynamically**: Loop through the `ActionableImplementation[]` array and inspect its properties (`type`, `execution`, `auth`, `requiredConfig`) to dynamically render the appropriate UI controls for the user.
-
-This directory serves as a live, working example of these principles. 
+2.  **Render the Process**: Iterate through the yielded steps from `resolveDomain` to provide real-time feedback to the user.
+3.  **Get the Actionable Profile**: On a `validation_success` or `actionable_profile` step, use `getImplementations` to generate an `ActionableImplementation[]` array.
+4.  **Build Your UI Dynamically**: Loop through the `ActionableImplementation[]` array and inspect its properties (`type`, `execution`, `auth`, `requiredConfig`) to dynamically render the appropriate UI controls for the user. This reference implementation provides a robust example (`ImplementationCard.tsx`) of how to accomplish this. 

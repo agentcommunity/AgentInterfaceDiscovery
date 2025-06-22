@@ -9,7 +9,7 @@ export type ChatRole = 'user' | 'assistant';
 
 export interface ChatMessageProps {
   role: ChatRole;
-  content: string;
+  content: string | React.ReactNode;
 }
 
 export function ChatMessage({ role, content }: ChatMessageProps) {
@@ -30,11 +30,15 @@ export function ChatMessage({ role, content }: ChatMessageProps) {
           ? "bg-primary text-primary-foreground"
           : "bg-muted text-muted-foreground"
       )}>
-        <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:whitespace-pre-wrap prose-pre:break-all">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {content}
-          </ReactMarkdown>
-        </div>
+        {typeof content === 'string' ? (
+           <div className="prose prose-sm dark:prose-invert max-w-none prose-pre:whitespace-pre-wrap prose-pre:break-all">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {content}
+            </ReactMarkdown>
+          </div>
+        ) : (
+          content
+        )}
       </div>
     </motion.div>
   );
