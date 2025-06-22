@@ -104,9 +104,35 @@ This refactoring sets the foundation for future UX improvements including:
 - "Add..." button pattern for list management
 - Improved form navigation and validation feedback
 
----
+### i. CSS Build System Fix
+A final set of fixes was required to stabilize the local development build for the web app, which was failing to apply CSS styling due to a misconfigured Tailwind CSS toolchain.
 
-## 3. Why This Architecture? (Educational Notes)
+- **The Problem:** The `pnpm --filter aid-generator dev` command resulted in an unstyled page. The root cause was a missing `tailwind.config.ts` file, which triggered a cascade of secondary errors, including missing packages (`autoprefixer`, `tailwindcss-animate`) and incorrect CSS directives.
+- **The Solution:** A multi-step process was undertaken to rebuild the CSS toolchain correctly:
+  1.  **Recreate Config:** A new, `shadcn/ui`-compliant `tailwind.config.ts` was created.
+  2.  **Install Dependencies:** The required `autoprefixer` and `tailwindcss-animate` packages were added as `devDependencies` to the web app.
+  3.  **Correct Directives:** The non-standard `@import "tailwindcss";` in `globals.css` was replaced with the correct `@tailwind base;`, `@tailwind components;`, and `@tailwind utilities;` directives.
+  4.  **Align Theme & Variables:** The final error (`The 'border-border' class does not exist`) was resolved by removing a conflicting experimental PostCSS plugin (`@tailwindcss/postcss`) and aligning the theme configuration. The `tailwind.config.ts` was updated to define colors using CSS variables (`oklch(var(--border) / <alpha-value>)`), and `globals.css` was updated to define those variables with only the raw color values (e.g., `--border: 0.922 0 0;`), following the standard `shadcn/ui` pattern.
+This restored the build process and ensured the UI renders correctly in local development.
+
+### j. Dynamic & Automated Sample Loading
+To improve maintainability and ensure the UI always reflects the canonical set of examples, the sample loading mechanism was automated.
+
+- **Build Script Enhancement:** The `packages/core/scripts/build-examples.ts` script was enhanced to be the single source of truth for all examples.
+  - On each run, it cleans the `packages/web/aid-generator/public/samples` directory.
+  - It reads the `config.json` from each subdirectory in `packages/examples`, validates it, corrects common issues (like removing invalid keys or fixing domain formats), and copies the cleaned file into the UI's sample directory.
+  - It programmatically generates an `index.json` file in the samples directory, which contains a list of all available examples with user-friendly names.
+
+- **Dynamic `SampleLoader` Component:** The `SampleLoader.tsx` component in the UI was refactored.
+  - It no longer contains a hardcoded list of samples.
+  - On component mount, it fetches the `index.json` file.
+  - It dynamically builds the dropdown menu based on the contents of the index, ensuring that any example added to `packages/examples` automatically appears in the UI after the build script is run.
+
+This change eliminates manual synchronization, reduces the chance of errors, and makes the example gallery easily extensible.
+
+Excellent. This is a textbook example of a successful and well-documented refactoring effort. You have not only improved the codebase but also clearly articulated the principles behind the changes.
+
+Let's break this down.
 
 ### Why do we need a `dist` folder?
 
@@ -132,63 +158,16 @@ Using a central `index.ts` file to export your package's functionality is a best
     ```
 3.  **Decouples from Internal Structure:** If you decide to refactor your internal files (e.g., split `generator.ts` into smaller files), you only need to update the exports in `index.ts`. The consuming applications (`web`) don't have to change their import statements at all, making your library much easier to maintain. This is a core principle of good API design.
 
+### i. CSS Build System Fix
+A final set of fixes was required to stabilize the local development build for the web app, which was failing to apply CSS styling due to a misconfigured Tailwind CSS toolchain.
 
-
-Excellent. This is a textbook example of a successful and well-documented refactoring effort. You have not only improved the codebase but also clearly articulated the principles behind the changes.
-
-Let's break this down.
-
-### "Consider if we did well."
-
-**Yes, you did extremely well.** This isn't just a code cleanup; it's a fundamental architectural improvement that establishes a robust, maintainable, and scalable foundation for the project.
-
-Here's a point-by-point validation of your summary:
-
-*   **Monorepo & Package Architecture:** Perfect. Defining `@aid/core` as a formal package and using workspace linking is the correct way to manage dependencies within a monorepo. This is the foundation for everything else.
-*   **Type Centralization:** This is the most critical win. Deleting the duplicated types and importing from the single source of truth (`@aid/core`) eliminates an entire category of potential bugs related to type drift.
-*   **Generator Logic Alignment:** This shows a sophisticated understanding of separation of concerns.
-    *   The API uses the **canonical, server-side-capable** generator from `@aid/core`.
-    *   The UI uses a **lightweight, client-safe** generator for previews.
-    This is a smart design. You avoid bundling server-side Node.js dependencies (like `fs` from `writeManifest`) into the client-side application, keeping the UI fast and lean.
-*   **Schema & Validation Hardening:** You correctly identified that Zod schemas belong in the `web` app (the consumer) to handle runtime/form validation, but they **must** be strictly aligned with the canonical types from `core`. Hardening them was the right move.
-
----
-
-### "Do we really need these dist files?"
-
-**Yes, they are absolutely essential.** Your own "Educational Notes" section is spot-on, and I will expand on it to solidify the concept. The `dist` folder is the non-negotiable link between your packages.
-
-Here is a breakdown of *why*, combining and reinforcing your notes:
-
-1.  **The Runtime Contract (JavaScript):**
-    *   **Your Code:** You write in TypeScript (`.ts`).
-    *   **The Machine's Code:** Node.js (for your API) and the browser (for your UI) can only execute JavaScript (`.js`).
-    *   **The `dist` Folder's Role:** It holds the compiled `.js` files that are the actual, runnable program. Without the `generator.js` and `types.js` files in `dist`, there is literally no code for your web app to import and execute.
-
-2.  **The Development Contract (TypeScript):**
-    *   **Your Code:** The `web` app needs to know the *shape* of the functions and objects it's importing from `@aid/core`. What arguments does `buildManifest` take? What properties does `AidManifest` have?
-    *   **The `dist` Folder's Role:** It holds the TypeScript Declaration Files (`.d.ts`). These files contain *only* the type information—no logic. When you write `import { buildManifest } from '@aid/core'`, your code editor and the TypeScript compiler look inside `@aid/core/dist/index.d.ts` to get the types. This is what enables autocompletion and error checking across your monorepo.
-
-3.  **The Public API Contract (`index.ts`):**
-    *   Your `index.ts` file acts as the "main entrance" to your library. By re-exporting (`export * from ...`), you create a clean, unified public interface.
-    *   This is incredibly important for maintainability. You can freely refactor the *internal* files inside `@aid/core/src` (e.g., splitting `types.ts` into multiple files), and as long as you update the `index.ts` to export the same things, **the `web` app doesn't have to change a single line of code.** It remains decoupled from the internal structure of the `core` library.
-
-**In short: The `dist` folder is the compiled, ready-to-use "product" that the `@aid/core` package provides to its consumers. It contains both the executable JavaScript and the type definitions needed for a modern development experience.**
-
----
-
-### Review of the New Web README
-
-The new `README.md` for the web UI is excellent. It's comprehensive, well-structured, and serves as fantastic documentation for any developer joining the project.
-
-**Strengths:**
-
-*   **Architecture Section:** Clearly explains the relationship with `@aid/core`. This is vital.
-*   **Generator Logic Distinction:** Explicitly calling out the two different generators (canonical vs. preview) is a great detail that prevents confusion.
-*   **API Documentation:** The request/response examples for the API are clear and actionable.
-*   **Development Workflow:** The instructions are specific and guide the developer on the correct process (e.g., "All changes to the data model must be made in the `@aid/core` package").
-
-This README is a high-quality piece of technical documentation that perfectly complements the refactored code.
+- **The Problem:** The `pnpm --filter aid-generator dev` command resulted in an unstyled page. The root cause was a missing `tailwind.config.ts` file, which triggered a cascade of secondary errors, including missing packages (`autoprefixer`, `tailwindcss-animate`) and incorrect CSS directives.
+- **The Solution:** A multi-step process was undertaken to rebuild the CSS toolchain correctly:
+  1.  **Recreate Config:** A new, `shadcn/ui`-compliant `tailwind.config.ts` was created.
+  2.  **Install Dependencies:** The required `autoprefixer` and `tailwindcss-animate` packages were added as `devDependencies` to the web app.
+  3.  **Correct Directives:** The non-standard `@import "tailwindcss";` in `globals.css` was replaced with the correct `@tailwind base;`, `@tailwind components;`, and `@tailwind utilities;` directives.
+  4.  **Align Theme & Variables:** The final error (`The 'border-border' class does not exist`) was resolved by removing a conflicting experimental PostCSS plugin (`@tailwindcss/postcss`) and aligning the theme configuration. The `tailwind.config.ts` was updated to define colors using CSS variables (`oklch(var(--border) / <alpha-value>)`), and `globals.css` was updated to define those variables with only the raw color values (e.g., `--border: 0.922 0 0;`), following the standard `shadcn/ui` pattern.
+This restored the build process and ensured the UI renders correctly in local development.
 
 ### Final Verdict
 

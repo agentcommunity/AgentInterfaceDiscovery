@@ -14,48 +14,54 @@ import { ChevronDown, FileText, Loader2, AlertTriangle } from "lucide-react"
 import { toast } from "sonner"
 import type { AidGeneratorConfig } from "@aid/core"
 
-// Define the samples to be loaded from the public directory
-const sampleFiles = [
-  { name: "Empty Template", path: "empty.json" },
-  { name: "Hello World", path: "hello-world.json" },
-  { name: "Auth0 MCP", path: "auth0-mcp.json" },
-  { name: "Mixed Profile", path: "mixed-profile.json" },
-]
+interface SampleInfo {
+  name: string;
+  path: string;
+}
 
 interface SampleLoaderProps {
   onLoadSample: (config: AidGeneratorConfig) => void
 }
 
 export function SampleLoader({ onLoadSample }: SampleLoaderProps) {
-  const [samples, setSamples] = useState<Record<string, AidGeneratorConfig>>({})
+  const [samples, setSamples] = useState<SampleInfo[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchSamples = async () => {
+    const fetchSampleIndex = async () => {
       try {
-        const loadedSamples: Record<string, AidGeneratorConfig> = {}
-        for (const file of sampleFiles) {
-          const response = await fetch(`/samples/${file.path}`)
-          if (!response.ok) {
-            throw new Error(`Failed to load ${file.name}`)
-          }
-          const data: AidGeneratorConfig = await response.json()
-          loadedSamples[file.name] = data
+        const response = await fetch(`/samples/index.json`)
+        if (!response.ok) {
+          throw new Error(`Failed to load samples index`)
         }
-        setSamples(loadedSamples)
+        const data: SampleInfo[] = await response.json()
+        setSamples(data)
       } catch (e) {
         const errorMessage = e instanceof Error ? e.message : "An unknown error occurred"
         setError(errorMessage)
         toast.error("Failed to load samples", { description: errorMessage })
-        console.error("Error fetching samples:", e)
+        console.error("Error fetching sample index:", e)
       } finally {
         setIsLoading(false)
       }
     }
 
-    fetchSamples()
+    fetchSampleIndex()
   }, []) // Empty dependency array ensures this runs only once on mount
+
+  const handleSelectSample = async (samplePath: string) => {
+    try {
+      const response = await fetch(`/samples/${samplePath}`)
+      if (!response.ok) throw new Error(`Failed to fetch ${samplePath}`)
+      const config = await response.json()
+      onLoadSample(config)
+      toast.success("Sample loaded!")
+    } catch (e) {
+       const errorMessage = e instanceof Error ? e.message : "An unknown error occurred"
+       toast.error("Failed to load sample", { description: errorMessage })
+    }
+  }
 
   return (
     <DropdownMenu>
@@ -81,9 +87,9 @@ export function SampleLoader({ onLoadSample }: SampleLoaderProps) {
           <>
             <DropdownMenuLabel>Select a sample to load</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {Object.entries(samples).map(([name, config]) => (
-              <DropdownMenuItem key={name} onClick={() => onLoadSample(config)}>
-                {name}
+            {samples.map((sample) => (
+              <DropdownMenuItem key={sample.path} onClick={() => handleSelectSample(sample.path)}>
+                {sample.name}
               </DropdownMenuItem>
             ))}
           </>

@@ -78,7 +78,7 @@ const authConfigSchema = z.discriminatedUnion("scheme", [
 
 const executionConfigSchema: z.ZodType<ExecutionConfig> = z.object({
   command: z.string().min(1, "Command is required"),
-  args: z.array(z.string()).min(1, "At least one argument is required"),
+  args: z.array(z.string()),
   platformOverrides: z.record(z.lazy(() => executionConfigSchema)).optional(),
 })
 
@@ -93,7 +93,7 @@ const baseImplementationSchema = z.object({
   certificate: z
     .object({
       source: z.enum(["file", "enrollment"]),
-      enrollmentEndpoint: z.string().url().optional(),
+      enrollmentEndpoint: z.string().url().optional().or(z.literal("")),
     })
     .optional(),
   configuration: z
@@ -158,7 +158,7 @@ const implementationConfigSchema: z.ZodType<ImplementationConfig> = z
     },
   )
 
-export const aidGeneratorConfigSchema: z.ZodType<AidGeneratorConfig> = z.object({
+export const aidGeneratorConfigSchema = z.object({
   schemaVersion: z.literal("1"),
   serviceName: z.string().min(1, "Service name is required"),
   domain: z

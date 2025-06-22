@@ -13,8 +13,6 @@ import type { AidGeneratorConfig } from "@aid/core"
 
 interface ConfigFormProps {
   form: UseFormReturn<AidGeneratorConfig>
-  onSubmit: (data: AidGeneratorConfig) => void
-  isGenerating: boolean
   hasServiceErrors: boolean
   hasMetadataErrors: boolean
   hasImplementationsErrors: boolean
@@ -22,8 +20,6 @@ interface ConfigFormProps {
 
 export function ConfigForm({
   form,
-  onSubmit,
-  isGenerating,
   hasServiceErrors,
   hasMetadataErrors,
   hasImplementationsErrors,
@@ -33,7 +29,7 @@ export function ConfigForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form className="space-y-8">
         <ServiceSection form={form} hasErrors={hasServiceErrors} />
         <Separator />
         <MetadataSection form={form} hasErrors={hasMetadataErrors} />
@@ -41,19 +37,6 @@ export function ConfigForm({
         <ImplementationsSection form={form} hasErrors={hasImplementationsErrors} />
         <Separator />
         <SignatureSection />
-
-        <Button type="submit" className="w-full" disabled={isGenerating || hasErrors}>
-          {isGenerating ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating...
-            </>
-          ) : hasErrors ? (
-            "Complete required sections to generate"
-          ) : (
-            "Generate AID Files"
-          )}
-        </Button>
       </form>
     </Form>
   )

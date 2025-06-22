@@ -3,6 +3,7 @@ import path from "path";
 import { AidGeneratorConfig, ImplementationConfig, buildManifest, buildTxtRecord } from "../src/index";
 
 const examplesDir = path.resolve(__dirname, "../../../packages/examples");
+const webSamplesDir = path.resolve(__dirname, "../../../web/aid-generator/public/samples");
 const CORE_EXAMPLES = ['simple', 'multi', 'edge-case', 'mixed'];
 
 interface VercelRewrite {
@@ -11,13 +12,57 @@ interface VercelRewrite {
   destination: string;
 }
 
+async function prepareWebSamplesDir() {
+  console.log(`\nPreparing web samples directory: ${webSamplesDir}`);
+  await fs.rm(webSamplesDir, { recursive: true, force: true });
+  await fs.mkdir(webSamplesDir, { recursive: true });
+  console.log("  ✓ Cleared and recreated web samples directory.");
+
+  // Create the "Empty" template
+  const emptyTemplate = {
+    schemaVersion: "1",
+    serviceName: "",
+    domain: "",
+    metadata: {},
+    implementations: []
+  };
+  await fs.writeFile(
+    path.join(webSamplesDir, "empty.json"),
+    JSON.stringify(emptyTemplate, null, 2),
+    "utf-8"
+  );
+  console.log("  ✓ Created empty.json template.");
+}
+
+async function writeSamplesIndex(sampleDir: string) {
+  const files = await fs.readdir(sampleDir);
+  const sampleIndex = files
+    .filter(file => file.endsWith('.json') && file !== 'index.json')
+    .map(file => {
+      // Create a more friendly name from the filename
+      const name = path.basename(file, '.json')
+        .replace(/-/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase());
+      return { name, path: file };
+    });
+  
+  await fs.writeFile(
+    path.join(sampleDir, "index.json"),
+    JSON.stringify(sampleIndex, null, 2),
+    "utf-8"
+  );
+  console.log("  ✓ Created samples index.json.");
+}
+
 async function buildExamples() {
   const vercelRewrites: VercelRewrite[] = [];
   const processedConfigs = new Map<string, AidGeneratorConfig>();
 
   try {
+    await prepareWebSamplesDir();
+
     const exampleDirs = await fs.readdir(examplesDir, { withFileTypes: true });
-    console.log(`Found ${exampleDirs.length} potential examples. Building...`);
+    console.log(`\nFound ${exampleDirs.length} potential examples. Building...`);
 
     // First pass: process all configs and store them.
     for (const dirent of exampleDirs) {
@@ -30,7 +75,27 @@ async function buildExamples() {
       try {
         await fs.access(configPath);
         const configContent = await fs.readFile(configPath, "utf-8");
-        const config = JSON.parse(configContent) as AidGeneratorConfig;
+        const config = JSON.parse(configContent) as AidGeneratorConfig & { name?: string };
+        
+        // --- Start: Correction and Validation Logic ---
+        
+        // 1. Remove non-standard top-level 'name' property
+        if ('name' in config) {
+          delete config.name;
+        }
+
+        // 2. Ensure domain is a bare domain
+        if (config.domain && (config.domain.startsWith('http://') || config.domain.startsWith('https://'))) {
+          console.warn(`  ! Correcting domain for ${exampleName}: from ${config.domain} to bare domain.`);
+          config.domain = config.domain.replace(/^(https?:\/\/)/, '');
+        }
+        
+        // --- End: Correction and Validation Logic ---
+
+        // Write the cleaned config to the web samples directory
+        const webSamplePath = path.join(webSamplesDir, `${exampleName}.json`);
+        await fs.writeFile(webSamplePath, JSON.stringify(config, null, 2), "utf-8");
+        console.log(`  ✓ Wrote cleaned sample to ${webSamplePath}`);
         
         let newDomain: string;
         if (exampleName === "landing-mcp") {
@@ -58,6 +123,9 @@ async function buildExamples() {
         }
       }
     }
+
+    // After all samples are processed, write the index file
+    await writeSamplesIndex(webSamplesDir);
 
     // Second pass: generate artifacts and Vercel config
     for (const [exampleName, config] of processedConfigs.entries()) {

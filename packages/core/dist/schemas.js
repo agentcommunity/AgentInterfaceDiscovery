@@ -75,7 +75,7 @@ const authConfigSchema = zod_1.z.discriminatedUnion("scheme", [
 ]);
 const executionConfigSchema = zod_1.z.object({
     command: zod_1.z.string().min(1, "Command is required"),
-    args: zod_1.z.array(zod_1.z.string()).min(1, "At least one argument is required"),
+    args: zod_1.z.array(zod_1.z.string()),
     platformOverrides: zod_1.z.record(zod_1.z.lazy(() => executionConfigSchema)).optional(),
 });
 const baseImplementationSchema = zod_1.z.object({
@@ -89,7 +89,7 @@ const baseImplementationSchema = zod_1.z.object({
     certificate: zod_1.z
         .object({
         source: zod_1.z.enum(["file", "enrollment"]),
-        enrollmentEndpoint: zod_1.z.string().url().optional(),
+        enrollmentEndpoint: zod_1.z.string().url().optional().or(zod_1.z.literal("")),
     })
         .optional(),
     configuration: zod_1.z

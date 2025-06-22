@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Auth0",
+    "path": "auth0.json"
+  },
+  {
+    "name": "Edge Case",
+    "path": "edge-case.json"
+  },
+  {
+    "name": "Empty",
+    "path": "empty.json"
+  },
+  {
+    "name": "Landing Mcp",
+    "path": "landing-mcp.json"
+  },
+  {
+    "name": "Mixed",
+    "path": "mixed.json"
+  },
+  {
+    "name": "Multi",
+    "path": "multi.json"
+  },
+  {
+    "name": "Simple",
+    "path": "simple.json"
+  }
+]

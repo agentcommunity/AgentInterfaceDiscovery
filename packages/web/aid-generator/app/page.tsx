@@ -1,61 +1,84 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ConfigForm } from "@/components/config-form"
 import { OutputPanel } from "@/components/output-panel"
 import { SampleLoader } from "@/components/sample-loader"
-import { aidGeneratorConfigSchema, type AidGeneratorConfig } from "@aid/core/browser"
-import { Toaster } from "@/components/ui/sonner"
-import { toast } from "sonner"
+import {
+  aidGeneratorConfigSchema,
+  type AidGeneratorConfig,
+  type ImplementationConfig,
+  buildManifest,
+  buildTxtRecord,
+} from "@aid/core/browser"
+import { useDebounce } from "@/lib/hooks/use-debounce"
+import { z } from "zod"
+
+const defaultImplementation: Omit<ImplementationConfig, "name" | "type" | "protocol" | "authentication"> = {
+  tags: [],
+  status: "active",
+  revocationURL: "",
+  configuration: [],
+  requiredPaths: [],
+}
+
+const defaultValues: AidGeneratorConfig = {
+  schemaVersion: "1",
+  serviceName: "",
+  domain: "",
+  env: "",
+  metadata: {
+    contentVersion: "",
+    documentation: "",
+    revocationURL: "",
+  },
+  implementations: [],
+}
 
 export default function GeneratorPage() {
   const [output, setOutput] = useState<{ manifest: string; txtRecord: string } | null>(null)
-  const [isGenerating, setIsGenerating] = useState(false)
 
   const form = useForm<AidGeneratorConfig>({
     resolver: zodResolver(aidGeneratorConfigSchema),
     mode: "onChange",
+    defaultValues: defaultValues,
   })
 
-  const { formState, reset } = form
+  const { formState, reset, watch } = form
+  const debouncedForm = useDebounce(watch(), 500)
+
   const hasServiceErrors = !!formState.errors.domain
   const hasMetadataErrors = !!formState.errors.metadata
   const hasImplementationsErrors = !!formState.errors.implementations
 
   const handleLoadSample = (config: AidGeneratorConfig) => {
-    reset(config)
-    setOutput(null)
-    toast.success("Sample configuration loaded.")
-  }
-
-  const onSubmit = async (data: AidGeneratorConfig) => {
-    setIsGenerating(true)
-    setOutput(null)
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-
-      if (!response.ok) {
-        const errorResult = await response.json()
-        throw new Error(errorResult.error || "An unknown error occurred.")
-      }
-
-      const result = await response.json()
-      setOutput(result)
-      toast.success("Profile generated successfully!")
-    } catch (error: any) {
-      console.error("Generation failed:", error)
-      toast.error("Generation Failed", { description: error.message })
-      setOutput(null)
-    } finally {
-      setIsGenerating(false)
+    const mergedConfig = {
+      ...defaultValues,
+      ...config,
+      metadata: { ...defaultValues.metadata, ...config.metadata },
+      implementations: config.implementations.map(impl => ({
+        ...defaultImplementation,
+        ...impl,
+      })),
     }
+    reset(mergedConfig)
   }
+
+  useEffect(() => {
+    if (formState.isValid) {
+      const formValues = form.getValues();
+      const manifest = buildManifest(formValues);
+      const txtRecord = buildTxtRecord(formValues);
+      setOutput({ 
+        manifest: JSON.stringify(manifest, null, 2), 
+        txtRecord 
+      });
+    } else {
+      setOutput(null);
+    }
+  }, [debouncedForm, formState.isValid]);
 
   return (
     <div className="container mx-auto p-4 md:p-8">
@@ -67,16 +90,15 @@ export default function GeneratorPage() {
           </div>
           <ConfigForm
             form={form}
-            onSubmit={onSubmit}
-            isGenerating={isGenerating}
             hasServiceErrors={hasServiceErrors}
             hasMetadataErrors={hasMetadataErrors}
             hasImplementationsErrors={hasImplementationsErrors}
           />
         </div>
-        <OutputPanel output={output} />
+        <div className="sticky top-8">
+          <OutputPanel output={output} />
+        </div>
       </div>
-      <Toaster />
     </div>
   )
 }

@@ -2,7 +2,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Copy, Download, Zap } from "lucide-react"
+import { Copy, Download, Loader2, Zap } from "lucide-react"
 import { toast } from "sonner"
 
 interface OutputPanelProps {
@@ -57,17 +57,8 @@ export function OutputPanel({ output }: OutputPanelProps) {
           <Zap className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium">Output Panel</h3>
           <p className="mt-1 text-sm text-gray-500">
-            Generated files will appear here.
+            Generated files will appear here once you start typing.
           </p>
-          <div className="mt-6">
-            <Button
-              disabled
-              type="button"
-              variant="outline"
-            >
-              Fill out the form to generate
-            </Button>
-          </div>
         </div>
       </div>
     )

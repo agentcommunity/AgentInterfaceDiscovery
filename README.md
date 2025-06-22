@@ -10,24 +10,25 @@ Agent Interface Discovery (AID) is a protocol that allows AI agents to discover 
 - **Generator utilities** to convert human-friendly configs into spec-compliant manifests
 - **DNS TXT record generation** for agent discovery
 - **CLI tool** for easy integration into build processes
+- **Web UI** for interactively creating and validating configurations
 
 ## Architecture
 
-### Core Components
+The project is a `pnpm` monorepo with three main packages:
 
 ```
 packages/
-├── core/
+├── core/               # The canonical library for all AID logic
 │   ├── src/
 │   │   ├── types.ts      # TypeScript definitions for AID v1 spec
-│   │   └── generator.ts  # Config → Manifest conversion logic
-│   └── bin/
-│       └── aid-gen.ts    # CLI tool for generating AID files
-└── examples/
-    └── auth0/            # Complete Auth0 MCP Server example
-        ├── config.json   # Human-friendly configuration
-        ├── aid.json      # Generated AID manifest
-        └── aid.txt       # Generated DNS TXT record
+│   │   ├── common.ts     # Browser-safe generators (manifest, TXT)
+│   │   ├── generator.ts  # Node.js file writers
+│   │   └── resolver.ts   # Logic for resolving an AID profile
+│   └── scripts/
+│       └── build-examples.ts # Builds examples & syncs them to the web UI
+├── examples/             # A collection of canonical example configs
+└── web/
+    └── aid-generator/    # Next.js web application
 ```
 
 ## Type System (`packages/core/src/types.ts`)
@@ -88,9 +89,9 @@ Comprehensive auth support including:
 - `mtls` - Mutual TLS
 - `custom` - Custom schemes
 
-## Generator (`packages/core/src/generator.ts`)
+## Generator (`packages/core/src/common.ts`)
 
-The generator converts developer-friendly configurations into spec-compliant manifests and DNS records.
+The generator, located in `packages/core/src/common.ts`, converts developer-friendly configurations into spec-compliant manifests and DNS records. It is browser-safe and used by both the core library and the web UI.
 
 ### Key Functions
 
@@ -114,25 +115,35 @@ _agent.domain.com. 3600 IN TXT "v=aid1;p=mcp;uri=https://api.example.com;auth=pa
 _agent.domain.com. 3600 IN TXT "v=aid1;u=https://domain.com/.well-known/aid.json"
 ```
 
-The generator automatically chooses simple format only when:
-- Exactly one implementation
-- Implementation is "remote" type
-- No configuration/paths/certificates/platform overrides
+The generator automatically chooses the simple format only when the configuration contains exactly one "remote" implementation with no complex properties (like `configuration` or `requiredPaths`).
 
-#### File Writers
+#### File Writers (`packages/core/src/generator.ts`)
+Node.js-specific functions for writing the generated files to disk.
 - `writeManifest(cfg, outDir)` - Writes `aid.json`
 - `writeTxtSnippet(cfg, outDir)` - Writes `aid.txt`
 
+## Web UI & Example Automation
+
+The repository includes a Next.js-based web application in `packages/web/aid-generator` that serves as a live editor and validator for AID profiles.
+
+A key feature of the build process is the automation of examples:
+- The `packages/core/scripts/build-examples.ts` script acts as the single source of truth.
+- When run via `pnpm -F @aid/core build:examples`, it reads all configurations from `packages/examples`.
+- It validates and cleans each configuration. This includes:
+  - Removing non-standard properties (like a top-level `name`).
+  - Correcting common mistakes, such as converting full URLs in the `domain` field to a bare domain.
+- The cleaned configs are copied to the `web/aid-generator/public/samples` directory for use in the UI.
+- It also generates an `index.json`, which the UI's "Load Sample" dropdown uses to dynamically populate its list.
+- This ensures the web UI is always synchronized with the canonical examples.
+
 ## CLI Tool (`packages/core/bin/aid-gen.ts`)
 
-Simple command-line interface for generating AID files:
+A simple command-line interface for generating AID files from a configuration file. The `pnpm -F @aid/core exec` command runs from within the `packages/core` directory, so paths should be relative to it.
 
 ```bash
-# Generate from config file
-npx aid-gen config.json [outputDir]
-
-# Example
-npx aid-gen packages/examples/auth0/config.json ./output
+# Generate from a config file (e.g., from the examples)
+# This will place the output in a new `output` directory in the project root.
+pnpm -F @aid/core exec ts-node bin/aid-gen.ts ../examples/auth0/config.json ../../output
 ```
 
 The CLI:
@@ -210,6 +221,13 @@ Since this example has:
 - Complex execution patterns
 
 The generator uses the **extended format** pointing to the hosted manifest rather than trying to inline everything.
+
+### Regenerating Example Artifacts
+
+To regenerate the `aid.json` and `aid.txt` for this (or any) example, run the build script:
+```bash
+pnpm -F @aid/core build:examples
+```
 
 ## Usage Patterns
 
@@ -293,14 +311,18 @@ The generator uses the **extended format** pointing to the hosted manifest rathe
 # Install dependencies
 pnpm install
 
-# Build packages
+# Build all packages
 pnpm build
 
-# Run generator on Auth0 example
-pnpm exec ts-node packages/core/bin/aid-gen.ts packages/examples/auth0/config.json
+# Run the example build script (updates web samples)
+# This is the single source of truth for all example artifacts.
+pnpm -F @aid/core build:examples
 
-# Run tests
-pnpm test
+# Run the CLI generator on the Auth0 example
+pnpm -F @aid/core exec ts-node bin/aid-gen.ts ../examples/auth0/config.json ../../output
+
+# Run the web UI in development mode
+pnpm -F aid-generator dev
 ```
 
 ## Integration
@@ -308,7 +330,7 @@ pnpm test
 ### As a Library
 
 ```typescript
-import { AidGeneratorConfig, buildManifest, buildTxtRecord } from '@aid/core';
+import { AidGeneratorConfig, buildManifest, buildTxtRecord } from '@aid/core/browser';
 
 const config: AidGeneratorConfig = {
   // your configuration
@@ -323,17 +345,17 @@ const dnsRecord = buildTxtRecord(config);
 ```json
 {
   "scripts": {
-    "build:aid": "aid-gen config/aid-config.json dist/"
+    "build": "pnpm -F @aid/core build:examples && next build"
   }
 }
 ```
 
 ### DNS Deployment
 
-1. Generate `aid.txt` with your configuration
-2. Add the TXT record to your DNS zone
-3. Host the `aid.json` manifest at `https://yourdomain.com/.well-known/aid.json`
-4. Agents can now discover your service via `_agent.yourdomain.com` TXT lookup
+1.  Run the `build:examples` script or use the generator to create your `aid.json` and `aid.txt` files.
+2.  Add the content of the `aid.txt` record to your DNS zone.
+3.  Host the `aid.json` manifest at the corresponding URL (e.g., `https://yourdomain.com/.well-known/aid.json`).
+4.  Agents can now discover your service via a `TXT` lookup on `_agent.yourdomain.com`.
 
 ## Specification Compliance
 
