@@ -12,7 +12,7 @@ The `lib/resolver.ts` and `lib/generator.ts` files in this application are now s
 
 This is the heart of any AID client. It's a framework-agnostic module that could be used in any TypeScript environment.
 
--   **`resolveDomain(domain)`**: An `async generator` that yields each step of the discovery process (`dns_query`, `manifest_fetch`, etc.).
+-   **`resolveDomain(domain, options)`**: An `async generator` that yields each step of the discovery process (`dns_query`, `manifest_fetch`, etc.). For use in a browser environment, you **must** provide a `manifestProxy` in the `options` object. This is a URL to a server-side proxy that bypasses CORS restrictions when fetching the `aid.json` manifest. The proxy should accept a `url` query parameter. Example: `resolveDomain("example.com", { manifestProxy: "/api/proxy" })`.
 -   **`ActionableImplementation` Interface**: A critical bridge that translates the raw `aid.json` manifest into a simplified, developer-friendly "to-do list" for a client application.
 -   **`getImplementations(manifest)`**: A function that transforms a valid manifest into an array of `ActionableImplementation` objects.
 

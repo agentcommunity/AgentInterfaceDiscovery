@@ -109,7 +109,9 @@ export interface ActionableImplementation {
  * @param domain The domain to resolve (e.g., "agentcommunity.org").
  * @returns An async generator that yields `ResolutionStep` objects.
  */
-export declare function resolveDomain(domain: string): AsyncGenerator<ResolutionStep>;
+export declare function resolveDomain(domain: string, options?: {
+    manifestProxy?: string;
+}): AsyncGenerator<ResolutionStep>;
 /**
  * Translates a valid `AidManifest` into an array of `ActionableImplementation` objects.
  * This function simplifies the manifest into a direct to-do list for a client application,

@@ -3,43 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveDomain = resolveDomain;
 exports.getImplementations = getImplementations;
 const schemas_1 = require("./schemas");
-async function* fetchAndValidateManifest(manifestUrl) {
-    // 2. Fetch Manifest
-    const proxyUrl = `/api/proxy?url=${encodeURIComponent(manifestUrl)}`;
-    yield { type: 'manifest_fetch', data: { manifestUrl } };
-    let manifestContent = '';
-    try {
-        const manifestRes = await fetch(proxyUrl);
-        if (!manifestRes.ok) {
-            let errorDetails = 'Unknown error';
-            try {
-                const err = await manifestRes.json();
-                errorDetails = err.details || JSON.stringify(err);
-            }
-            catch (e) {
-                errorDetails = await manifestRes.text();
-            }
-            throw new Error(`Request failed with status ${manifestRes.status}. Details: ${errorDetails}`);
-        }
-        manifestContent = await manifestRes.text();
-        yield { type: 'manifest_success', data: { manifestContent } };
-    }
-    catch (error) {
-        yield { type: 'manifest_error', error: error.message };
-        return;
-    }
-    // 3. Validate Manifest
-    yield { type: 'validation_start' };
-    try {
-        const manifestJson = JSON.parse(manifestContent);
-        schemas_1.aidGeneratorConfigSchema.parse(manifestJson);
-        yield { type: 'validation_success', data: { manifest: manifestJson } };
-    }
-    catch (error) {
-        yield { type: 'validation_error', error: error.message };
-        return;
-    }
-}
 /**
  * The primary function for resolving a domain's AID profile.
  * It handles the entire discovery chain, from DNS TXT lookup to manifest fetching and validation.
@@ -58,13 +21,13 @@ async function* fetchAndValidateManifest(manifestUrl) {
  * @param domain The domain to resolve (e.g., "agentcommunity.org").
  * @returns An async generator that yields `ResolutionStep` objects.
  */
-async function* resolveDomain(domain) {
+async function* resolveDomain(domain, options) {
     // 1. DNS Lookup
     const recordName = `_agent.${domain}`;
     yield { type: 'dns_query', data: { recordName } };
     let txtRecord = '';
     try {
-        // Use a public DNS-over-HTTPS resolver
+        // Use the proxy for DNS query
         const response = await fetch(`https://cloudflare-dns.com/dns-query?name=${recordName}&type=TXT`, {
             headers: { 'Accept': 'application/dns-json' }
         });
@@ -72,7 +35,7 @@ async function* resolveDomain(domain) {
             throw new Error(`DNS query failed with status ${response.status}`);
         const data = await response.json();
         if (data.Status !== 0 || !data.Answer || data.Answer.length === 0) {
-            throw new Error('No AID record found for this domain.');
+            throw new Error('DNS query returned status 3 or no answer.');
         }
         txtRecord = data.Answer[0].data.replace(/"/g, '');
         yield { type: 'dns_success', data: { txtRecord } };
@@ -81,21 +44,49 @@ async function* resolveDomain(domain) {
         yield { type: 'dns_error', error: e.message || 'An unknown error occurred during DNS query.' };
         return;
     }
-    if (txtRecord.startsWith('v=aid1')) {
-        const parts = txtRecord.split(';').reduce((acc, part) => {
-            const [key, ...value] = part.split('=');
-            if (key && value.length)
-                acc[key.trim()] = value.join('=').trim();
-            return acc;
-        }, {});
-        // Case 1: TXT record points to a manifest file
-        if (parts.config) {
-            yield* fetchAndValidateManifest(parts.config);
+    // Per spec: Check for an extended profile first by looking for the 'config' key.
+    const configPart = txtRecord.split(';').find((part) => part.startsWith('config='));
+    if (configPart) {
+        const manifestUrl = configPart.split('=')[1];
+        // 2. Fetch Manifest
+        const proxyUrl = options?.manifestProxy ? `${options.manifestProxy}?url=${encodeURIComponent(manifestUrl)}` : manifestUrl;
+        yield { type: 'manifest_fetch', data: { manifestUrl } };
+        let manifestContent = '';
+        try {
+            const manifestRes = await fetch(proxyUrl);
+            if (!manifestRes.ok) {
+                const err = await manifestRes.json().catch(() => ({ details: manifestRes.statusText }));
+                throw new Error(`Request failed with status ${manifestRes.status}. Details: ${err.details || 'Unknown error'}`);
+            }
+            manifestContent = await manifestRes.text();
+            yield { type: 'manifest_success', data: { manifestContent } };
+        }
+        catch (error) {
+            yield { type: 'manifest_error', error: error.message };
             return;
         }
-        // Case 2: TXT record is an inline profile
+        // 3. Validate Manifest
+        yield { type: 'validation_start' };
+        try {
+            const manifestJson = JSON.parse(manifestContent);
+            schemas_1.aidGeneratorConfigSchema.parse(manifestJson);
+            yield { type: 'validation_success', data: { manifest: manifestJson } };
+        }
+        catch (error) {
+            yield { type: 'validation_error', error: error.message };
+        }
+        return; // End of flow for extended profiles.
+    }
+    // If no 'config' key is found, treat it as a Simple Profile.
+    if (txtRecord.startsWith('v=aid1')) {
         yield { type: 'inline_profile', message: 'TXT record is an inline profile. Parsing...' };
         try {
+            const parts = txtRecord.split(';').reduce((acc, part) => {
+                const [key, ...value] = part.split('=');
+                if (key && value.length)
+                    acc[key.trim()] = value.join('=').trim();
+                return acc;
+            }, {});
             const isLocal = parts['pkg-id'] || parts['pkg-mgr'];
             const implementation = {
                 name: parts.name || (isLocal ? 'Local Inline Profile' : 'Remote Inline Profile'),
@@ -122,7 +113,7 @@ async function* resolveDomain(domain) {
                 };
                 implementation.tags?.push(parts['pkg-mgr']);
             }
-            else { // Remote inline profile
+            else {
                 if (!parts.uri) {
                     throw new Error('Remote inline profile is missing required field (uri).');
                 }
@@ -136,13 +127,7 @@ async function* resolveDomain(domain) {
         }
         return;
     }
-    // Legacy format support
-    if (txtRecord.startsWith('aid-manifest=')) {
-        const manifestUrl = txtRecord.substring('aid-manifest='.length);
-        yield* fetchAndValidateManifest(manifestUrl);
-        return;
-    }
-    yield { type: 'dns_error', error: 'Invalid or unrecognized TXT record format.' };
+    yield { type: 'dns_error', error: 'Invalid TXT record format.' };
 }
 /**
  * Translates a valid `AidManifest` into an array of `ActionableImplementation` objects.

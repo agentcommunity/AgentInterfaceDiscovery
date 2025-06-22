@@ -84,7 +84,7 @@ export interface ActionableImplementation {
  * @param domain The domain to resolve (e.g., "agentcommunity.org").
  * @returns An async generator that yields `ResolutionStep` objects.
  */
-export async function* resolveDomain(domain: string): AsyncGenerator<ResolutionStep> {
+export async function* resolveDomain(domain: string, options?: { manifestProxy?: string }): AsyncGenerator<ResolutionStep> {
     // 1. DNS Lookup
     const recordName = `_agent.${domain}`;
     yield { type: 'dns_query', data: { recordName } };
@@ -109,6 +109,42 @@ export async function* resolveDomain(domain: string): AsyncGenerator<ResolutionS
         return;
     }
 
+    // Per spec: Check for an extended profile first by looking for the 'config' key.
+    const configPart = txtRecord.split(';').find((part: string) => part.startsWith('config='));
+    if (configPart) {
+        const manifestUrl = configPart.split('=')[1];
+        
+        // 2. Fetch Manifest
+        const proxyUrl = options?.manifestProxy ? `${options.manifestProxy}?url=${encodeURIComponent(manifestUrl)}` : manifestUrl;
+        yield { type: 'manifest_fetch', data: { manifestUrl } };
+        
+        let manifestContent = '';
+        try {
+            const manifestRes = await fetch(proxyUrl);
+            if (!manifestRes.ok) {
+                const err = await manifestRes.json().catch(() => ({ details: manifestRes.statusText }));
+                throw new Error(`Request failed with status ${manifestRes.status}. Details: ${err.details || 'Unknown error'}`);
+            }
+            manifestContent = await manifestRes.text();
+            yield { type: 'manifest_success', data: { manifestContent } };
+        } catch (error: any) {
+            yield { type: 'manifest_error', error: error.message };
+            return;
+        }
+
+        // 3. Validate Manifest
+        yield { type: 'validation_start' };
+        try {
+            const manifestJson = JSON.parse(manifestContent);
+            aidGeneratorConfigSchema.parse(manifestJson);
+            yield { type: 'validation_success', data: { manifest: manifestJson as AidManifest } };
+        } catch (error: any) {
+            yield { type: 'validation_error', error: error.message };
+        }
+        return; // End of flow for extended profiles.
+    }
+
+    // If no 'config' key is found, treat it as a Simple Profile.
     if (txtRecord.startsWith('v=aid1')) {
         yield { type: 'inline_profile', message: 'TXT record is an inline profile. Parsing...' };
         try {
@@ -159,46 +195,9 @@ export async function* resolveDomain(domain: string): AsyncGenerator<ResolutionS
             yield { type: 'validation_error', error: e.message };
         }
         return;
-    } else if (!txtRecord.startsWith('aid-manifest=')) {
-        yield { type: 'dns_error', error: 'Invalid TXT record format.' };
-        return;
     }
 
-    const configPart = txtRecord.split(';').find((part: string) => part.startsWith('config='));
-    if (!configPart) {
-        yield { type: 'inline_profile', message: "No 'config=' key found in TXT record. This is a simple inline profile." };
-        return;
-    }
-    const manifestUrl = configPart.split('=')[1];
-
-    // 2. Fetch Manifest
-    const proxyUrl = manifestUrl; // In a browser context, we assume direct or proxied access is handled by the caller.
-    yield { type: 'manifest_fetch', data: { manifestUrl } };
-    
-    let manifestContent = '';
-    try {
-        const manifestRes = await fetch(proxyUrl);
-        if (!manifestRes.ok) {
-            const err = await manifestRes.json();
-            throw new Error(`Request failed with status ${manifestRes.status}. Details: ${err.details || 'Unknown error'}`);
-        }
-        manifestContent = await manifestRes.text();
-        yield { type: 'manifest_success', data: { manifestContent } };
-    } catch (error: any) {
-        yield { type: 'manifest_error', error: error.message };
-        return;
-    }
-
-    // 3. Validate Manifest
-    yield { type: 'validation_start' };
-    try {
-        const manifestJson = JSON.parse(manifestContent);
-        aidGeneratorConfigSchema.parse(manifestJson);
-        yield { type: 'validation_success', data: { manifest: manifestJson as AidManifest } };
-    } catch (error: any) {
-        yield { type: 'validation_error', error: error.message };
-        return;
-    }
+    yield { type: 'dns_error', error: 'Invalid TXT record format.' };
 }
 
 /**

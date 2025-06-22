@@ -62,7 +62,8 @@ export default function ResolverPage() {
         let tempImplementations: ActionableImplementation[] | null = null;
         let tempDomain: string | null = null;
 
-        for await (const step of resolveDomain(domain)) {
+        const proxyPath = '/api/proxy';
+        for await (const step of resolveDomain(domain, { manifestProxy: proxyPath })) {
             let message = '';
             switch (step.type) {
                 case 'dns_query':

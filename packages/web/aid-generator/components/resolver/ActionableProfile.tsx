@@ -65,7 +65,10 @@ const AuthSection = ({ auth }: { auth: ActionableImplementation['auth'] }) => {
                     </div>
                 );
             case 'mtls':
-                 const cert = 'certificate' in auth ? (auth as any).certificate : {};
+                 const cert = 'certificate' in auth ? (auth as any).certificate : undefined;
+                 if (!cert) {
+                    return <p>{auth.description || 'mTLS authentication required.'}</p>;
+                 }
                  return (
                     <>
                         <Detail label="Source" value={cert.source || 'unknown'} />

@@ -21,19 +21,18 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const response = await fetch(url.toString(), {
-      headers: {
-        'Accept': 'application/dns-json',
-      },
-    });
+    console.log(`[PROXY] Attempting to fetch: ${url.toString()}`);
+    const response = await fetch(url.toString());
 
     if (!response.ok) {
         const errorText = await response.text();
+        console.error(`[PROXY] Error fetching from external URL: ${response.status} ${response.statusText}`, { details: errorText });
         return NextResponse.json({ error: `Failed to fetch from external URL: ${response.status} ${response.statusText}`, details: errorText }, { status: response.status });
     }
     
     // Stream the response back to the client
     const data = await response.text();
+    console.log(`[PROXY] Successfully fetched and returning data from: ${url.toString()}`);
     return new NextResponse(data, {
         status: response.status,
         statusText: response.statusText,
@@ -43,7 +42,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('Proxy error:', error);
-    return NextResponse.json({ error: 'An internal error occurred while fetching the URL.', details: error.message }, { status: 500 });
+    console.error('[PROXY] CATCH BLOCK ERROR:', error);
+    return NextResponse.json({ error: 'An internal error occurred while fetching the URL.', details: error.message || 'An unknown error occurred in the proxy.' }, { status: 500 });
   }
 } 
