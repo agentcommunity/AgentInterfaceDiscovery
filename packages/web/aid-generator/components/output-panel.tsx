@@ -1,120 +1,107 @@
 "use client"
+
+import { useEffect, useState } from "react"
+import { useFormContext } from "react-hook-form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Copy, Download, Loader2, Zap } from "lucide-react"
-import { toast } from "sonner"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { aidGeneratorConfigSchema, buildManifest, buildTxtRecord } from "@aid/core/browser"
+import { Codeblock } from "@/components/resolver/Codeblock"
+import { pruneEmpty } from "@/lib/prune"
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
+import { ShieldAlert, ShieldCheck, Terminal } from "lucide-react"
+import type { ZodIssue } from "zod"
+import { AidGeneratorConfig } from "@aid/core"
 
-interface OutputPanelProps {
-  output: {
-    manifest: string
-    txtRecord: string
-  } | null
-}
+export function OutputPanel() {
+  const { watch, getValues } = useFormContext<AidGeneratorConfig>()
+  const [output, setOutput] = useState<{ manifest: string; txtRecord: string } | null>(null)
+  const [issues, setIssues] = useState<ZodIssue[]>([])
 
-export function OutputPanel({ output }: OutputPanelProps) {
-  const copyToClipboard = async (text: string, label: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      toast.success("Copied!", {
-        description: `${label} copied to clipboard`,
-      })
-    } catch {
-      toast.error("Copy failed", {
-        description: "Unable to copy to clipboard",
-      })
+  useEffect(() => {
+    const updateOutput = (data: AidGeneratorConfig) => {
+      // 1. Generate output from pruned data
+      const cleanedValues = pruneEmpty(data)
+      try {
+        const manifest = buildManifest(cleanedValues)
+        const txtRecord = buildTxtRecord(cleanedValues)
+        setOutput({
+          manifest: JSON.stringify(manifest, null, 2),
+          txtRecord,
+        })
+      } catch (error) {
+        setOutput(null)
+      }
+
+      // 2. Validate the original data to get issues
+      const result = aidGeneratorConfigSchema.safeParse(data)
+      if (!result.success) {
+        setIssues(result.error.issues)
+      } else {
+        setIssues([])
+      }
     }
-  }
 
-  const downloadFile = (content: string, filename: string, mimeType: string) => {
-    const blob = new Blob([content], { type: mimeType })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = filename
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+    // Set initial state
+    updateOutput(getValues())
 
-    toast.success("Downloaded!", {
-      description: `${filename} has been downloaded`,
+    // Subscribe to subsequent changes
+    const subscription = watch((value) => {
+      updateOutput(value as AidGeneratorConfig)
     })
-  }
 
-  const downloadAll = () => {
-    if (!output) return
-    downloadFile(output.manifest, "aid.json", "application/json")
-    setTimeout(() => {
-      downloadFile(output.txtRecord, "aid.txt", "text/plain")
-    }, 100)
-  }
+    // Unsubscribe on cleanup
+    return () => subscription.unsubscribe()
+  }, [watch, getValues])
 
-  if (!output) {
-    return (
-      <div className="flex items-center justify-center h-full min-h-[400px] text-muted-foreground p-6 border rounded-lg bg-card shadow-sm">
-        <div className="text-center">
-          <Zap className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-sm font-medium">Output Panel</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Generated files will appear here once you start typing.
-          </p>
-        </div>
-      </div>
-    )
-  }
+  const isValid = issues.length === 0
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex justify-end items-center pb-3">
-        <Button onClick={downloadAll} variant="outline" size="sm">
-          <Download className="mr-2 h-4 w-4" />
-          Download All
-        </Button>
-      </div>
+    <Card className="h-full flex flex-col">
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <CardTitle>Live Output</CardTitle>
+          {isValid ? (
+            <span className="flex items-center gap-1.5 text-xs text-green-600">
+              <ShieldCheck className="h-4 w-4" /> Valid
+            </span>
+          ) : (
+            <span className="flex items-center gap-1.5 text-xs text-destructive">
+              <ShieldAlert className="h-4 w-4" /> {issues.length} Issues
+            </span>
+          )}
+        </div>
+        <CardDescription>The generated manifest and DNS record will update in real-time as you edit the form.</CardDescription>
+      </CardHeader>
+      <CardContent className="flex-grow flex flex-col gap-4">
+        {/* Validation Issues Display */}
+        {!isValid && (
+          <Alert variant="destructive">
+            <Terminal className="h-4 w-4" />
+            <AlertTitle>The configuration has validation issues</AlertTitle>
+            <AlertDescription>
+              <ul className="list-disc pl-5 mt-2 space-y-1 text-xs">
+                {issues.map((issue, i) => (
+                  <li key={i}>
+                    <span className="font-semibold">{issue.path.join(".")}</span>: {issue.message}
+                  </li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
 
-      <Tabs defaultValue="manifest" className="flex flex-col flex-1">
-        <TabsList className="grid grid-cols-2 gap-2 mb-4">
-          <TabsTrigger value="manifest">Manifest (aid.json)</TabsTrigger>
-          <TabsTrigger value="dns">DNS Record (aid.txt)</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="manifest" className="flex-1 flex flex-col space-y-4">
-          <div className="flex items-center justify-end">
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm" onClick={() => copyToClipboard(output.manifest, "Manifest JSON")}>
-                <Copy className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => downloadFile(output.manifest, "aid.json", "application/json")}
-              >
-                <Download className="h-4 w-4" />
-              </Button>
-            </div>
+        {/* Output Blocks */}
+        {output ? (
+          <div className="space-y-4">
+            <Codeblock content={output.txtRecord} title="DNS TXT Record" />
+            <Codeblock content={output.manifest} title="Manifest (aid.json)" />
           </div>
-          <pre className="bg-muted p-4 rounded-md overflow-auto text-sm font-mono flex-1">
-            <code>{output.manifest}</code>
-          </pre>
-        </TabsContent>
-
-        <TabsContent value="dns" className="space-y-4 flex-1 flex flex-col">
-          <div className="flex items-center justify-end">
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm" onClick={() => copyToClipboard(output.txtRecord, "DNS TXT record")}>
-                <Copy className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => downloadFile(output.txtRecord, "aid.txt", "text/plain")}>
-                <Download className="h-4 w-4" />
-              </Button>
-            </div>
+        ) : (
+          <div className="flex-grow flex items-center justify-center h-full text-muted-foreground border-2 border-dashed rounded-lg">
+            <p>Start filling the form to see output...</p>
           </div>
-          <pre className="bg-muted p-4 rounded-md overflow-x-auto text-sm font-mono flex-1">
-            <code>{output.txtRecord}</code>
-          </pre>
-        </TabsContent>
-      </Tabs>
-    </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }

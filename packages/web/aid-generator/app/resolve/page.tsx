@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { getImplementations, resolveDomain, ActionableImplementation } from "@aid/core/browser";
 import { cn } from '@/lib/utils';
@@ -16,7 +16,7 @@ import { Codeblock } from '@/components/resolver/Codeblock';
 import { ExamplePicker } from '@/components/resolver/ExamplePicker';
 import { useSearchParams } from "next/navigation";
 
-export default function ResolverPage() {
+function ResolverPageContent() {
     const [inputValue, setInputValue] = useState('');
     const [hasStarted, setHasStarted] = useState(false);
     const [isStreaming, setIsStreaming] = useState(false);
@@ -179,4 +179,12 @@ export default function ResolverPage() {
             </main>
         </div>
     );
+}
+
+export default function ResolverPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <ResolverPageContent />
+        </Suspense>
+    )
 } 

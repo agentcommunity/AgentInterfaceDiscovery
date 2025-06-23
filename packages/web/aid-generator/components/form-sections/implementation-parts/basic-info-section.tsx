@@ -1,25 +1,26 @@
 "use client"
 
-import type { UseFormReturn } from "react-hook-form"
+import { useFormContext } from "react-hook-form"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { HelpCircle } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { UrlInput } from "@/components/ui/url-input"
-import type { AidGeneratorConfig } from "@aid/core"
+import type { AidGeneratorConfig } from "@aid/core/browser"
+import { TagsSection } from "./tags-section"
 
 interface BasicInfoSectionProps {
-  form: UseFormReturn<AidGeneratorConfig>
   index: number
 }
 
-export function BasicInfoSection({ form, index }: BasicInfoSectionProps) {
+export function BasicInfoSection({ index }: BasicInfoSectionProps) {
+  const { control } = useFormContext<AidGeneratorConfig>()
   return (
     <TooltipProvider>
       <div className="grid grid-cols-2 gap-4">
         <FormField
-          control={form.control}
+          control={control}
           name={`implementations.${index}.name`}
           render={({ field }) => (
             <FormItem>
@@ -47,7 +48,7 @@ export function BasicInfoSection({ form, index }: BasicInfoSectionProps) {
         />
 
         <FormField
-          control={form.control}
+          control={control}
           name={`implementations.${index}.protocol`}
           render={({ field }) => (
             <FormItem>
@@ -87,7 +88,7 @@ export function BasicInfoSection({ form, index }: BasicInfoSectionProps) {
 
       <div className="grid grid-cols-2 gap-4">
         <FormField
-          control={form.control}
+          control={control}
           name={`implementations.${index}.status`}
           render={({ field }) => (
             <FormItem>
@@ -119,7 +120,7 @@ export function BasicInfoSection({ form, index }: BasicInfoSectionProps) {
           )}
         />
         <FormField
-          control={form.control}
+          control={control}
           name={`implementations.${index}.revocationURL`}
           render={({ field }) => (
             <FormItem>

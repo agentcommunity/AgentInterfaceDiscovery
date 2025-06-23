@@ -36,7 +36,12 @@ export async function GET(request: NextRequest) {
   // on-the-fly from the local generator config files in `/public/samples`.
   // This avoids the Vercel "hairpinning" issue while keeping the files where the UI expects them.
   if (exampleDomains.includes(urlHost)) {
-    const domainName = urlHost.split('.')[0];
+    let domainName = urlHost.split('.')[0];
+    // Special case for the root domain which maps to the landing-mcp example
+    if (urlHost === 'agentcommunity.org') {
+      domainName = 'landing-mcp';
+    }
+    
     // Next.js bundles the `public` directory, making it available at the root of the server.
     const filePath = path.join(process.cwd(), 'public/samples', `${domainName}.json`);
 

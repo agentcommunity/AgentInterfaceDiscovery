@@ -1,27 +1,27 @@
 "use client"
 
-import type { UseFormReturn } from "react-hook-form"
+import { useFormContext } from "react-hook-form"
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { HelpCircle } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import type { AidGeneratorConfig } from "@aid/core"
+import type { AidGeneratorConfig } from "@aid/core/browser"
 import { CollapsibleList } from "./collapsible-list"
 
 interface ConfigVariablesSectionProps {
-  form: UseFormReturn<AidGeneratorConfig>
   index: number
 }
 
-export function ConfigVariablesSection({ form, index }: ConfigVariablesSectionProps) {
-  const currentConfig = form.watch(`implementations.${index}.configuration`) || []
+export function ConfigVariablesSection({ index }: ConfigVariablesSectionProps) {
+  const { watch, getValues, setValue, control } = useFormContext<AidGeneratorConfig>()
+  const currentConfig = watch(`implementations.${index}.configuration`) || []
 
   const addConfigItem = () => {
-    const currentConfig = form.getValues(`implementations.${index}.configuration`) || []
-    form.setValue(`implementations.${index}.configuration`, [
-      ...currentConfig,
+    const current = getValues(`implementations.${index}.configuration`) || []
+    setValue(`implementations.${index}.configuration`, [
+      ...current,
       {
         key: "",
         description: "",
@@ -33,31 +33,31 @@ export function ConfigVariablesSection({ form, index }: ConfigVariablesSectionPr
   }
 
   const removeConfigItem = (configIndex: number) => {
-    const currentConfig = form.getValues(`implementations.${index}.configuration`) || []
-    form.setValue(
+    const current = getValues(`implementations.${index}.configuration`) || []
+    setValue(
       `implementations.${index}.configuration`,
-      currentConfig.filter((_, i) => i !== configIndex),
+      current.filter((_, i) => i !== configIndex),
     )
   }
 
   const duplicateConfigItem = (configIndex: number) => {
-    const currentConfig = form.getValues(`implementations.${index}.configuration`) || []
-    const itemToDuplicate = currentConfig[configIndex]
-    form.setValue(`implementations.${index}.configuration`, [
-      ...currentConfig,
+    const current = getValues(`implementations.${index}.configuration`) || []
+    const itemToDuplicate = current[configIndex]
+    setValue(`implementations.${index}.configuration`, [
+      ...current,
       { ...itemToDuplicate, key: `${itemToDuplicate.key}_copy` },
     ])
   }
 
   const clearAllConfigItems = () => {
-    form.setValue(`implementations.${index}.configuration`, [])
+    setValue(`implementations.${index}.configuration`, [])
   }
 
   const renderConfigItem = (configIndex: number) => (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <FormField
-          control={form.control}
+          control={control}
           name={`implementations.${index}.configuration.${configIndex}.key`}
           render={({ field }) => (
             <FormItem>
@@ -70,7 +70,7 @@ export function ConfigVariablesSection({ form, index }: ConfigVariablesSectionPr
           )}
         />
         <FormField
-          control={form.control}
+          control={control}
           name={`implementations.${index}.configuration.${configIndex}.type`}
           render={({ field }) => (
             <FormItem>
@@ -83,7 +83,7 @@ export function ConfigVariablesSection({ form, index }: ConfigVariablesSectionPr
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="string">String</SelectItem>
-                  <SelectItem value="number">Number</SelectItem>
+                  <SelectItem value="integer">Integer</SelectItem>
                   <SelectItem value="boolean">Boolean</SelectItem>
                 </SelectContent>
               </Select>
@@ -94,7 +94,7 @@ export function ConfigVariablesSection({ form, index }: ConfigVariablesSectionPr
       </div>
 
       <FormField
-        control={form.control}
+        control={control}
         name={`implementations.${index}.configuration.${configIndex}.description`}
         render={({ field }) => (
           <FormItem>
@@ -107,44 +107,39 @@ export function ConfigVariablesSection({ form, index }: ConfigVariablesSectionPr
         )}
       />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 items-center">
         <FormField
-          control={form.control}
+          control={control}
           name={`implementations.${index}.configuration.${configIndex}.defaultValue`}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Default Value</FormLabel>
               <FormControl>
-                <Input 
-                  placeholder="false" 
-                  {...field} 
-                  value={field.value?.toString() || ""} 
-                />
+                <Input placeholder="false" {...field} value={field.value?.toString() || ""} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <FormField
-          control={form.control}
+          control={control}
           name={`implementations.${index}.configuration.${configIndex}.secret`}
           render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between space-x-2 space-y-0">
-              <FormLabel>Secret</FormLabel>
+            <FormItem className="flex flex-row items-center gap-2 pt-8">
               <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                <Checkbox checked={field.value} onCheckedChange={field.onChange} id={`secret-${index}-${configIndex}`} />
               </FormControl>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Mark as secret to handle the value securely</p>
-                </TooltipContent>
-              </Tooltip>
+              <FormLabel htmlFor={`secret-${index}-${configIndex}`} className="flex items-center gap-2">
+                Secret
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Mark as secret to handle the value securely in client UIs</p>
+                  </TooltipContent>
+                </Tooltip>
+              </FormLabel>
             </FormItem>
           )}
         />
@@ -156,11 +151,11 @@ export function ConfigVariablesSection({ form, index }: ConfigVariablesSectionPr
     <TooltipProvider>
       <CollapsibleList
         title="Configuration Variables"
-        description="Define variables that can be configured by users"
-        addButtonText="Add Configuration Variable"
-        itemTitle={(index) => {
-          const item = currentConfig[index]
-          return item?.key || `Variable ${index + 1}`
+        description="Define variables for users to configure (e.g., API keys, flags)"
+        addButtonText="Add Variable"
+        itemTitle={configIndex => {
+          const item = currentConfig[configIndex]
+          return item?.key || `Variable ${configIndex + 1}`
         }}
         itemCount={currentConfig.length}
         onAdd={addConfigItem}

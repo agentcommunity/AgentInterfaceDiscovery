@@ -21,11 +21,15 @@ export function ExamplePicker({ handleExampleClick }: ExamplePickerProps) {
         </div>
       </div>
       <div>
-        <p className="text-xs text-muted-foreground mb-1.5">Real-World Showcase</p>
+        <p className="text-xs text-muted-foreground mb-1.5">Real-World Showcase (by us) </p>
         <div className="flex flex-wrap gap-2 justify-center">
              <Button variant="outline" size="sm" onClick={() => handleExampleClick('auth0.aid.agentcommunity.org')} className="border-primary/50 hover:bg-primary/10 text-primary hover:text-primary">
                 <Star size={12} className="mr-2 fill-current" />
                 auth0-mcp
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => handleExampleClick('_agent.supabase.agentdomain.xyz')} className="border-primary/50 hover:bg-primary/10 text-primary hover:text-primary">
+                <Star size={12} className="mr-2 fill-current" />
+                Supabase
             </Button>
         </div>
       </div>

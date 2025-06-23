@@ -66,6 +66,18 @@ To make changes to the AID manifest structure, follow this workflow:
 
 The `build:examples` script is critical for the web UI. It reads all configs from `/packages/examples`, cleans them, and generates an `index.json`. The web UI dynamically fetches this index to populate its "Load Sample" dropdown, ensuring the examples are always in sync with the canonical configurations.
 
+## Web UI (`packages/web/aid-generator`)
+
+This project includes a powerful, user-friendly web application for generating and validating AID manifests in real-time. It's built with Next.js and provides a rich form-based interface that uses the `@aid/core` library as its single source of truth for generation logic.
+
+Key features include:
+- Live preview of the generated `aid.json` and DNS TXT record.
+- Real-time validation with clear error feedback.
+- A responsive interface optimized for both desktop and mobile use.
+- Pre-built examples for common use cases.
+
+For detailed information on its architecture, components, and development workflow, please see the [web UI's dedicated README](./packages/web/aid-generator/README.md).
+
 ## Generator (`packages/core/src/common.ts`)
 
 The generator converts developer-friendly configurations into spec-compliant manifests and DNS records.

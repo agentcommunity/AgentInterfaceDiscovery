@@ -1,35 +1,35 @@
 "use client"
 
 import { useState } from "react"
-import type { UseFormReturn } from "react-hook-form"
+import { useFormContext } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Plus, X, HelpCircle } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import type { AidGeneratorConfig } from "@aid/core"
+import type { AidGeneratorConfig } from "@aid/core/browser"
 
 interface TagsSectionProps {
-  form: UseFormReturn<AidGeneratorConfig>
   index: number
 }
 
-export function TagsSection({ form, index }: TagsSectionProps) {
+export function TagsSection({ index }: TagsSectionProps) {
   const [newTag, setNewTag] = useState("")
-  const currentTags = form.watch(`implementations.${index}.tags`) || []
+  const { watch, getValues, setValue } = useFormContext<AidGeneratorConfig>()
+  const currentTags = watch(`implementations.${index}.tags`) || []
 
   const addTag = () => {
     if (!newTag.trim()) return
-    const currentTags = form.getValues(`implementations.${index}.tags`) || []
-    form.setValue(`implementations.${index}.tags`, [...currentTags, newTag.trim()])
+    const current = getValues(`implementations.${index}.tags`) || []
+    setValue(`implementations.${index}.tags`, [...current, newTag.trim()])
     setNewTag("")
   }
 
   const removeTag = (tagIndex: number) => {
-    const currentTags = form.getValues(`implementations.${index}.tags`) || []
-    form.setValue(
+    const current = getValues(`implementations.${index}.tags`) || []
+    setValue(
       `implementations.${index}.tags`,
-      currentTags.filter((_, i) => i !== tagIndex),
+      current.filter((_, i) => i !== tagIndex),
     )
   }
 
