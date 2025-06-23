@@ -23,9 +23,7 @@
         "args": [
           "-y",
           "@auth0/auth0-mcp-server",
-          "run",
-          "${config.TOOLS_FLAG}",
-          "${config.READ_ONLY_FLAG}"
+          "run"
         ]
       },
       "authentication": {
@@ -35,7 +33,7 @@
           "deviceAuthorizationEndpoint": "https://auth0.com/oauth/device/code",
           "tokenEndpoint": "https://auth0.com/oauth/token",
           "scopes": [
-            "${config.AUTH0_MCP_SCOPES}"
+            "read:*"
           ]
         }
       },

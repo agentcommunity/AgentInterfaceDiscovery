@@ -60,15 +60,49 @@ async function buildExamples() {
           const configContent = await fs.readFile(configPath, "utf-8")
           const config: AidGeneratorConfig = JSON.parse(configContent)
 
-          // 2. Generate hosting artifacts (TXT and JSON manifest)
+          // 2. Create a version of the config with placeholders resolved for hosting.
+          // This prevents invalid JSON from being generated due to unescaped quotes in placeholders.
+          const hostedConfig = JSON.parse(JSON.stringify(config)) as AidGeneratorConfig
+          for (const impl of hostedConfig.implementations) {
+            if (!impl.configuration) {
+              continue
+            }
+
+            const configMap = new Map<string, any>()
+            for (const item of impl.configuration) {
+              configMap.set(item.key, item.defaultValue)
+            }
+
+            const resolveValue = (placeholder: string): string => {
+              const match = placeholder.match(/^\${config\.([A-Z_0-9]+)}$/)
+              if (match) {
+                const key = match[1]
+                const value = configMap.get(key)
+                return value !== undefined ? String(value) : ""
+              }
+              return placeholder
+            }
+
+            if (impl.type === "local" && impl.execution?.args) {
+              impl.execution.args = impl.execution.args.map(resolveValue).filter((arg) => arg !== "")
+            }
+
+            if ("oauth" in impl.authentication && impl.authentication.oauth?.scopes) {
+              impl.authentication.oauth.scopes = impl.authentication.oauth.scopes
+                .map(resolveValue)
+                .filter((scope) => scope !== "")
+            }
+          }
+
+          // 3. Generate hosting artifacts (TXT and JSON manifest) using the resolved config
           const examplePublicDir = path.join(publicDir, exampleName)
           const wellKnownDir = path.join(examplePublicDir, ".well-known")
 
-          await writeTxtSnippet(config, examplePublicDir)
-          await writeManifest(config, wellKnownDir)
+          await writeTxtSnippet(hostedConfig, examplePublicDir)
+          await writeManifest(hostedConfig, wellKnownDir)
           console.log(`✅ Generated manifest and TXT for ${exampleName}`)
 
-          // 3. Generate Vercel rewrite rule for this example
+          // 4. Generate Vercel rewrite rule for this example
           if (config.domain) {
             vercelRewrites.push({
               source: "/.well-known/aid.json",
@@ -77,7 +111,7 @@ async function buildExamples() {
             })
           }
 
-          // 4. Sync config to web UI samples
+          // 5. Sync ORIGINAL config (with placeholders) to web UI samples
           const destFileName = `${exampleName}.json`
           const destPath = path.join(samplesDir, destFileName)
           await fs.copyFile(configPath, destPath)
@@ -94,13 +128,13 @@ async function buildExamples() {
       }
     }
 
-    // 5. Write the aggregate vercel.json file
+    // 6. Write the aggregate vercel.json file
     const vercelConfig = { rewrites: vercelRewrites }
     const vercelPath = path.join(examplesDir, "vercel.json")
     await fs.writeFile(vercelPath, JSON.stringify(vercelConfig, null, 2))
     console.log(`✅ Wrote vercel.json with ${vercelRewrites.length} rules.`)
 
-    // 6. Write the final sample index file for the web UI
+    // 7. Write the final sample index file for the web UI
     const emptyConfig = { schemaVersion: "1", serviceName: "", domain: "", implementations: [] }
     const emptyPath = path.join(samplesDir, "empty.json")
     await fs.writeFile(emptyPath, JSON.stringify(emptyConfig, null, 2))
