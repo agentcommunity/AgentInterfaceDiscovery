@@ -10,7 +10,8 @@ const exampleDomains = [
     'landing-mcp.aid.agentcommunity.org',
     'mixed.aid.agentcommunity.org',
     'multi.aid.agentcommunity.org',
-    'simple.aid.agentcommunity.org'
+    'simple.aid.agentcommunity.org',
+    'agentcommunity.org' // Added for the landing-mcp case
 ];
 
 export async function GET(request: NextRequest) {
@@ -30,33 +31,34 @@ export async function GET(request: NextRequest) {
   
   const urlHost = url.hostname;
 
-  // --- Development-only local rewrite for examples ---
-  if (process.env.NODE_ENV === 'development' && exampleDomains.includes(url.hostname)) {
-    const domainName = url.hostname.split('.')[0];
-    const filePath = path.resolve('./public/samples', `${domainName}.json`);
+  // --- Unified Example Handling (Works Locally & on Vercel) ---
+  // For our special example domains, we bypass the network fetch.
+  // This avoids issues with serverless functions fetching URLs that are part of the same deployment (hairpinning).
+  // The `build-examples` script ensures the final, published manifests are available in the deployment package.
+  if (exampleDomains.includes(urlHost)) {
+      // The domain name (e.g., 'simple') corresponds to the directory in `packages/examples/public`.
+      // The main domain `agentcommunity.org` maps to the `landing-mcp` example.
+      const exampleName = urlHost === 'agentcommunity.org' ? 'landing-mcp' : urlHost.split('.')[0];
+      
+      // This path resolves to the built static manifest file within the project structure.
+      // Vercel makes the monorepo's file structure available to the serverless function.
+      const filePath = path.join(process.cwd(), 'packages/examples/public', exampleName, '.well-known/aid.json');
 
-    try {
-        console.log(`[PROXY] DEV MODE: Attempting to read local file: ${filePath}`);
-        const fileContent = await fs.readFile(filePath, 'utf-8');
-        const generatorConfig = JSON.parse(fileContent) as AidGeneratorConfig;
-        
-        // Convert the generator config to a published manifest on the fly
-        const manifest = buildManifest(generatorConfig);
-        console.log(`[PROXY] DEV MODE: Successfully converted and serving manifest for ${domainName}.`);
+      try {
+          console.log(`[PROXY] Serving known example '${exampleName}' from filesystem path: ${filePath}`);
+          const fileContent = await fs.readFile(filePath, 'utf-8');
+          
+          return new NextResponse(fileContent, {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+          });
 
-        return new NextResponse(JSON.stringify(manifest, null, 2), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' }
-        });
-    } catch (error: any) {
-        console.error(`[PROXY] DEV MODE ERROR: Could not load or convert local sample for ${url.hostname}.`, {
-             path: filePath,
-             error: error.message 
-        });
-        return NextResponse.json({ error: `Could not load or convert local sample file for development: ${error.message}` }, { status: 404 });
-    }
+      } catch (error: any) {
+          console.error(`[PROXY] ERROR: Could not read manifest for '${exampleName}' from filesystem.`, { path: filePath, error: error.message });
+          return NextResponse.json({ error: `Could not load manifest file for example domain: ${error.message}` }, { status: 500 });
+      }
   }
-  // --- End of dev-only logic ---
+  // --- End of unified example handling ---
 
 
   // Basic security measure: only proxy http and https protocols
