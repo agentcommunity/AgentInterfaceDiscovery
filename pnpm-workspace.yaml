@@ -1,3 +1,4 @@
 packages:
   - 'packages/core'
   - 'packages/web/aid-generator'
+  - 'packages/well-known-pages'
