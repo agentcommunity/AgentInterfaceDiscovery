@@ -1,16 +1,33 @@
 # Agent Interface Discovery (AID) - Core Library
 
-This repository contains the reference TypeScript implementation for the [Agent Interface Discovery (AID) v1 specification](https://github.com/agentcommunity/docs). It provides a robust set of tools for generating and resolving AID profiles, enabling standardized agent-to-agent communication.
+This repository contains the reference TypeScript implementation for the [Agent Interface Discovery (AID) v1 specification](https://docs.agentcommunity.org/specs/aid/spec-v1/). It provides a robust set of tools for generating and resolving AID profiles, enabling standardized agent-to-agent communication.
+
+As the ecosystem of AI agents and agentic services expands, a fundamental interoperability challenge emerges: *How can a client application or another agent discover the endpoint and configuration for a service, given only its domain name?* Current methods rely on manual configuration, proprietary client-specific files, and fragmented documentation. This hinders scalability and creates a poor user experience.
+
+This document proposes **Agent Interface Discovery (AID)**, a simple, decentralized discovery protocol built on existing Internet standards. AID uses a DNS TXT record to enable a client to discover an agent's service information with a single query.
+
+The protocol features a dual-mode design to balance ease-of-use with expressive power:
+
+- **Simple Profile:** For basic, remotely-hosted agents, the DNS record itself contains enough information (URI, protocol, auth hint) for immediate connection with no additional steps.
+- **Extended Profile:** For more complex agents—including those that may run locally via packages (Docker, NPX, etc.) or have multiple endpoints—the DNS record can optionally point to a standardized **AID Manifest** (a JSON configuration file). This manifest provides a rich, unambiguous description of multiple implementations, detailed authentication requirements, and configuration options.
+
+AID is pragmatic, protocol-agnostic (supporting MCP, A2A, etc.), and immediately deployable. It provides a robust foundation for a truly interoperable agentic web by leveraging infrastructure that is already ubiquitous (DNS and HTTPS).
+
+## Official Specification
+
+- [**Introduction**](https://docs.agentcommunity.org/specs/aid/introduction/): Learn the what and why of AID.
+- [**Design Rationale**](https://docs.agentcommunity.org/specs/aid/rationale/): Understand the design decisions behind the protocol.
+- [**Full Specification (v1)**](https://docs.agentcommunity.org/specs/aid/spec-v1/): Read the complete technical specification.
 
 ## Core Concept: A Single Source of Truth
 
 This library is built around a "single source of truth" model to ensure that its types, validation logic, and the public-facing JSON schema are always perfectly synchronized.
 
-The entire system is driven by the Zod schemas defined in **`packages/core/src/schemas.ts`**.
+The entire system is driven by the Zod schemas defined in **[`packages/core/src/schemas.ts`](./packages/core/src/schemas.ts)**.
 
 This source of truth generates:
-1.  **TypeScript Types:** All static types in `packages/core/src/types.ts` are automatically inferred from the Zod schemas using `z.infer<T>`. This means the types you code against are guaranteed to match the validation logic.
-2.  **Canonical JSON Schema:** The `schema/v1/aid.schema.json` file is programmatically generated from the Zod schemas. This file is the public, machine-readable contract for the AID v1 manifest.
+1.  **TypeScript Types:** All static types in [`packages/core/src/types.ts`](./packages/core/src/types.ts) are automatically inferred from the Zod schemas using `z.infer<T>`. This means the types you code against are guaranteed to match the validation logic.
+2.  **Canonical JSON Schema:** The [`schema/v1/aid.schema.json`](./schema/v1/aid.schema.json) file is programmatically generated from the Zod schemas. This file is the public, machine-readable contract for the AID v1 manifest.
 
 This approach eliminates drift between validation, static types, and public documentation.
 
@@ -41,19 +58,19 @@ The project is a `pnpm` monorepo with the following key components:
         └── aid.schema.json # The generated canonical JSON Schema artifact
 ```
 
-A key design feature is the separation of browser-safe and Node.js-specific code. `common.ts` contains pure data transformation logic (`buildManifest`, `buildTxtRecord`) that can run in any JavaScript environment. `generator.ts` contains file system operations (`writeManifest`) and is intended for Node.js environments only. This ensures the library is lightweight and versatile.
+A key design feature is the separation of browser-safe and Node.js-specific code. [`packages/core/src/common.ts`](./packages/core/src/common.ts) contains pure data transformation logic (`buildManifest`, `buildTxtRecord`) that can run in any JavaScript environment. [`packages/core/src/generator.ts`](./packages/core/src/generator.ts) contains file system operations (`writeManifest`) and is intended for Node.js environments only. This ensures the library is lightweight and versatile.
 
 ## Development Workflow
 
 To make changes to the AID manifest structure, follow this workflow:
 
-1.  **Modify the Schema:** Make your changes to the Zod schemas in `packages/core/src/schemas.ts`.
-2.  **Update Types:** The TypeScript types in `packages/core/src/types.ts` will update automatically as they are inferred from the schemas. You may need to adjust code that uses these types.
+1.  **Modify the Schema:** Make your changes to the Zod schemas in [`packages/core/src/schemas.ts`](./packages/core/src/schemas.ts).
+2.  **Update Types:** The TypeScript types in [`packages/core/src/types.ts`](./packages/core/src/types.ts) will update automatically as they are inferred from the schemas. You may need to adjust code that uses these types.
 3.  **Regenerate the JSON Schema:** Run the generator script to create an updated `aid.schema.json`.
     ```bash
     pnpm -F @aid/core run schema:generate
     ```
-4.  **Commit Changes:** Commit all modified files, including `schemas.ts`, `types.ts`, and the newly generated `schema/v1/aid.schema.json`.
+4.  **Commit Changes:** Commit all modified files, including `schemas.ts`, `types.ts`, and the newly generated [`schema/v1/aid.schema.json`](./schema/v1/aid.schema.json).
 5.  **Push to `main`:** Pushing to the `main` branch will trigger the `sync-schema.yml` GitHub Action, which automatically pushes the updated `aid.schema.json` to the public `agentcommunity/docs` repository.
 
 ## Key Scripts
@@ -61,10 +78,10 @@ To make changes to the AID manifest structure, follow this workflow:
 -   `pnpm install`: Install all dependencies.
 -   `pnpm build`: Build all packages in the monorepo.
 -   `pnpm -F @aid/core run schema:generate`: Regenerate the canonical JSON schema.
--   `pnpm -F @aid/core run build:examples`: Update the web UI samples from the `examples` directory.
+-   `pnpm -F @aid/core run build:examples`: Update the web UI samples from the [`packages/examples`](./packages/examples) directory.
 -   `pnpm -F aid-generator dev`: Run the web UI in development mode.
 
-The `build:examples` script is critical for the web UI. It reads all configs from `/packages/examples`, cleans them, and generates an `index.json`. The web UI dynamically fetches this index to populate its "Load Sample" dropdown, ensuring the examples are always in sync with the canonical configurations.
+The `build:examples` script is critical for the web UI. It reads all configs from [`/packages/examples`](./packages/examples), cleans them, and generates an `index.json`. The web UI dynamically fetches this index to populate its "Load Sample" dropdown, ensuring the examples are always in sync with the canonical configurations.
 
 ## Web UI (`packages/web/aid-generator`)
 
@@ -78,7 +95,7 @@ Key features include:
 
 For detailed information on its architecture, components, and development workflow, please see the [web UI's dedicated README](./packages/web/aid-generator/README.md).
 
-## Generator (`packages/core/src/common.ts`)
+## Generator ([`packages/core/src/common.ts`](./packages/core/src/common.ts))
 
 The generator converts developer-friendly configurations into spec-compliant manifests and DNS records.
 
@@ -180,7 +197,7 @@ Note how the `platformOverrides` keys are `windows`, `linux`, and `macos` as per
 }
 ```
 
-## Resolver (`packages/core/src/resolver.ts`)
+## Resolver ([`packages/core/src/resolver.ts`](./packages/core/src/resolver.ts))
 
 The resolver is an async generator that consumes a domain and yields the steps of the AID discovery process, from DNS lookup to manifest validation. This is ideal for building UIs that show the discovery process in real-time.
 
@@ -203,9 +220,9 @@ async function main() {
 
 ## Specification Compliance
 
-This implementation strictly follows the [AID v1 specification](https://github.com/agentcommunity/docs/blob/main/docs/specs/aid/spec-v1.md).
+This implementation strictly follows the [AID v1 specification](https://docs.agentcommunity.org/specs/aid/spec-v1/).
 
-- ✅ All validation is driven by Zod schemas that match the spec.
+- ✅ All validation is driven by Zod schemas that match the spec. ([`packages/core/src/schemas.ts`](./packages/core/src/schemas.ts))
 - ✅ All authentication schemes are supported.
 - ✅ Local and remote implementation types are supported.
 - ✅ DNS TXT record formats (Simple and Extended Profiles) are correctly generated.

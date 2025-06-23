@@ -2,6 +2,8 @@
 
 A Next.js web application for generating and validating Agent Interface Discovery (AID) manifests in real-time. This tool provides an intuitive, responsive, form-based interface for creating AID configurations that comply with the official specification.
 
+This web UI is part of a larger monorepo. For details on the core library and the AID specification itself, please see the [main project README.md](../../../README.md).
+
 ## 🎯 Key Features
 
 -   **Live Generation & Validation**: Instantly see the generated `aid.json` manifest and DNS TXT record as you type. Get immediate, clear feedback on validation errors.
