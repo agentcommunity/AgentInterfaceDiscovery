@@ -76,10 +76,20 @@ const authConfigSchema = z.discriminatedUnion("scheme", [
   }),
 ])
 
+// A non-recursive version for use in platformOverrides
+const osExecutionSchema = z.object({
+  command: z.string().min(1, "Command is required"),
+  args: z.array(z.string()),
+});
+
 const executionConfigSchema: z.ZodType<ExecutionConfig> = z.object({
   command: z.string().min(1, "Command is required"),
   args: z.array(z.string()),
-  platformOverrides: z.record(z.lazy(() => executionConfigSchema)).optional(),
+  platformOverrides: z.object({
+    windows: osExecutionSchema.optional(),
+    linux: osExecutionSchema.optional(),
+    macos: osExecutionSchema.optional(),
+  }).optional(),
 })
 
 const baseImplementationSchema = z.object({
