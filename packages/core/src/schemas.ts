@@ -25,20 +25,20 @@ export const authConfigSchema = z.discriminatedUnion("scheme", [
     description: z.string().min(1, "Description is required"),
     tokenUrl: z.string().url().optional().or(z.literal("")),
     credentials: z.array(credentialItemSchema).optional(),
-    placement: authPlacementSchema,
+    placement: authPlacementSchema.optional(),
   }),
   z.object({
     scheme: z.literal("apikey"),
     description: z.string().min(1, "Description isrequired"),
     tokenUrl: z.string().url().optional().or(z.literal("")),
     credentials: z.array(credentialItemSchema).optional(),
-    placement: authPlacementSchema,
+    placement: authPlacementSchema.optional(),
   }),
   z.object({
     scheme: z.literal("basic"),
     description: z.string().min(1, "Description is required"),
     credentials: z.array(credentialItemSchema).optional(),
-    placement: authPlacementSchema,
+    placement: authPlacementSchema.optional(),
   }),
   baseOAuthSchema.extend({
     scheme: z.literal("oauth2_device"),
