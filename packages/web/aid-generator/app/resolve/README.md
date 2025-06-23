@@ -34,6 +34,18 @@ This resolver is a reference implementation designed to perform live, spec-compl
     -   **Local Development:** To enable UI testing without live DNS, the `/api/proxy` route intercepts requests for these specific domains and serves their configuration from local files in `/public/samples`.
     -   **Production (Vercel):** On the deployed Vercel site, the resolver will attempt a live fetch for the example domains. **This is expected to fail.** This happens because a Vercel serverless function cannot `fetch` a URL that resolves back to the same project (a "hairpinning" limitation). This is a known issue demonstrating a common platform constraint. The primary purpose—resolving external domains—remains fully functional.
 
+**Note on How Example Domains are Handled:**
+
+This resolver is a reference implementation designed to perform live, spec-compliant discovery for any public domain.
+
+-   **For any external domain you provide (e.g., `your-domain.com`)**, the resolver performs a live DNS lookup and manifest fetch via the `/api/proxy`. This works in all environments.
+
+-   **For the included example domains (e.g., `simple.aid.agentcommunity.org`)**, the resolver uses a special workaround to solve a common cloud platform networking challenge.
+    -   **The Challenge (Hairpinning):** A serverless function (like our `/api/proxy` on Vercel) cannot reliably `fetch` a public URL that resolves back to the same project it is a part of. This is known as "hairpinning" or a "NAT loopback," and these requests are often dropped by the platform.
+    -   **The Solution:** To make the examples work reliably, the `/api/proxy` route identifies requests for these known domains. Instead of a network fetch, it reads the corresponding generator configuration file from the `/public/samples` directory (which is included in the deployment) and builds the final AID Manifest on-the-fly.
+
+This approach ensures the examples are always available while preserving the resolver's core function of performing live discovery for any other domain on the internet.
+
 ## Implementation Guide for Your Own Client
 
 To build your own AID client, you should depend directly on the `@aid/core` package.
