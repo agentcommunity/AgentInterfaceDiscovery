@@ -27,6 +27,8 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     return NextResponse.json({ error: 'Invalid URL provided' }, { status: 400 });
   }
+  
+  const urlHost = url.hostname;
 
   // --- Development-only local rewrite for examples ---
   if (process.env.NODE_ENV === 'development' && exampleDomains.includes(url.hostname)) {

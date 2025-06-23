@@ -24,7 +24,15 @@ The UI is designed to be a highly interactive and clear representation of the da
 -   **`ActionableProfile.tsx`**: This component acts as a container for the final results. It uses a `ViewToggle` to allow the user to switch between a user-friendly "Preview" and the raw `aid.json` manifest.
 -   **`ImplementationCard.tsx`**: In "Preview" mode, one of these cards is rendered for each implementation found. It clearly displays the execution command/URI, authentication details, and any required configuration or paths in a structured, easy-to-digest format.
 
-**Note on Local Development:** The example domains (e.g., `simple.aid.agentcommunity.org`) rely on Vercel rewrite rules in production to point to the correct manifest files. These domains will not resolve on a local machine. To handle this, the `/api/proxy` route in this application intercepts these requests during development and serves the appropriate local sample file from `/public/samples`, simulating the production environment.
+**Note on Example Domains (Local vs. Production):**
+
+This resolver is a reference implementation designed to perform live, spec-compliant discovery for any public domain.
+
+-   **For any external domain you provide (e.g., `your-domain.com`)**, the resolver will perform a live DNS lookup and manifest fetch via the `/api/proxy`. This works in all environments.
+
+-   **For the included example domains (e.g., `simple.aid.agentcommunity.org`)**, the behavior differs by environment:
+    -   **Local Development:** To enable UI testing without live DNS, the `/api/proxy` route intercepts requests for these specific domains and serves their configuration from local files in `/public/samples`.
+    -   **Production (Vercel):** On the deployed Vercel site, the resolver will attempt a live fetch for the example domains. **This is expected to fail.** This happens because a Vercel serverless function cannot `fetch` a URL that resolves back to the same project (a "hairpinning" limitation). This is a known issue demonstrating a common platform constraint. The primary purpose—resolving external domains—remains fully functional.
 
 ## Implementation Guide for Your Own Client
 
