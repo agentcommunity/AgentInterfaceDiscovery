@@ -213,6 +213,11 @@ async function main() {
       const implementations = getImplementations(step.data.manifest);
       console.log(implementations);
     }
+    
+    if (step.type === 'validation_error' && step.data?.manifestContent) {
+        console.error("Validation failed. Invalid manifest content:");
+        console.error(step.data.manifestContent);
+    }
   }
 }
 ```

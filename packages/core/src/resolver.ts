@@ -11,7 +11,7 @@ export type ResolutionStep =
     | { type: 'manifest_error'; error: string }
     | { type: 'validation_start' }
     | { type: 'validation_success'; data: { manifest: AidManifest } }
-    | { type: 'validation_error'; error: string }
+    | { type: 'validation_error'; error: string; data?: { manifestContent: string } }
     | { type: 'actionable_profile'; data: { implementations: ActionableImplementation[], domain: string } };
 
 /**
@@ -145,7 +145,7 @@ export async function* resolveDomain(domain: string, options?: { manifestProxy?:
             aidManifestSchema.parse(manifestJson);
             yield { type: 'validation_success', data: { manifest: manifestJson as AidManifest } };
         } catch (error: any) {
-            yield { type: 'validation_error', error: error.message };
+            yield { type: 'validation_error', error: error.message, data: { manifestContent } };
         }
         return; // End of flow for extended profiles.
     }

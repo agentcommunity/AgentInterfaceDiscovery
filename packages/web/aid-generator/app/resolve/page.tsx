@@ -104,7 +104,15 @@ function ResolverPageContent() {
                     node = <p key={key} className="m-0">✅ Manifest is valid! Preparing summary...</p>;
                     break;
                 case 'validation_error':
-                    node = <p key={key} className="m-0 text-red-500">❌ Validation Error: {step.error}</p>;
+                    const validationErrorNode = (
+                        <div key={key}>
+                            <p className="m-0 text-red-500">❌ Validation Error: {step.error}</p>
+                            {step.data?.manifestContent && (
+                                <Codeblock title="Invalid Manifest Source" content={step.data.manifestContent} />
+                            )}
+                        </div>
+                    );
+                    node = validationErrorNode;
                     break;
                 case 'actionable_profile':
                     tempImplementations = step.data.implementations;

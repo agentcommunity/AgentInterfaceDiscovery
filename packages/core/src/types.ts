@@ -87,4 +87,3 @@ export type RequiredPathItem = z.infer<typeof requiredPathItemSchema>;
 export type OAuth2DeviceAuth = Extract<AuthConfig, { scheme: "oauth2_device" }>;
 export type OAuth2CodeAuth = Extract<AuthConfig, { scheme: "oauth2_code" }>;
 export type OAuth2ServiceAuth = Extract<AuthConfig, { scheme: "oauth2_service" }>;
-  

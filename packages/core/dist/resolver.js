@@ -73,7 +73,7 @@ async function* resolveDomain(domain, options) {
             yield { type: 'validation_success', data: { manifest: manifestJson } };
         }
         catch (error) {
-            yield { type: 'validation_error', error: error.message };
+            yield { type: 'validation_error', error: error.message, data: { manifestContent } };
         }
         return; // End of flow for extended profiles.
     }

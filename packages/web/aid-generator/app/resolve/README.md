@@ -18,7 +18,7 @@ This is the heart of any AID client. It's a framework-agnostic module that could
 
 The UI is designed to be a highly interactive and clear representation of the data provided by the core resolver engine. It calls `resolveDomain` and consumes the stream of events to render a conversational history of the process and a detailed, multi-format final profile.
 
--   **`page.tsx`**: The main page orchestrates the UI. It manages state, calls the `resolveDomain` generator, and dynamically builds a chat history by rendering a new `ChatMessage` for each step yielded by the resolver.
+-   **`page.tsx`**: The main page orchestrates the UI. It manages state, calls the `resolveDomain` generator, and dynamically builds a chat history. For `validation_error` steps, it now renders the invalid manifest source using the `Codeblock` component, providing a clear debugging path.
 -   **`ChatMessage.tsx`**: A flexible component that can render either simple markdown strings or complex React components (like a `Codeblock`), allowing for a rich, mixed-media chat log.
 -   **`Codeblock.tsx`**: A dedicated component for displaying formatted code, TXT records, or JSON. It includes a header and a one-click copy button.
 -   **`ActionableProfile.tsx`**: This component acts as a container for the final results. It uses a `ViewToggle` to allow the user to switch between a user-friendly "Preview" and the raw `aid.json` manifest.
@@ -34,23 +34,11 @@ This resolver is a reference implementation designed to perform live, spec-compl
     -   **Local Development:** To enable UI testing without live DNS, the `/api/proxy` route intercepts requests for these specific domains and serves their configuration from local files in `/public/samples`.
     -   **Production (Vercel):** On the deployed Vercel site, the resolver will attempt a live fetch for the example domains. **This is expected to fail.** This happens because a Vercel serverless function cannot `fetch` a URL that resolves back to the same project (a "hairpinning" limitation). This is a known issue demonstrating a common platform constraint. The primary purpose—resolving external domains—remains fully functional.
 
-**Note on How Example Domains are Handled:**
-
-This resolver is a reference implementation designed to perform live, spec-compliant discovery for any public domain.
-
--   **For any external domain you provide (e.g., `your-domain.com`)**, the resolver performs a live DNS lookup and manifest fetch via the `/api/proxy`. This works in all environments.
-
--   **For the included example domains (e.g., `simple.aid.agentcommunity.org`)**, the resolver uses a special workaround to solve a common cloud platform networking challenge.
-    -   **The Challenge (Hairpinning):** A serverless function (like our `/api/proxy` on Vercel) cannot reliably `fetch` a public URL that resolves back to the same project it is a part of. This is known as "hairpinning" or a "NAT loopback," and these requests are often dropped by the platform.
-    -   **The Solution:** To make the examples work reliably, the `/api/proxy` route identifies requests for these known domains. Instead of a network fetch, it reads the corresponding generator configuration file from the `/public/samples` directory (which is included in the deployment) and builds the final AID Manifest on-the-fly.
-
-This approach ensures the examples are always available while preserving the resolver's core function of performing live discovery for any other domain on the internet.
-
 ## Implementation Guide for Your Own Client
 
 To build your own AID client, you should depend directly on the `@aid/core` package.
 
 1.  **Use the Resolver Engine**: Import and use `resolveDomain` from `@aid/core/resolver` to handle the discovery logic.
-2.  **Render the Process**: Iterate through the yielded steps from `resolveDomain` to provide real-time feedback to the user.
+2.  **Render the Process**: Iterate through the yielded steps from `resolveDomain` to provide real-time feedback to the user. On a `validation_error`, check for the `data.manifestContent` property to display the invalid source to the user, improving the debugging experience.
 3.  **Get the Actionable Profile**: On a `validation_success` or `actionable_profile` step, use `getImplementations` to generate an `ActionableImplementation[]` array.
-4.  **Build Your UI Dynamically**: Loop through the `ActionableImplementation[]` array and inspect its properties (`type`, `execution`, `auth`, `requiredConfig`) to dynamically render the appropriate UI controls for the user. This reference implementation provides a robust example (`ImplementationCard.tsx`) of how to accomplish this. 
+4.  **Build Your UI Dynamically**: Loop through the `ActionableImplementation[]` array and inspect its properties (`type`, `execution`, `auth`, `requiredConfig`) to dynamically render the appropriate UI controls for the user. This reference implementation provides a robust example (`ImplementationCard.tsx`) of how to accomplish this.

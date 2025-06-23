@@ -38,6 +38,9 @@ export type ResolutionStep = {
 } | {
     type: 'validation_error';
     error: string;
+    data?: {
+        manifestContent: string;
+    };
 } | {
     type: 'actionable_profile';
     data: {
