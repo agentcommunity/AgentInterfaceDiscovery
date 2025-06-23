@@ -1,10 +1,10 @@
 {
-  "name": "Mixed Mode Service",
+  "schemaVersion": "1",
+  "serviceName": "Mixed Mode Service",
+  "domain": "mixed.agentcommunity.org",
   "metadata": {
-    "contentVersion": "2025-06-23",
     "documentation": "https://docs.agentcommunity.org/specs/aid/spec-v1/"
   },
-  "schemaVersion": "1",
   "implementations": [
     {
       "type": "remote",
@@ -24,10 +24,7 @@
     {
       "type": "local",
       "name": "Management CLI",
-      "tags": [
-        "cli",
-        "admin"
-      ],
+      "tags": ["cli", "admin"],
       "protocol": "none",
       "package": {
         "manager": "npx",
@@ -46,4 +43,4 @@
       }
     }
   ]
-}
+} 

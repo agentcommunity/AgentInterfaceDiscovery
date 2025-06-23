@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Empty",
+    "file": "empty.json"
+  },
+  {
+    "name": "Auth0",
+    "file": "auth0.json"
+  },
+  {
+    "name": "Edge case",
+    "file": "edge-case.json"
+  },
+  {
+    "name": "Landing mcp",
+    "file": "landing-mcp.json"
+  },
+  {
+    "name": "Mixed",
+    "file": "mixed.json"
+  },
+  {
+    "name": "Multi",
+    "file": "multi.json"
+  },
+  {
+    "name": "Simple",
+    "file": "simple.json"
+  },
+  {
+    "name": "Supabase",
+    "file": "supabase.json"
+  }
+]

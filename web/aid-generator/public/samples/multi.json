@@ -1,10 +1,10 @@
 {
-  "name": "Multi-Region API",
+  "schemaVersion": "1",
+  "serviceName": "Multi-Region API",
+  "domain": "multi.agentcommunity.org",
   "metadata": {
-    "contentVersion": "2025-06-23",
     "documentation": "https://docs.agentcommunity.org/specs/aid/spec-v1/"
   },
-  "schemaVersion": "1",
   "implementations": [
     {
       "type": "remote",
@@ -37,4 +37,4 @@
       }
     }
   ]
-}
+} 

@@ -1,1 +1,1 @@
-_agent.edge-case.aid.agentcommunity.org. 3600 IN TXT "v=aid1;env=staging;uri=https://api.edge-case.aid.agentcommunity.org/v2;proto=mcp;auth=mtls;config=https://edge-case.aid.agentcommunity.org/.well-known/aid.json"
+_agent.edge.agentcommunity.org. 3600 IN TXT "v=aid1;env=staging;uri=https://api.edge.agentcommunity.org/v2;proto=mcp;auth=mtls;config=https://edge.agentcommunity.org/.well-known/aid.json"

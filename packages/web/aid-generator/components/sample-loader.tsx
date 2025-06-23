@@ -48,10 +48,10 @@ export function SampleLoader() {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm font-medium">Load Sample</span>
+      <span className="text-sm font-medium">🧪 Load Sample Config:</span>
       <Select onValueChange={handleLoadSample}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select a sample..." />
+          <SelectValue placeholder="Select..." />
         </SelectTrigger>
         <SelectContent>
           {samples.map((sample) => (

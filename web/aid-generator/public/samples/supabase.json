@@ -1,18 +1,15 @@
 {
-  "name": "Supabase MCP",
+  "schemaVersion": "1",
+  "serviceName": "Supabase MCP",
+  "domain": "supabase.agentdomain.xyz",
   "metadata": {
-    "contentVersion": "2025-06-23",
     "documentation": "https://supabase.com/docs/guides/getting-started/mcp?queryGroups=os&os=mac"
   },
-  "schemaVersion": "1",
   "implementations": [
     {
       "type": "local",
       "name": "Supabase MCP Server",
-      "tags": [
-        "cli",
-        "database"
-      ],
+      "tags": ["cli", "database"],
       "protocol": "mcp",
       "package": {
         "manager": "npx",
@@ -48,4 +45,4 @@
       ]
     }
   ]
-}
+} 

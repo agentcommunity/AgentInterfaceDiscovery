@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { UrlInput } from "@/components/ui/url-input"
 import type { AidGeneratorConfig } from "@aid/core"
 import { cn } from "@/lib/utils"
+import { SampleLoader } from "../sample-loader"
 
 export function ServiceSection() {
   const { control, formState: { errors } } = useFormContext<AidGeneratorConfig>()
@@ -16,10 +17,13 @@ export function ServiceSection() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className={cn("text-lg font-semibold", hasErrors && "text-destructive")}>Service Details</h3>
+          <h3 className={cn("text-lg font-semibold", hasErrors && "text-destructive")}>Service Details           <Badge variant="outline">Schema v1</Badge></h3>
           <p className="text-sm text-muted-foreground">The core identity of your agent service</p>
         </div>
-        <Badge variant="outline">Schema v1</Badge>
+        <div className="flex items-center gap-4">
+          <SampleLoader />
+
+        </div>
       </div>
 
       <div className="space-y-4 pl-4 border-l-2 border-muted">
