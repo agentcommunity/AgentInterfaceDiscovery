@@ -1,235 +1,96 @@
-# Agent Interface Discovery (AID)
+# Agent Interface Discovery (AID) - Core Library
 
-A TypeScript implementation for generating Agent Interface Discovery manifests and DNS records, enabling standardized agent-to-agent communication discovery.
+This repository contains the reference TypeScript implementation for the [Agent Interface Discovery (AID) v1 specification](https://github.com/agentcommunity/docs). It provides a robust set of tools for generating and resolving AID profiles, enabling standardized agent-to-agent communication.
 
-## Overview
+## Core Concept: A Single Source of Truth
 
-Agent Interface Discovery (AID) is a protocol that allows AI agents to discover and connect to each other through standardized manifest files and DNS TXT records. This repository provides:
+This library is built around a "single source of truth" model to ensure that its types, validation logic, and the public-facing JSON schema are always perfectly synchronized.
 
-- **Type-safe TypeScript definitions** for AID v1 spec
-- **Generator utilities** to convert human-friendly configs into spec-compliant manifests
-- **DNS TXT record generation** for agent discovery
-- **CLI tool** for easy integration into build processes
-- **Web UI** for interactively creating and validating configurations
+The entire system is driven by the Zod schemas defined in **`packages/core/src/schemas.ts`**.
+
+This source of truth generates:
+1.  **TypeScript Types:** All static types in `packages/core/src/types.ts` are automatically inferred from the Zod schemas using `z.infer<T>`. This means the types you code against are guaranteed to match the validation logic.
+2.  **Canonical JSON Schema:** The `schema/v1/aid.schema.json` file is programmatically generated from the Zod schemas. This file is the public, machine-readable contract for the AID v1 manifest.
+
+This approach eliminates drift between validation, static types, and public documentation.
 
 ## Architecture
 
-The project is a `pnpm` monorepo with three main packages:
+The project is a `pnpm` monorepo with the following key components:
 
 ```
-packages/
-├── core/               # The canonical library for all AID logic
-│   ├── src/
-│   │   ├── types.ts      # TypeScript definitions for AID v1 spec
-│   │   ├── common.ts     # Browser-safe generators (manifest, TXT)
-│   │   ├── generator.ts  # Node.js file writers
-│   │   └── resolver.ts   # Logic for resolving an AID profile
-│   └── scripts/
-│       └── build-examples.ts # Builds examples & syncs them to the web UI
-├── examples/             # A collection of canonical example configs
-└── web/
-    └── aid-generator/    # Next.js web application
+.
+├── .github/workflows/    # CI/CD automation
+│   └── sync-schema.yml   # Action to sync the JSON schema to the docs repo
+├── packages/
+│   ├── core/             # The canonical library for all AID logic
+│   │   ├── src/
+│   │   │   ├── schemas.ts    # The single source of truth (Zod schemas)
+│   │   │   ├── types.ts      # Inferred TypeScript types (auto-generated)
+│   │   │   ├── common.ts     # Browser-safe generators (manifest, TXT)
+│   │   │   ├── generator.ts  # Node.js file writers for manifests
+│   │   │   └── resolver.ts   # Logic for resolving an AID profile
+│   │   └── scripts/
+│   │       ├── generate-schema.ts # Generates the canonical JSON schema
+│   │       └── build-examples.ts  # Builds examples & syncs them to the web UI
+│   ├── examples/           # A collection of canonical example configs
+│   └── web/
+│       └── aid-generator/  # Next.js web application for building manifests
+└── schema/
+    └── v1/
+        └── aid.schema.json # The generated canonical JSON Schema artifact
 ```
 
-## Type System (`packages/core/src/types.ts`)
+A key design feature is the separation of browser-safe and Node.js-specific code. `common.ts` contains pure data transformation logic (`buildManifest`, `buildTxtRecord`) that can run in any JavaScript environment. `generator.ts` contains file system operations (`writeManifest`) and is intended for Node.js environments only. This ensures the library is lightweight and versatile.
 
-The type system provides complete TypeScript definitions for the AID v1 specification:
+## Development Workflow
 
-### Core Configuration Interface
+To make changes to the AID manifest structure, follow this workflow:
 
-```typescript
-export interface AidGeneratorConfig {
-  schemaVersion: "1";           // MUST be "1"
-  serviceName: string;          // Human-readable service name
-  domain: string;               // Primary domain for DNS records
-  metadata?: {
-    contentVersion?: string;
-    documentation?: string;
-    revocationURL?: string;
-  };
-  implementations: ImplementationConfig[];
-  signature?: unknown;          // For future JWS signing
-}
-```
+1.  **Modify the Schema:** Make your changes to the Zod schemas in `packages/core/src/schemas.ts`.
+2.  **Update Types:** The TypeScript types in `packages/core/src/types.ts` will update automatically as they are inferred from the schemas. You may need to adjust code that uses these types.
+3.  **Regenerate the JSON Schema:** Run the generator script to create an updated `aid.schema.json`.
+    ```bash
+    pnpm -F @aid/core run schema:generate
+    ```
+4.  **Commit Changes:** Commit all modified files, including `schemas.ts`, `types.ts`, and the newly generated `schema/v1/aid.schema.json`.
+5.  **Push to `main`:** Pushing to the `main` branch will trigger the `sync-schema.yml` GitHub Action, which automatically pushes the updated `aid.schema.json` to the public `agentcommunity/docs` repository.
 
-### Implementation Types
+## Key Scripts
 
-The system supports two implementation types:
+-   `pnpm install`: Install all dependencies.
+-   `pnpm build`: Build all packages in the monorepo.
+-   `pnpm -F @aid/core run schema:generate`: Regenerate the canonical JSON schema.
+-   `pnpm -F @aid/core run build:examples`: Update the web UI samples from the `examples` directory.
+-   `pnpm -F aid-generator dev`: Run the web UI in development mode.
 
-**Remote Implementations** - HTTPS endpoints:
-```typescript
-export interface RemoteImplementationConfig {
-  type: "remote";
-  uri: string;                  // HTTPS endpoint
-  // ...shared fields
-}
-```
-
-**Local Implementations** - Locally executable packages:
-```typescript
-export interface LocalImplementationConfig {
-  type: "local";
-  package: {
-    manager: string;            // docker | npx | pip | etc.
-    identifier: string;         // image/module name
-    digest?: string;            // sha256 hash
-  };
-  execution: ExecutionConfig;   // Command + args with ${...} substitution
-  // ...shared fields
-}
-```
-
-### Authentication System
-
-Comprehensive auth support including:
-- `none` - No authentication
-- `pat` / `apikey` - Token-based auth
-- `basic` - HTTP Basic auth
-- `oauth2_device` / `oauth2_code` / `oauth2_service` - OAuth2 flows
-- `mtls` - Mutual TLS
-- `custom` - Custom schemes
+The `build:examples` script is critical for the web UI. It reads all configs from `/packages/examples`, cleans them, and generates an `index.json`. The web UI dynamically fetches this index to populate its "Load Sample" dropdown, ensuring the examples are always in sync with the canonical configurations.
 
 ## Generator (`packages/core/src/common.ts`)
 
-The generator, located in `packages/core/src/common.ts`, converts developer-friendly configurations into spec-compliant manifests and DNS records. It is browser-safe and used by both the core library and the web UI.
+The generator converts developer-friendly configurations into spec-compliant manifests and DNS records.
 
-### Key Functions
+### `buildManifest(cfg: AidGeneratorConfig): AidManifest`
 
-#### `buildManifest(cfg: AidGeneratorConfig): AidManifest`
-Converts configuration to final manifest:
-- Renames `serviceName` → `name`
-- Removes `domain` (used only for DNS generation)
-- Auto-fills `contentVersion` if not provided
-- Validates structure against types
+-   Converts `serviceName` to `name`.
+-   Removes the `domain` property (only used for DNS generation).
+-   Auto-fills `metadata.contentVersion` with the current date if not provided.
 
-#### `buildTxtRecord(cfg, manifestPath?, ttl?): string`
-Generates DNS TXT records with intelligent format selection:
+### `buildTxtRecord(cfg: AidGeneratorConfig): string`
 
-**Simple inline format** (when possible):
+Generates DNS TXT records with intelligent format selection.
+
+**Simple Profile** (for a single, simple remote implementation):
 ```
-_agent.domain.com. 3600 IN TXT "v=aid1;p=mcp;uri=https://api.example.com;auth=pat"
+_agent.domain.com. 3600 IN TXT "v=aid1;proto=mcp;uri=https://api.example.com;auth=pat"
 ```
 
-**Extended format** (complex configurations):
+**Extended Profile** (for complex configurations):
 ```
-_agent.domain.com. 3600 IN TXT "v=aid1;u=https://domain.com/.well-known/aid.json"
-```
-
-The generator automatically chooses the simple format only when the configuration contains exactly one "remote" implementation with no complex properties (like `configuration` or `requiredPaths`).
-
-#### File Writers (`packages/core/src/generator.ts`)
-Node.js-specific functions for writing the generated files to disk.
-- `writeManifest(cfg, outDir)` - Writes `aid.json`
-- `writeTxtSnippet(cfg, outDir)` - Writes `aid.txt`
-
-## Web UI & Example Automation
-
-The repository includes a Next.js-based web application in `packages/web/aid-generator` that serves as a live editor and validator for AID profiles.
-
-A key feature of the build process is the automation of examples:
-- The `packages/core/scripts/build-examples.ts` script acts as the single source of truth.
-- When run via `pnpm -F @aid/core build:examples`, it reads all configurations from `packages/examples`.
-- It validates and cleans each configuration. This includes:
-  - Removing non-standard properties (like a top-level `name`).
-  - Correcting common mistakes, such as converting full URLs in the `domain` field to a bare domain.
-- The cleaned configs are copied to the `packages/web/aid-generator/public/samples` directory for use in the UI.
-- It also generates an `index.json`, which the UI's "Load Sample" dropdown uses to dynamically populate its list.
-- This ensures the web UI is always synchronized with the canonical examples.
-
-## CLI Tool (`packages/core/bin/aid-gen.ts`)
-
-A simple command-line interface for generating AID files from a configuration file. The `pnpm -F @aid/core exec` command runs from within the `packages/core` directory, so paths should be relative to it.
-
-```bash
-# Generate from a config file (e.g., from the examples)
-# This will place the output in a new `output` directory in the project root.
-pnpm -F @aid/core exec ts-node bin/aid-gen.ts ../examples/auth0/config.json ../../output
+_agent.domain.com. 3600 IN TXT "v=aid1;config=https://domain.com/.well-known/aid.json"
 ```
 
-The CLI:
-1. Reads JSON configuration file
-2. Generates both `aid.json` manifest and `aid.txt` DNS record
-3. Outputs file paths on success
-
-## Auth0 Example
-
-The `packages/examples/auth0/` directory demonstrates a complete real-world implementation for an Auth0 MCP Server.
-
-### Configuration (`config.json`)
-
-```json
-{
-  "serviceName": "Auth0 MCP Server",
-  "schemaVersion": "1", 
-  "domain": "auth0.agentcommunity.org",
-  "metadata": {
-    "documentation": "https://github.com/auth0/auth0-mcp-server",
-    "contentVersion": "2025-06-18"
-  },
-  "implementations": [
-    {
-      "type": "local",
-      "name": "Auth0 MCP (run)",
-      "protocol": "mcp",
-      "package": {
-        "manager": "npx",
-        "identifier": "@auth0/auth0-mcp-server"
-      },
-      "execution": {
-        "command": "npx",
-        "args": ["-y", "@auth0/auth0-mcp-server", "run", "${config.TOOLS_FLAG}", "${config.READ_ONLY_FLAG}"]
-      },
-      "authentication": {
-        "scheme": "oauth2_device",
-        "description": "Device flow starts on first run",
-        "oauth": {
-          "deviceAuthorizationEndpoint": "https://auth0.com/oauth/device/code",
-          "tokenEndpoint": "https://auth0.com/oauth/token",
-          "scopes": ["${config.AUTH0_MCP_SCOPES}"]
-        }
-      },
-      "configuration": [
-        {
-          "key": "AUTH0_MCP_SCOPES",
-          "description": "Scopes to request during init", 
-          "type": "string",
-          "defaultValue": "read:*"
-        }
-        // ...more config options
-      ]
-    }
-  ]
-}
-```
-
-### Generated Manifest (`aid.json`)
-
-The generator transforms the config into a spec-compliant manifest:
-- `serviceName` becomes `name`
-- `domain` is removed (used only for DNS)
-- Structure matches AID v1 specification exactly
-
-### Generated DNS Record (`aid.txt`)
-
-```
-_agent.auth0.agentcommunity.org. 3600 IN TXT "v=aid1;u=https://auth0.agentcommunity.org/.well-known/aid.json"
-```
-
-Since this example has:
-- Multiple implementations (run + init)
-- User configuration options
-- Complex execution patterns
-
-The generator uses the **extended format** pointing to the hosted manifest rather than trying to inline everything.
-
-### Regenerating Example Artifacts
-
-To regenerate the `aid.json` and `aid.txt` for this (or any) example, run the build script:
-```bash
-pnpm -F @aid/core build:examples
-```
-
-## Usage Patterns
+## Usage Examples
 
 ### 1. Basic Remote Service
 
@@ -287,6 +148,8 @@ pnpm -F @aid/core build:examples
 
 ### 3. Multi-Platform Support
 
+Note how the `platformOverrides` keys are `windows`, `linux`, and `macos` as per the spec.
+
 ```json
 {
   "implementations": [{
@@ -295,7 +158,7 @@ pnpm -F @aid/core build:examples
       "command": "python",
       "args": ["-m", "mypackage"],
       "platformOverrides": {
-        "win32": {
+        "windows": {
           "command": "python.exe",
           "args": ["-m", "mypackage"]
         }
@@ -305,75 +168,39 @@ pnpm -F @aid/core build:examples
 }
 ```
 
-## Development
+## Resolver (`packages/core/src/resolver.ts`)
 
-```bash
-# Install dependencies
-pnpm install
-
-# Build all packages
-pnpm build
-
-# Run the example build script (updates web samples)
-# This is the single source of truth for all example artifacts.
-pnpm -F @aid/core build:examples
-
-# Run the CLI generator on the Auth0 example
-pnpm -F @aid/core exec ts-node bin/aid-gen.ts ../examples/auth0/config.json ../../output
-
-# Run the web UI in development mode
-pnpm -F aid-generator dev
-```
-
-### Local Development Server & Proxy
-
-The example domains (e.g., `auth0.aid.agentcommunity.org`) are configured with rewrite rules on Vercel to serve their corresponding manifest files from the `/public/samples` directory. These domains will not resolve on a local machine.
-
-To enable seamless local development, the Next.js application includes a proxy at `packages/web/aid-generator/app/api/proxy/route.ts`. In a development environment, this proxy intercepts requests for the known example domains and serves the correct local JSON file, simulating the Vercel rewrites and preventing DNS errors.
-
-## Integration
-
-### As a Library
+The resolver is an async generator that consumes a domain and yields the steps of the AID discovery process, from DNS lookup to manifest validation. This is ideal for building UIs that show the discovery process in real-time.
 
 ```typescript
-import { AidGeneratorConfig, buildManifest, buildTxtRecord } from '@aid/core/browser';
+import { resolveDomain } from '@aid/core';
 
-const config: AidGeneratorConfig = {
-  // your configuration
-};
+async function main() {
+  const domain = "agentcommunity.org";
+  for await (const step of resolveDomain(domain)) {
+    console.log(step);
 
-const manifest = buildManifest(config);
-const dnsRecord = buildTxtRecord(config);
-```
-
-### In Build Process
-
-```json
-{
-  "scripts": {
-    "build": "pnpm -F @aid/core build:examples && next build"
+    if (step.type === 'validation_success') {
+      // The manifest is valid, now you can get actionable implementations
+      const implementations = getImplementations(step.data.manifest);
+      console.log(implementations);
+    }
   }
 }
 ```
 
-### DNS Deployment
-
-1.  Run the `build:examples` script or use the generator to create your `aid.json` and `aid.txt` files.
-2.  Add the content of the `aid.txt` record to your DNS zone.
-3.  Host the `aid.json` manifest at the corresponding URL (e.g., `https://yourdomain.com/.well-known/aid.json`).
-4.  Agents can now discover your service via a `TXT` lookup on `_agent.yourdomain.com`.
-
 ## Specification Compliance
 
-This implementation follows the AID v1 specification:
-- ✅ Schema version validation
-- ✅ All authentication schemes supported
-- ✅ Local and remote implementation types
-- ✅ DNS TXT record formats (simple + extended)
-- ✅ Configuration templates with variable substitution
-- ✅ Platform-specific execution overrides
-- ✅ Metadata and versioning support
+This implementation strictly follows the [AID v1 specification](https://github.com/agentcommunity/docs/blob/main/docs/specs/aid/spec-v1.md).
+
+- ✅ All validation is driven by Zod schemas that match the spec.
+- ✅ All authentication schemes are supported.
+- ✅ Local and remote implementation types are supported.
+- ✅ DNS TXT record formats (Simple and Extended Profiles) are correctly generated.
+- ✅ Configuration templates with `${...}` variable substitution are supported.
+- ✅ OS-specific execution overrides are supported (`windows`, `linux`, `macos`).
+- ✅ The generated JSON Schema is automatically synced to the public documentation repository.
 
 ## License
 
-
+[MIT](./LICENSE)

@@ -1,13 +1,13 @@
 import { z } from "zod"
 import type { AidGeneratorConfig, ImplementationConfig, ExecutionConfig } from "./types"
 
-const authPlacementSchema = z.object({
+export const authPlacementSchema = z.object({
   in: z.enum(["header", "query", "cli_arg"]),
   key: z.string().min(1, "Key is required for placement"),
   format: z.string().optional(),
 })
 
-const credentialItemSchema = z.object({
+export const credentialItemSchema = z.object({
   key: z.string().min(1, "Key is required for credential"),
   description: z.string().min(1, "Description is required for credential"),
 })
@@ -18,7 +18,7 @@ const baseOAuthSchema = z.object({
   placement: authPlacementSchema.optional(),
 })
 
-const authConfigSchema = z.discriminatedUnion("scheme", [
+export const authConfigSchema = z.discriminatedUnion("scheme", [
   z.object({ scheme: z.literal("none") }),
   z.object({
     scheme: z.literal("pat"),
@@ -82,7 +82,7 @@ const osExecutionSchema = z.object({
   args: z.array(z.string()),
 });
 
-const executionConfigSchema: z.ZodType<ExecutionConfig> = z.object({
+export const executionConfigSchema: z.ZodType<ExecutionConfig> = z.object({
   command: z.string().min(1, "Command is required"),
   args: z.array(z.string()),
   platformOverrides: z.object({
@@ -92,7 +92,28 @@ const executionConfigSchema: z.ZodType<ExecutionConfig> = z.object({
   }).optional(),
 })
 
-const baseImplementationSchema = z.object({
+export const certificateConfigSchema = z
+  .object({
+    source: z.enum(["file", "enrollment"]),
+    enrollmentEndpoint: z.string().url().optional().or(z.literal("")),
+  })
+  .optional();
+
+export const userConfigurableItemSchema = z.object({
+  key: z.string().min(1, "Key is required"),
+  description: z.string().min(1, "Description is required"),
+  type: z.enum(["string", "boolean", "integer"]),
+  defaultValue: z.union([z.string(), z.boolean(), z.number()]).optional(),
+  secret: z.boolean().optional(),
+});
+
+export const requiredPathItemSchema = z.object({
+  key: z.string().min(1, "Key is required"),
+  description: z.string().min(1, "Description is required"),
+  type: z.enum(["file", "directory"]).optional(),
+});
+
+export const baseImplementationSchema = z.object({
   name: z.string().min(1, "Name is required"),
   protocol: z.string().min(1, "Protocol is required"),
   type: z.enum(["remote", "local"]),
@@ -100,35 +121,12 @@ const baseImplementationSchema = z.object({
   status: z.enum(["active", "deprecated"]).optional(),
   revocationURL: z.string().url().optional().or(z.literal("")),
   authentication: authConfigSchema,
-  certificate: z
-    .object({
-      source: z.enum(["file", "enrollment"]),
-      enrollmentEndpoint: z.string().url().optional().or(z.literal("")),
-    })
-    .optional(),
-  configuration: z
-    .array(
-      z.object({
-        key: z.string().min(1, "Key is required"),
-        description: z.string().min(1, "Description is required"),
-        type: z.enum(["string", "boolean", "integer"]),
-        defaultValue: z.union([z.string(), z.boolean(), z.number()]).optional(),
-        secret: z.boolean().optional(),
-      }),
-    )
-    .optional(),
-  requiredPaths: z
-    .array(
-      z.object({
-        key: z.string().min(1, "Key is required"),
-        description: z.string().min(1, "Description is required"),
-        type: z.enum(["file", "directory"]).optional(),
-      }),
-    )
-    .optional(),
+  certificate: certificateConfigSchema,
+  configuration: z.array(userConfigurableItemSchema).optional(),
+  requiredPaths: z.array(requiredPathItemSchema).optional(),
 })
 
-const implementationConfigSchema: z.ZodType<ImplementationConfig> = z
+export const implementationConfigSchema: z.ZodType<ImplementationConfig> = z
   .discriminatedUnion("type", [
     baseImplementationSchema.extend({
       type: z.literal("remote"),

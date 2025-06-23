@@ -37,6 +37,12 @@ export interface ActionableImplementation {
       command?: string;
       /** For 'local' implementations: the arguments for the command. */
       args?: string[];
+      /** For 'local' implementations: OS-specific execution overrides. */
+      platformOverrides?: {
+        windows?: { command: string; args: string[]; };
+        linux?: { command: string; args: string[]; };
+        macos?: { command: string; args: string[]; };
+      };
     };
   
     /** Instructions on how the client should handle authentication. */
@@ -218,6 +224,7 @@ export function getImplementations(manifest: AidManifest): ActionableImplementat
         } else {
             actionable.execution.command = impl.execution.command;
             actionable.execution.args = impl.execution.args;
+            actionable.execution.platformOverrides = impl.execution.platformOverrides;
         }
         
         // Handle auth specifics
