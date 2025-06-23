@@ -1,6 +1,6 @@
 "use client"
 
-import type { UseFormReturn } from "react-hook-form"
+import { useFormContext } from "react-hook-form"
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -8,13 +8,10 @@ import { UrlInput } from "@/components/ui/url-input"
 import type { AidGeneratorConfig } from "@aid/core"
 import { cn } from "@/lib/utils"
 
-interface ServiceSectionProps {
-  form: UseFormReturn<AidGeneratorConfig>
-  hasErrors: boolean
-}
+export function ServiceSection() {
+  const { control, formState: { errors } } = useFormContext<AidGeneratorConfig>()
+  const hasErrors = !!errors.serviceName || !!errors.domain
 
-
-export function ServiceSection({ form, hasErrors }: ServiceSectionProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -27,7 +24,7 @@ export function ServiceSection({ form, hasErrors }: ServiceSectionProps) {
 
       <div className="space-y-4 pl-4 border-l-2 border-muted">
         <FormField
-          control={form.control}
+          control={control}
           name="serviceName"
           render={({ field }) => (
             <FormItem>
@@ -45,7 +42,7 @@ export function ServiceSection({ form, hasErrors }: ServiceSectionProps) {
         />
 
         <FormField
-          control={form.control}
+          control={control}
           name="domain"
           render={({ field }) => (
             <FormItem>
@@ -58,7 +55,7 @@ export function ServiceSection({ form, hasErrors }: ServiceSectionProps) {
                   value={typeof field.value === "string" ? field.value : ""}
                   onChange={field.onChange}
                   placeholder="example.com"
-                  autoHttps={true}
+                  autoHttps={false}
                   stripProtocol={true}
                 />
               </FormControl>

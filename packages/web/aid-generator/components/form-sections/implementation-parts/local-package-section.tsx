@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import type { UseFormReturn } from "react-hook-form"
+import { useFormContext } from "react-hook-form"
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -10,36 +10,36 @@ import { Terminal } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { HelpCircle } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import type { AidGeneratorConfig } from "@aid/core"
+import type { AidGeneratorConfig } from "@aid/core/browser"
 
 interface LocalPackageSectionProps {
-  form: UseFormReturn<AidGeneratorConfig>
   index: number
 }
 
-export function LocalPackageSection({ form, index }: LocalPackageSectionProps) {
-  const packageManager = form.watch(`implementations.${index}.package.manager`)
-  const packageIdentifier = form.watch(`implementations.${index}.package.identifier`)
+export function LocalPackageSection({ index }: LocalPackageSectionProps) {
+  const { watch, getValues, setValue, control } = useFormContext<AidGeneratorConfig>()
+  const packageManager = watch(`implementations.${index}.package.manager`)
+  const packageIdentifier = watch(`implementations.${index}.package.identifier`)
 
   // Auto-sync execution command with package manager
   useEffect(() => {
     if (packageManager) {
-      const currentCommand = form.getValues(`implementations.${index}.execution.command`)
+      const currentCommand = getValues(`implementations.${index}.execution.command`)
       if (!currentCommand || currentCommand !== packageManager) {
-        form.setValue(`implementations.${index}.execution.command`, packageManager)
+        setValue(`implementations.${index}.execution.command`, packageManager)
       }
     }
-  }, [packageManager, form, index])
+  }, [packageManager, getValues, setValue, index])
 
   // Auto-suggest args based on package identifier
   useEffect(() => {
     if (packageIdentifier && packageManager === "npx") {
-      const currentArgs = form.getValues(`implementations.${index}.execution.args`)
+      const currentArgs = getValues(`implementations.${index}.execution.args`)
       if (!currentArgs || currentArgs.length === 0) {
-        form.setValue(`implementations.${index}.execution.args`, ["-y", packageIdentifier])
+        setValue(`implementations.${index}.execution.args`, ["-y", packageIdentifier])
       }
     }
-  }, [packageIdentifier, packageManager, form, index])
+  }, [packageIdentifier, packageManager, getValues, setValue, index])
 
   return (
     <TooltipProvider>
@@ -57,7 +57,7 @@ export function LocalPackageSection({ form, index }: LocalPackageSectionProps) {
         <div className="space-y-4 pl-6 border-l-2 border-muted">
           <div className="grid grid-cols-2 gap-4">
             <FormField
-              control={form.control}
+              control={control}
               name={`implementations.${index}.package.manager`}
               render={({ field }) => (
                 <FormItem>
@@ -95,7 +95,7 @@ export function LocalPackageSection({ form, index }: LocalPackageSectionProps) {
             />
 
             <FormField
-              control={form.control}
+              control={control}
               name={`implementations.${index}.package.identifier`}
               render={({ field }) => (
                 <FormItem>
@@ -124,7 +124,7 @@ export function LocalPackageSection({ form, index }: LocalPackageSectionProps) {
           </div>
 
           <FormField
-            control={form.control}
+            control={control}
             name={`implementations.${index}.package.digest`}
             render={({ field }) => (
               <FormItem>
@@ -156,7 +156,7 @@ export function LocalPackageSection({ form, index }: LocalPackageSectionProps) {
         <h3 className="text-sm font-semibold">Execution Configuration</h3>
         <div className="space-y-4 pl-6 border-l-2 border-muted">
           <FormField
-            control={form.control}
+            control={control}
             name={`implementations.${index}.execution.command`}
             render={({ field }) => (
               <FormItem>
@@ -182,7 +182,7 @@ export function LocalPackageSection({ form, index }: LocalPackageSectionProps) {
           />
 
           <FormField
-            control={form.control}
+            control={control}
             name={`implementations.${index}.execution.args`}
             render={({ field }) => (
               <FormItem>
