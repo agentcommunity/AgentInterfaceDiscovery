@@ -49,9 +49,6 @@ export interface AidGeneratorConfig {
     status?: "active" | "deprecated";
     revocationURL?: string;
   
-    /** Optional per-platform overrides (non-spec helper). */
-    platformOverrides?: Record<string, ExecutionConfig>;
-  
     authentication: AuthConfig;
     certificate?: CertificateConfig;          // when scheme === "mtls"
     configuration?: UserConfigurableItem[];

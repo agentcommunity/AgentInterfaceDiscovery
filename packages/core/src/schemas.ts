@@ -116,7 +116,6 @@ const baseImplementationSchema = z.object({
       }),
     )
     .optional(),
-  platformOverrides: z.record(z.lazy(() => executionConfigSchema)).optional(),
 })
 
 const implementationConfigSchema: z.ZodType<ImplementationConfig> = z
@@ -156,6 +155,18 @@ const implementationConfigSchema: z.ZodType<ImplementationConfig> = z
       message: "Authentication Placement is required for this remote authentication scheme",
       path: ["authentication", "placement"],
     },
+  )
+  .refine(
+    (data: ImplementationConfig) => {
+      if (data.authentication.scheme === "mtls") {
+        return data.certificate !== undefined && data.certificate !== null;
+      }
+      return true;
+    },
+    {
+      message: "A 'certificate' object is required when authentication.scheme is 'mtls'.",
+      path: ["certificate"],
+    }
   )
 
 export const aidGeneratorConfigSchema = z.object({

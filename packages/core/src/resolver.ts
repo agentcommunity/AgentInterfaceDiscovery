@@ -154,14 +154,18 @@ export async function* resolveDomain(domain: string, options?: { manifestProxy?:
                 return acc;
             }, {});
 
-            const isLocal = parts['pkg-id'] || parts['pkg-mgr'];
+            if (!parts.uri) {
+                throw new Error('Simple inline profile is missing required field (uri). Local implementations require an extended profile manifest.');
+            }
 
             const implementation: ActionableImplementation = {
-                name: parts.name || (isLocal ? 'Local Inline Profile' : 'Remote Inline Profile'),
-                type: isLocal ? 'local' : 'remote',
+                name: parts.name || 'Remote Inline Profile',
+                type: 'remote',
                 protocol: parts.proto || 'unknown',
                 tags: parts.tags ? parts.tags.split(',') : [],
-                execution: {},
+                execution: {
+                    uri: parts.uri,
+                },
                 auth: {
                     scheme: (parts.auth as any) || 'none',
                     description: `Authentication via ${parts.auth || 'none'}`,
@@ -169,24 +173,6 @@ export async function* resolveDomain(domain: string, options?: { manifestProxy?:
                 },
                 requiredConfig: [], // Note: Complex config not supported in simple inline profiles
             };
-
-            if (isLocal) {
-                if (!parts['pkg-id'] || !parts['pkg-mgr']) {
-                     throw new Error('Local inline profile is missing required fields (pkg-id, pkg-mgr).');
-                }
-                implementation.execution.command = parts.cmd || parts['pkg-mgr'];
-                implementation.execution.args = parts.args ? parts.args.split(' ') : [parts['pkg-id']];
-                (implementation as any).package = { // This is for display consistency, not a full PackageConfig
-                    manager: parts['pkg-mgr'],
-                    identifier: parts['pkg-id'],
-                };
-                implementation.tags?.push(parts['pkg-mgr']);
-            } else {
-                 if (!parts.uri) {
-                    throw new Error('Remote inline profile is missing required field (uri).');
-                }
-                implementation.execution.uri = parts.uri;
-            }
             
             implementation.tags?.push(implementation.protocol);
             yield { type: 'actionable_profile', data: { implementations: [implementation], domain: domain } };

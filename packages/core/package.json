@@ -23,13 +23,19 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "build:examples": "ts-node scripts/build-examples.ts"
+    "build:examples": "ts-node scripts/build-examples.ts",
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "schema:generate": "ts-node ./scripts/generate-schema.ts"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "zod-to-json-schema": "^3.24.5"
   },
   "dependencies": {
-    "zod": "^3.22.4"
-  }
-} 
+    "zod": "^3.25.67"
+  },
+  "keywords": [],
+  "author": ""
+}
