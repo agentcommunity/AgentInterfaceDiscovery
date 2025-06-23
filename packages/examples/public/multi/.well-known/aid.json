@@ -10,7 +10,7 @@
       "type": "remote",
       "name": "US-West Datacenter",
       "protocol": "mcp",
-      "uri": "https://api.us-west.multi.agentcommunity.org/v1",
+      "uri": "https://api.us-west.multi.aid.agentcommunity.org/v1",
       "authentication": {
         "scheme": "pat",
         "description": "API Key for US-West region.",
@@ -25,7 +25,7 @@
       "type": "remote",
       "name": "EU-Central Datacenter",
       "protocol": "mcp",
-      "uri": "https://api.eu-central.multi.agentcommunity.org/v1",
+      "uri": "https://api.eu-central.multi.aid.agentcommunity.org/v1",
       "authentication": {
         "scheme": "pat",
         "description": "API Key for EU-Central region.",

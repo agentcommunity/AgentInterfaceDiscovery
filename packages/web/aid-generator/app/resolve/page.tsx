@@ -39,6 +39,7 @@ function ResolverPageContent() {
         setFinalDomain(null);
         setFinalManifest(null);
         setFinalImplementations(null);
+        setIsStreaming(false);
     };
 
     const processStream = async (domain: string) => {

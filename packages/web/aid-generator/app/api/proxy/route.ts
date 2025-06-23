@@ -5,14 +5,26 @@ import { buildManifest, AidGeneratorConfig } from '@aid/core';
 
 // These are the special domains for our examples that rely on Vercel rewrites.
 const exampleDomains = [
-    'auth0.aid.agentcommunity.org',
-    'edge-case.aid.agentcommunity.org',
+    'auth0.agentdomain.xyz',
+    'edge.aid.agentcommunity.org',
     'landing-mcp.aid.agentcommunity.org',
     'mixed.aid.agentcommunity.org',
     'multi.aid.agentcommunity.org',
     'simple.aid.agentcommunity.org',
-    'agentcommunity.org' // Added for the landing-mcp case
+    'supabase.agentdomain.xyz',
+    'agentcommunity.org' // This maps to the landing-mcp example
 ];
+
+const domainToFileMap: Record<string, string> = {
+    'auth0.agentdomain.xyz': 'auth0',
+    'edge.aid.agentcommunity.org': 'edge-case',
+    'landing-mcp.aid.agentcommunity.org': 'landing-mcp',
+    'mixed.aid.agentcommunity.org': 'mixed',
+    'multi.aid.agentcommunity.org': 'multi',
+    'simple.aid.agentcommunity.org': 'simple',
+    'supabase.agentdomain.xyz': 'supabase',
+    'agentcommunity.org': 'landing-mcp',
+};
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -36,10 +48,9 @@ export async function GET(request: NextRequest) {
   // on-the-fly from the local generator config files in `/public/samples`.
   // This avoids the Vercel "hairpinning" issue while keeping the files where the UI expects them.
   if (exampleDomains.includes(urlHost)) {
-    let domainName = urlHost.split('.')[0];
-    // Special case for the root domain which maps to the landing-mcp example
-    if (urlHost === 'agentcommunity.org') {
-      domainName = 'landing-mcp';
+    const domainName = domainToFileMap[urlHost];
+    if (!domainName) {
+         return NextResponse.json({ error: `Could not map host ${urlHost} to a sample file.` }, { status: 500 });
     }
     
     // Next.js bundles the `public` directory, making it available at the root of the server.

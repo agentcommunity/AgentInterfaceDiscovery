@@ -1,1 +1,1 @@
-_agent.multi.agentcommunity.org. 3600 IN TXT "v=aid1;uri=https://api.us-west.multi.agentcommunity.org/v1;proto=mcp;auth=pat;config=https://multi.agentcommunity.org/.well-known/aid.json"
+_agent.multi.aid.agentcommunity.org. 3600 IN TXT "v=aid1;uri=https://api.us-west.multi.aid.agentcommunity.org/v1;proto=mcp;auth=pat;config=https://multi.aid.agentcommunity.org/.well-known/aid.json"

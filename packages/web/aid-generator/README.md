@@ -21,31 +21,7 @@ The new architecture is built around a **single source of truth for form state**
 
 ### Data Flow
 
-This diagram illustrates how data moves from the raw example files to the reactive UI:
-
-```mermaid
-graph TD;
-    subgraph "Local Development Setup"
-        A["Developer edits raw config<br/>(e.g., /examples/simple.json)"] --> B{"pnpm build:examples"};
-        B --> C["Script copies raw config to<br/>/web/public/samples/"];
-    end
-
-    subgraph "Web UI: Generator"
-        D["SampleLoader Dropdown"] -->|loads config into| E["<b>GeneratorFormProvider</b><br/>(Central React Hook Form state)"];
-        C -->|is loaded by| D;
-        E <--> F["Form Components<br/>(e.g., ServiceSection, etc.)"];
-        G["OutputPanel Component"] -- "watches form state" --> E;
-        G -- "calls" --> H["@aid/core/browser<br/>(buildManifest, buildTxtRecord)"];
-        G --> I["Live Manifest Output"];
-        G --> J["Live DNS Record Output"];
-        G --> K["Live Validation Errors"];
-    end
-
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style B fill:#ccf,stroke:#333,stroke-width:2px
-    style E fill:#cfc,stroke:#333,stroke-width:2px
-    classDef default fill:#fff,stroke:#333,stroke-width:2px;
-```
+The sample configuration files in `/public/samples` are the single source of truth for all examples. The `SampleLoader` component reads the `index.json` in that directory and fetches the corresponding JSON file when a user selects an example from the dropdown. The loaded configuration is then passed directly into the `react-hook-form` provider to populate the UI.
 
 ## 🔧 Core Components
 

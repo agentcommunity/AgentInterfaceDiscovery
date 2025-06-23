@@ -78,8 +78,8 @@ export const authConfigSchema = z.discriminatedUnion("scheme", [
 
 // A non-recursive version for use in platformOverrides
 const osExecutionSchema = z.object({
-  command: z.string().min(1, "Command is required"),
-  args: z.array(z.string()),
+  command: z.string().min(1, "Command is required").optional(),
+  args: z.array(z.string()).optional(),
 });
 
 export const executionConfigSchema: z.ZodType<ExecutionConfig> = z.object({

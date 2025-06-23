@@ -78,10 +78,10 @@ To make changes to the AID manifest structure, follow this workflow:
 -   `pnpm install`: Install all dependencies.
 -   `pnpm build`: Build all packages in the monorepo.
 -   `pnpm -F @aid/core run schema:generate`: Regenerate the canonical JSON schema.
--   `pnpm -F @aid/core run build:examples`: Update the web UI samples from the [`packages/examples`](./packages/examples) directory.
+-   `pnpm -F @aid/core run build:examples`: Generate the hosted example artifacts (`aid.json`, `aid.txt`) in `packages/examples/public/` using the configs from the web UI's samples directory as the source of truth.
 -   `pnpm -F aid-generator dev`: Run the web UI in development mode.
 
-The `build:examples` script is critical for the web UI. It reads all configs from [`/packages/examples`](./packages/examples), cleans them, and generates an `index.json`. The web UI dynamically fetches this index to populate its "Load Sample" dropdown, ensuring the examples are always in sync with the canonical configurations.
+The `build:examples` script is used to generate the publicly hosted manifests that are used for testing the resolver. It reads all configurations from `packages/web/aid-generator/public/samples`, resolves any template variables, and writes the final `aid.json` and `aid.txt` files to `packages/examples/public/`. This ensures our hosted examples are always in sync with the samples used in the web UI.
 
 ## Web UI (`packages/web/aid-generator`)
 
@@ -177,19 +177,18 @@ _agent.domain.com. 3600 IN TXT "v=aid1;config=https://domain.com/.well-known/aid
 
 ### 3. Multi-Platform Support
 
-Note how the `platformOverrides` keys are `windows`, `linux`, and `macos` as per the spec.
+Note how the `platformOverrides` keys are `windows`, `linux`, and `macos` as per the spec. Partial overrides are supported; for instance, you can override just the `command` for one OS while inheriting the `args`.
 
 ```json
 {
   "implementations": [{
     "type": "local",
     "execution": {
-      "command": "python",
+      "command": "python3",
       "args": ["-m", "mypackage"],
       "platformOverrides": {
         "windows": {
-          "command": "python.exe",
-          "args": ["-m", "mypackage"]
+          "command": "python.exe"
         }
       }
     }

@@ -1,18 +1,18 @@
 {
   "schemaVersion": "1",
   "serviceName": "Edge Case Service",
-  "domain": "edge.agentcommunity.org",
+  "domain": "edge.aid.agentcommunity.org",
   "env": "staging",
   "metadata": {
     "documentation": "https://docs.agentcommunity.org/specs/aid/spec-v1/",
-    "revocationURL": "https://api.edge.agentcommunity.org/revoke"
+    "revocationURL": "https://api.edge.aid.agentcommunity.org/revoke"
   },
   "implementations": [
     {
       "type": "remote",
       "name": "Secure API",
       "protocol": "mcp",
-      "uri": "https://api.edge.agentcommunity.org/v2",
+      "uri": "https://api.edge.aid.agentcommunity.org/v2",
       "authentication": {
         "scheme": "mtls",
         "description": "Requires client certificate for authentication."
@@ -22,7 +22,7 @@
         "enrollmentEndpoint": "https://api.edge.agentcommunity.org/v2/enroll"
       },
       "status": "active",
-      "revocationURL": "https://api.edge.agentcommunity.org/v2/revoke-impl"
+      "revocationURL": "https://api.edge.aid.agentcommunity.org/v2/revoke-impl"
     },
     {
       "type": "local",
@@ -38,8 +38,7 @@
         "args": ["-m", "edge_admin_tool"],
         "platformOverrides": {
           "windows": {
-            "command": "edge-admin-tool.exe",
-            "args": []
+            "command": "edge-admin-tool.exe"
           }
         }
       },
@@ -48,4 +47,4 @@
       }
     }
   ]
-} 
+}

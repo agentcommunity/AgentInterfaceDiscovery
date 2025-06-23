@@ -39,9 +39,9 @@ export interface ActionableImplementation {
       args?: string[];
       /** For 'local' implementations: OS-specific execution overrides. */
       platformOverrides?: {
-        windows?: { command: string; args: string[]; };
-        linux?: { command: string; args: string[]; };
-        macos?: { command: string; args: string[]; };
+        windows?: Partial<{ command: string; args: string[] }>;
+        linux?: Partial<{ command: string; args: string[] }>;
+        macos?: Partial<{ command: string; args: string[] }>;
       };
     };
   

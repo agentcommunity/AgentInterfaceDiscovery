@@ -67,6 +67,21 @@ export interface ActionableImplementation {
         command?: string;
         /** For 'local' implementations: the arguments for the command. */
         args?: string[];
+        /** For 'local' implementations: OS-specific execution overrides. */
+        platformOverrides?: {
+            windows?: Partial<{
+                command: string;
+                args: string[];
+            }>;
+            linux?: Partial<{
+                command: string;
+                args: string[];
+            }>;
+            macos?: Partial<{
+                command: string;
+                args: string[];
+            }>;
+        };
     };
     /** Instructions on how the client should handle authentication. */
     auth: {

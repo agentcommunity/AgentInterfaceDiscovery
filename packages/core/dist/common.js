@@ -34,13 +34,39 @@ function buildManifest(cfg) {
         schemaVersion: manifest.schemaVersion,
         implementations: manifest.implementations,
     };
-    // Clean away any undefined keys before returning
-    Object.keys(orderedManifest).forEach(key => {
-        if (orderedManifest[key] === undefined) {
-            delete orderedManifest[key];
+    // Recursively clean the object to remove empty/null values
+    const cleanedManifest = removeEmptyKeys(orderedManifest);
+    return cleanedManifest;
+}
+/**
+ * Recursively removes keys from an object if their value is null, undefined,
+ * an empty string, or an empty array.
+ * @param obj The object to clean.
+ * @returns A new object with empty keys removed.
+ */
+function removeEmptyKeys(obj) {
+    if (obj === null || obj === undefined) {
+        return undefined;
+    }
+    if (Array.isArray(obj)) {
+        const newArr = obj.map(removeEmptyKeys).filter(item => item !== undefined);
+        return newArr.length > 0 ? newArr : undefined;
+    }
+    if (typeof obj === 'object') {
+        const newObj = {};
+        for (const key in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                const cleanedValue = removeEmptyKeys(obj[key]);
+                const isEmptyArray = Array.isArray(cleanedValue) && cleanedValue.length === 0;
+                const isEmptyString = typeof cleanedValue === 'string' && cleanedValue.trim() === '';
+                if (cleanedValue !== undefined && !isEmptyArray && !isEmptyString) {
+                    newObj[key] = cleanedValue;
+                }
+            }
         }
-    });
-    return orderedManifest;
+        return Object.keys(newObj).length > 0 ? newObj : undefined;
+    }
+    return obj;
 }
 /* --------------------------------------------------------------- *
  * 2. Build the DNS TXT record                                      *

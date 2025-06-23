@@ -15,7 +15,7 @@
       "has": [
         {
           "type": "host",
-          "value": "edge.agentcommunity.org"
+          "value": "edge.aid.agentcommunity.org"
         }
       ],
       "destination": "/edge-case/.well-known/aid.json"
@@ -35,7 +35,7 @@
       "has": [
         {
           "type": "host",
-          "value": "mixed.agentcommunity.org"
+          "value": "mixed.aid.agentcommunity.org"
         }
       ],
       "destination": "/mixed/.well-known/aid.json"
@@ -45,7 +45,7 @@
       "has": [
         {
           "type": "host",
-          "value": "multi.agentcommunity.org"
+          "value": "multi.aid.agentcommunity.org"
         }
       ],
       "destination": "/multi/.well-known/aid.json"

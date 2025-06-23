@@ -27,14 +27,20 @@ export type AidManifest = z.infer<typeof aidManifestSchema>;
  *    Implementation-level Types                                    *
  * ------------------------------------------------------------------ */
 
+// Manually define a platform-specific override type
+export interface ExecutionPlatformOverride {
+  command?: string;
+  args?: string[];
+}
+
 // Manually define ExecutionConfig to solve circular dependency with its own schema
 export interface ExecutionConfig {
   command: string;
   args: string[];
   platformOverrides?: {
-    windows?: Omit<ExecutionConfig, "platformOverrides">;
-    linux?: Omit<ExecutionConfig, "platformOverrides">;
-    macos?: Omit<ExecutionConfig, "platformOverrides">;
+    windows?: ExecutionPlatformOverride;
+    linux?: ExecutionPlatformOverride;
+    macos?: ExecutionPlatformOverride;
   };
 }
 
