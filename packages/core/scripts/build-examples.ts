@@ -4,6 +4,7 @@ import { AidGeneratorConfig, ImplementationConfig, buildManifest, buildTxtRecord
 
 const examplesDir = path.resolve(__dirname, "../../../packages/examples");
 const webSamplesDir = path.resolve(__dirname, "../../../packages/web/aid-generator/public/samples");
+const webManifestsDir = path.resolve(__dirname, "../../../packages/web/aid-generator/prebuilt-manifests");
 const CORE_EXAMPLES = ['simple', 'multi', 'edge-case', 'mixed'];
 
 interface VercelRewrite {
@@ -12,11 +13,13 @@ interface VercelRewrite {
   destination: string;
 }
 
-async function prepareWebSamplesDir() {
-  console.log(`\nPreparing web samples directory: ${webSamplesDir}`);
+async function prepareWebDirs() {
+  console.log(`\nPreparing web directories...`);
   await fs.rm(webSamplesDir, { recursive: true, force: true });
+  await fs.rm(webManifestsDir, { recursive: true, force: true });
   await fs.mkdir(webSamplesDir, { recursive: true });
-  console.log("  ✓ Cleared and recreated web samples directory.");
+  await fs.mkdir(webManifestsDir, { recursive: true });
+  console.log("  ✓ Cleared and recreated web directories.");
 
   // Create the "Empty" template
   const emptyTemplate = {
@@ -59,7 +62,7 @@ async function buildExamples() {
   const processedConfigs = new Map<string, AidGeneratorConfig>();
 
   try {
-    await prepareWebSamplesDir();
+    await prepareWebDirs();
 
     const exampleDirs = await fs.readdir(examplesDir, { withFileTypes: true });
     console.log(`\nFound ${exampleDirs.length} potential examples. Building...`);
@@ -155,6 +158,10 @@ async function buildExamples() {
       await fs.writeFile(path.join(manifestOutDir, "aid.json"), JSON.stringify(manifest, null, 2), "utf-8");
       await fs.writeFile(path.join(publicOutDir, "aid.txt"), txtRecord + "\n", "utf-8");
 
+      // Also write the final manifest to a location the web proxy can access directly
+      const webManifestPath = path.join(webManifestsDir, `${exampleName}.json`);
+      await fs.writeFile(webManifestPath, JSON.stringify(manifest, null, 2), "utf-8");
+      
       console.log(`  ✓ Wrote manifest and TXT record for ${exampleName}`);
 
       // Add rewrite rule for Vercel, skipping the main landing page
