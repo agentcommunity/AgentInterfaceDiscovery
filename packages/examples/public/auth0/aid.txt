@@ -1,1 +1,1 @@
-_agent.auth0.aid.agentcommunity.org. 3600 IN TXT "v=aid1;config=https://auth0.aid.agentcommunity.org/.well-known/aid.json"
+_agent.auth0.agentdomain.xyz. 3600 IN TXT "v=aid1;config=https://auth0.agentdomain.xyz/.well-known/aid.json"

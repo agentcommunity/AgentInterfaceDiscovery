@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1",
+  "serviceName": "Supabase MCP",
+  "domain": "supabase.agentdomain.xyz",
+  "metadata": {
+    "documentation": "https://supabase.com/docs/guides/getting-started/mcp?queryGroups=os&os=mac"
+  },
+  "implementations": [
+    {
+      "type": "local",
+      "name": "Supabase MCP Server",
+      "tags": ["cli", "database"],
+      "protocol": "mcp",
+      "package": {
+        "manager": "npx",
+        "identifier": "@supabase/mcp-server-supabase@latest"
+      },
+      "execution": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@supabase/mcp-server-supabase@latest",
+          "--read-only",
+          "--project-ref",
+          "${config.SUPABASE_PROJECT_REF}"
+        ]
+      },
+      "authentication": {
+        "scheme": "pat",
+        "description": "Supabase Personal Access Token. The client must set this as the SUPABASE_ACCESS_TOKEN environment variable for the execution.",
+        "tokenUrl": "https://supabase.com/dashboard/account/tokens",
+        "credentials": [
+          {
+            "key": "SUPABASE_ACCESS_TOKEN",
+            "description": "Supabase Personal Access Token"
+          }
+        ]
+      },
+      "configuration": [
+        {
+          "key": "SUPABASE_PROJECT_REF",
+          "description": "The project reference for your Supabase project (e.g., abcdefghijklmnopqrst).",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+} 

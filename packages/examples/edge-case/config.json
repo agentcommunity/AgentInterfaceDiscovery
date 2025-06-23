@@ -4,7 +4,7 @@
   "domain": "edge.agentcommunity.org",
   "env": "staging",
   "metadata": {
-    "documentation": "https://agentcommunity.org/docs/edge",
+    "documentation": "https://docs.agentcommunity.org/specs/aid/spec-v1/",
     "revocationURL": "https://api.edge.agentcommunity.org/revoke"
   },
   "implementations": [

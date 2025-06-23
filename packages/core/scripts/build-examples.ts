@@ -4,8 +4,8 @@ import { AidGeneratorConfig, ImplementationConfig, buildManifest, buildTxtRecord
 
 const examplesDir = path.resolve(__dirname, "../../../packages/examples");
 const webSamplesDir = path.resolve(__dirname, "../../../packages/web/aid-generator/public/samples");
-const webManifestsDir = path.resolve(__dirname, "../../../packages/web/aid-generator/prebuilt-manifests");
 const CORE_EXAMPLES = ['simple', 'multi', 'edge-case', 'mixed'];
+const REAL_WORLD_EXAMPLES = ['auth0', 'supabase'];
 
 interface VercelRewrite {
   source: string;
@@ -16,9 +16,7 @@ interface VercelRewrite {
 async function prepareWebDirs() {
   console.log(`\nPreparing web directories...`);
   await fs.rm(webSamplesDir, { recursive: true, force: true });
-  await fs.rm(webManifestsDir, { recursive: true, force: true });
   await fs.mkdir(webSamplesDir, { recursive: true });
-  await fs.mkdir(webManifestsDir, { recursive: true });
   console.log("  ✓ Cleared and recreated web directories.");
 
   // Create the "Empty" template
@@ -37,17 +35,59 @@ async function prepareWebDirs() {
   console.log("  ✓ Created empty.json template.");
 }
 
+const CATEGORY_ORDER = [
+  "Empty",
+  "Basic Examples",
+  "Fully Spec Compliant",
+  "Real World Examples (by us)",
+];
+
+const KNOWN_EXAMPLE_CATEGORIES: { [key: string]: string } = {
+  'empty': 'Empty',
+  'simple': 'Basic Examples',
+  'edge-case': 'Basic Examples',
+  'mixed': 'Basic Examples',
+  'multi': 'Basic Examples',
+  'landing-mcp': 'Fully Spec Compliant',
+  'auth0': 'Real World Examples (by us)',
+  'supabase': 'Real World Examples (by us)',
+};
+
+const BASIC_EXAMPLE_ORDER = ['Simple', 'Mixed', 'Multi', 'Edge Case'];
+
 async function writeSamplesIndex(sampleDir: string) {
   const files = await fs.readdir(sampleDir);
   const sampleIndex = files
     .filter(file => file.endsWith('.json') && file !== 'index.json')
     .map(file => {
-      // Create a more friendly name from the filename
-      const name = path.basename(file, '.json')
-        .replace(/-/g, ' ')
-        .replace(/\b\w/g, l => l.toUpperCase());
-      return { name, path: file };
+      const fileName = path.basename(file, '.json');
+      const name = fileName === 'landing-mcp' 
+        ? 'Agentcommunity Landing'
+        : fileName === 'empty'
+        ? 'Empty Config'
+        : fileName
+          .replace(/-/g, ' ')
+          .replace(/\b\w/g, l => l.toUpperCase());
+      
+      const category = KNOWN_EXAMPLE_CATEGORIES[fileName] || 'Real World Examples (by us)';
+
+      return { name, path: file, category };
     });
+  
+  sampleIndex.sort((a, b) => {
+    const categoryAIndex = CATEGORY_ORDER.indexOf(a.category);
+    const categoryBIndex = CATEGORY_ORDER.indexOf(b.category);
+
+    if (categoryAIndex !== categoryBIndex) {
+      return categoryAIndex - categoryBIndex;
+    }
+
+    if (a.category === 'Basic Examples') {
+      return BASIC_EXAMPLE_ORDER.indexOf(a.name) - BASIC_EXAMPLE_ORDER.indexOf(b.name);
+    }
+
+    return a.name.localeCompare(b.name);
+  });
   
   await fs.writeFile(
     path.join(sampleDir, "index.json"),
@@ -101,7 +141,9 @@ async function buildExamples() {
         console.log(`  ✓ Wrote cleaned sample to ${webSamplePath}`);
         
         let newDomain: string;
-        if (exampleName === "landing-mcp") {
+        if (REAL_WORLD_EXAMPLES.includes(exampleName)) {
+          newDomain = `${exampleName}.agentdomain.xyz`;
+        } else if (exampleName === "landing-mcp") {
           newDomain = "agentcommunity.org";
         } else {
           newDomain = `${exampleName}.aid.agentcommunity.org`;
@@ -159,7 +201,7 @@ async function buildExamples() {
       await fs.writeFile(path.join(publicOutDir, "aid.txt"), txtRecord + "\n", "utf-8");
 
       // Also write the final manifest to a location the web proxy can access directly
-      const webManifestPath = path.join(webManifestsDir, `${exampleName}.json`);
+      const webManifestPath = path.join(webSamplesDir, `${exampleName}.json`);
       await fs.writeFile(webManifestPath, JSON.stringify(manifest, null, 2), "utf-8");
       
       console.log(`  ✓ Wrote manifest and TXT record for ${exampleName}`);

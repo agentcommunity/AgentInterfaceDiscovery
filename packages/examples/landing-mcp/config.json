@@ -3,7 +3,7 @@
     "serviceName": "Agent Community Hub",
     "domain": "agentcommunity.org",
     "metadata": {
-      "documentation": "https://agentcommunity.org/docs"
+      "documentation": "https://docs.agentcommunity.org/specs/aid/spec-v1/"
     },
     "implementations": [
       {

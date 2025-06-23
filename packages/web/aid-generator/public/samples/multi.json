@@ -1,16 +1,16 @@
 {
-  "schemaVersion": "1",
-  "serviceName": "Multi-Region API",
-  "domain": "multi.agentcommunity.org",
+  "name": "Multi-Region API",
   "metadata": {
-    "documentation": "https://agentcommunity.org/docs/multi"
+    "contentVersion": "2025-06-23",
+    "documentation": "https://docs.agentcommunity.org/specs/aid/spec-v1/"
   },
+  "schemaVersion": "1",
   "implementations": [
     {
       "type": "remote",
       "name": "US-West Datacenter",
       "protocol": "mcp",
-      "uri": "https://api.us-west.multi.agentcommunity.org/v1",
+      "uri": "https://api.us-west.multi.aid.agentcommunity.org/v1",
       "authentication": {
         "scheme": "pat",
         "description": "API Key for US-West region.",
@@ -25,7 +25,7 @@
       "type": "remote",
       "name": "EU-Central Datacenter",
       "protocol": "mcp",
-      "uri": "https://api.eu-central.multi.agentcommunity.org/v1",
+      "uri": "https://api.eu-central.multi.aid.agentcommunity.org/v1",
       "authentication": {
         "scheme": "pat",
         "description": "API Key for EU-Central region.",

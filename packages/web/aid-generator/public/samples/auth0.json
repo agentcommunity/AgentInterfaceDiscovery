@@ -1,11 +1,10 @@
 {
-  "schemaVersion": "1",
-  "serviceName": "Auth0 MCP Server",
-  "domain": "auth0.agentcommunity.org",
+  "name": "Auth0 MCP Server",
   "metadata": {
-    "documentation": "https://github.com/auth0/auth0-mcp-server",
-    "contentVersion": "2025-06-18"
+    "contentVersion": "2025-06-18",
+    "documentation": "https://github.com/auth0/auth0-mcp-server"
   },
+  "schemaVersion": "1",
   "implementations": [
     {
       "type": "local",

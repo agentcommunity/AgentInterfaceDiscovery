@@ -5,7 +5,7 @@
       "has": [
         {
           "type": "host",
-          "value": "auth0.aid.agentcommunity.org"
+          "value": "auth0.agentdomain.xyz"
         }
       ],
       "destination": "/auth0/.well-known/aid.json"
@@ -49,6 +49,16 @@
         }
       ],
       "destination": "/simple/.well-known/aid.json"
+    },
+    {
+      "source": "/.well-known/aid.json",
+      "has": [
+        {
+          "type": "host",
+          "value": "supabase.agentdomain.xyz"
+        }
+      ],
+      "destination": "/supabase/.well-known/aid.json"
     }
   ]
 }

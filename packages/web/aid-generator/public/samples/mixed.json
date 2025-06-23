@@ -1,16 +1,16 @@
 {
-  "schemaVersion": "1",
-  "serviceName": "Mixed Mode Service",
-  "domain": "mixed.agentcommunity.org",
+  "name": "Mixed Mode Service",
   "metadata": {
-    "documentation": "https://agentcommunity.org/docs/mixed"
+    "contentVersion": "2025-06-23",
+    "documentation": "https://docs.agentcommunity.org/specs/aid/spec-v1/"
   },
+  "schemaVersion": "1",
   "implementations": [
     {
       "type": "remote",
       "name": "Cloud API",
       "protocol": "mcp",
-      "uri": "https://api.mixed.agentcommunity.org/v1",
+      "uri": "https://api.mixed.aid.agentcommunity.org/v1",
       "authentication": {
         "scheme": "pat",
         "description": "API Key for the cloud service.",

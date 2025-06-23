@@ -3,7 +3,7 @@
   "serviceName": "Mixed Mode Service",
   "domain": "mixed.agentcommunity.org",
   "metadata": {
-    "documentation": "https://agentcommunity.org/docs/mixed"
+    "documentation": "https://docs.agentcommunity.org/specs/aid/spec-v1/"
   },
   "implementations": [
     {

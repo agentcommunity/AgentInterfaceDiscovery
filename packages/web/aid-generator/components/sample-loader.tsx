@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -17,6 +17,7 @@ import type { AidGeneratorConfig } from "@aid/core"
 interface SampleInfo {
   name: string;
   path: string;
+  category: string;
 }
 
 interface SampleLoaderProps {
@@ -87,11 +88,29 @@ export function SampleLoader({ onLoadSample }: SampleLoaderProps) {
           <>
             <DropdownMenuLabel>Select a sample to load</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {samples.map((sample) => (
-              <DropdownMenuItem key={sample.path} onClick={() => handleSelectSample(sample.path)}>
-                {sample.name}
-              </DropdownMenuItem>
-            ))}
+            {(() => {
+              const elements: React.ReactNode[] = [];
+              let lastCategory: string | null = null;
+              samples.forEach((sample) => {
+                if (sample.category !== lastCategory) {
+                  if (elements.length > 0) {
+                    elements.push(<DropdownMenuSeparator key={`sep-${sample.category}`} />);
+                  }
+                  elements.push(
+                    <DropdownMenuLabel key={sample.category} className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">
+                      {sample.category}
+                    </DropdownMenuLabel>
+                  );
+                  lastCategory = sample.category;
+                }
+                elements.push(
+                  <DropdownMenuItem key={sample.path} onClick={() => handleSelectSample(sample.path)}>
+                    {sample.name}
+                  </DropdownMenuItem>
+                );
+              });
+              return elements;
+            })()}
           </>
         )}
       </DropdownMenuContent>

@@ -1,30 +1,42 @@
 [
   {
-    "name": "Auth0",
-    "path": "auth0.json"
-  },
-  {
-    "name": "Edge Case",
-    "path": "edge-case.json"
-  },
-  {
-    "name": "Empty",
-    "path": "empty.json"
-  },
-  {
-    "name": "Landing Mcp",
-    "path": "landing-mcp.json"
-  },
-  {
-    "name": "Mixed",
-    "path": "mixed.json"
-  },
-  {
-    "name": "Multi",
-    "path": "multi.json"
+    "name": "Empty Config",
+    "path": "empty.json",
+    "category": "Empty"
   },
   {
     "name": "Simple",
-    "path": "simple.json"
+    "path": "simple.json",
+    "category": "Basic Examples"
+  },
+  {
+    "name": "Mixed",
+    "path": "mixed.json",
+    "category": "Basic Examples"
+  },
+  {
+    "name": "Multi",
+    "path": "multi.json",
+    "category": "Basic Examples"
+  },
+  {
+    "name": "Edge Case",
+    "path": "edge-case.json",
+    "category": "Basic Examples"
+  },
+  {
+    "name": "Agentcommunity Landing",
+    "path": "landing-mcp.json",
+    "category": "Fully Spec Compliant"
+  },
+  {
+    "name": "Auth0",
+    "path": "auth0.json",
+    "category": "Real World Examples (by us)"
+  },
+  {
+    "name": "Supabase",
+    "path": "supabase.json",
+    "category": "Real World Examples (by us)"
   }
 ]

@@ -1,0 +1,1 @@
+_agent.supabase.agentdomain.xyz. 3600 IN TXT "v=aid1;config=https://supabase.agentdomain.xyz/.well-known/aid.json"

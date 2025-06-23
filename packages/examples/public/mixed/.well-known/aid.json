@@ -2,7 +2,7 @@
   "name": "Mixed Mode Service",
   "metadata": {
     "contentVersion": "2025-06-23",
-    "documentation": "https://agentcommunity.org/docs/mixed"
+    "documentation": "https://docs.agentcommunity.org/specs/aid/spec-v1/"
   },
   "schemaVersion": "1",
   "implementations": [
