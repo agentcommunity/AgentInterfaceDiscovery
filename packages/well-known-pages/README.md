@@ -2,6 +2,8 @@
 
 This package hosts `aid.txt` and `.well-known/aid.json` files for various services. It's designed to be deployed to Vercel and uses hostname-based routing to serve the correct files for each service's subdomain.
 
+These domains are not auto updated (yet) via script.
+
 ## Deployment to Vercel
 
 1.  **Create a new Vercel Project:**
