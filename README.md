@@ -276,3 +276,11 @@ Hint: the example files under `packages/examples/public/**/aid.txt` are DNS TXT 
 ## License
 
 [MIT](./LICENSE)
+
+## Validation
+
+The new /validate page provides a way to validate AID manifests against the canonical specification. This is useful for ensuring that your AID artifacts are compliant with the AID v1 specification.
+
+To use the validation feature, you can use the `aid-validate` command-line tool. This tool allows you to validate either an AID manifest or a pair of a generator configuration and an AID manifest.
+
+For more details on how to use the validation feature and the conformance CLI, please see the [conformance package's dedicated README](./packages/conformance/README.md).

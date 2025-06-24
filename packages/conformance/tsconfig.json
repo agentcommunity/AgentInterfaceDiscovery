@@ -14,9 +14,12 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "rootDir": ".",
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    "paths": {
+      "@aid/core/browser": ["../core/src/browser.ts"]
+    }
   },
-  "include": ["src", "tests"],
+  "include": ["src", "tests", "typings"],
   "references": [
     { "path": "../core" }
   ]

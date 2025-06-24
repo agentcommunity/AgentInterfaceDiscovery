@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateManifest = validateManifest;
 exports.validateTxt = validateTxt;
 exports.validatePair = validatePair;
-const core_1 = require("@aid/core");
+const browser_1 = require("@aid/core/browser");
 /**
  * Validates a raw JavaScript object against the canonical AID manifest schema.
  *
@@ -16,7 +16,7 @@ const core_1 = require("@aid/core");
  */
 function validateManifest(raw) {
     // Use .strict() to ensure no unknown keys are present at the top level.
-    const result = core_1.aidManifestSchema.strict().safeParse(raw);
+    const result = browser_1.aidManifestSchema.strict().safeParse(raw);
     if (result.success) {
         // The schema already validates schemaVersion is "1" via z.literal("1")
         return { ok: true };
@@ -74,7 +74,7 @@ function validateTxt(txt) {
  * @returns A `ValidationResult` object indicating whether the two are in sync.
  */
 function validatePair(cfg, manifest, opts = { strict: true }) {
-    const generatedManifest = (0, core_1.buildManifest)(cfg);
+    const generatedManifest = (0, browser_1.buildManifest)(cfg);
     // For non-strict checks, we can attempt to strip unknown keys from the
     // provided manifest before comparison, but a simple deep equal is often
     // sufficient if we assume the generated one is the source of truth.
@@ -84,7 +84,7 @@ function validatePair(cfg, manifest, opts = { strict: true }) {
     if (!opts.strict) {
         // In non-strict mode, we parse the user's manifest to strip any keys
         // not in the schema. This allows vendors to add their own metadata.
-        const parseResult = core_1.aidManifestSchema.safeParse(manifest);
+        const parseResult = browser_1.aidManifestSchema.safeParse(manifest);
         if (!parseResult.success) {
             return {
                 ok: false,

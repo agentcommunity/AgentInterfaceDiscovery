@@ -29,6 +29,12 @@ export function Header() {
           >
             Resolver
           </Link>
+          <Link
+            href="/validate"
+            className={cn(buttonVariants({ variant: pathname === "/validate" ? "secondary" : "ghost" }))}
+          >
+            Validator
+          </Link>
           <a
             href="https://docs.agentcommunity.org/specs/aid/spec-v1/"
             target="_blank"
@@ -36,7 +42,7 @@ export function Header() {
             className={cn(buttonVariants({ variant: "ghost" }), "gap-2")}
           >
             <BookText />
-            Specification
+            Documentation
           </a>
         </nav>
       </div>

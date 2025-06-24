@@ -53,3 +53,17 @@ pnpm -F aid-generator dev
 ## 📄 License
 
 [MIT](../LICENSE)
+
+## Validation
+
+This project includes a standalone validation page to test your AID artifacts.
+
+**URL**: `/validate`
+
+You can use this page to validate:
+- Generator Configs (`aid.config.json`)
+- Manifests (`aid.json`)
+- DNS TXT records
+- A pair of a generator config and a manifest
+
+The page supports drag-and-drop, file browsing, and pasting raw content. It provides instant feedback on the validity of your artifacts.
