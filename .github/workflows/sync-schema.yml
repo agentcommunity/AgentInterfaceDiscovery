@@ -1,40 +1,63 @@
-name: Sync AID Schema to Docs
+name: Sync AID schema into docs repo
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - 'schema/v1/aid.schema.json'
+    tags:
+      - 'v1-*'          # trigger only on version tags like v1-2025-06-19
 
 jobs:
-  sync-schema:
+  copy-and-pr:
     runs-on: ubuntu-latest
+
+    env:
+      TAG_NAME: ${{ github.ref_name }}          # e.g. v1-2025-06-19
+      DOCS_REPO: agentcommunity/docs
+
     steps:
-      - name: Checkout AgentInterfaceDiscovery Repo
-        uses: actions/checkout@v4
-
-      - name: Checkout Docs Repo
+      # 1. Checkout this (schema) repo at the tag
+      - name: Checkout schema repo
         uses: actions/checkout@v4
         with:
-          repository: agentcommunity/docs
-          path: ./docs-repo
-          # A Personal Access Token with repo scope is required
-          # It should be stored as a secret named DOCS_REPO_PAT
+          fetch-depth: 0   # needed so we're exactly on the tag
+
+      # 2. Checkout the docs repo on a throw-away branch
+      - name: Checkout docs repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.DOCS_REPO }}
+          path: docs-repo
           token: ${{ secrets.DOCS_REPO_PAT }}
+          ref: main        # or default branch of docs repo
 
-      - name: Copy Schema to Docs Repo
+      # 3. Copy schema into versioned folder + "latest"
+      - name: Copy schema file
         run: |
-          mkdir -p ./docs-repo/docs/specs/aid
-          cp ./schema/v1/aid.schema.json ./docs-repo/docs/specs/aid/aid.schema.json
-          echo "Schema file copied to docs/docs/specs/aid/aid.schema.json"
+          set -euo pipefail
+          SRC_FILE=./schema/v1/aid.schema.json
+          VERSION_DIR=./docs-repo/docs/specs/aid/${TAG_NAME}
+          LATEST_DIR=./docs-repo/docs/specs/aid/latest
 
-      - name: Commit and Push to Docs Repo
-        uses: stefanzweifel/git-auto-commit-action@v5
+          mkdir -p "${VERSION_DIR}" "${LATEST_DIR}"
+          cp "${SRC_FILE}" "${VERSION_DIR}/aid.schema.json"
+          cp "${SRC_FILE}" "${LATEST_DIR}/aid.schema.json"
+
+      # 4. Create PR in docs repo
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v6
         with:
-          repository: ./docs-repo
-          commit_message: "chore(schema): Sync latest aid.schema.json"
-          commit_user_name: "AID Schema Bot"
-          commit_user_email: "actions@github.com"
-          commit_author: "AID Schema Bot <actions@github.com>"
-          push_options: '--force' # Use force push if you want to overwrite history, otherwise remove. For this use-case it might be okay. 
+          path: docs-repo
+          token: ${{ secrets.DOCS_REPO_PAT }}
+          commit-message: "chore(schema): add AID schema for ${{ env.TAG_NAME }}"
+          branch: "chore/aid-schema-${{ env.TAG_NAME }}"
+          title: "chore(schema): sync schema ${{ env.TAG_NAME }}"
+          body: |
+            This PR copies **aid.schema.json** from the schema repository tag **${{ env.TAG_NAME }}**.
+
+            •  New archival copy: `docs/specs/aid/${{ env.TAG_NAME }}/aid.schema.json`  
+            •  Updated stable copy: `docs/specs/aid/latest/aid.schema.json`
+
+            Merging will keep the docs site in sync with the latest specification.
+
+          labels: automated
+          draft: false       # set to true if you prefer manual review
+          delete-branch: true 
