@@ -43,7 +43,30 @@ function validateManifest(raw) {
  * @returns A `ValidationResult` object.
  */
 function validateTxt(txt) {
-    const fullTxt = Array.isArray(txt) ? txt.join("") : txt;
+    /**
+     * Accept either a bare TXT value (e.g. `v=aid1;proto=mcp`) **or** a full
+     * RFC 1035 zone-file line such as:
+     *   _agent.example.com. 3600 IN TXT "v=aid1;proto=mcp"
+     *   _agent.example.com. 3600 IN TXT ( "v=aid1;proto=mcp" ";uri=https://…" )
+     *
+     * If the input does not start with `v=aid1`, we treat it as a zone-file
+     * representation and try to extract the quoted string(s). This makes the
+     * validator more forgiving and allows people to copy-paste the generator's
+     * full output directly.
+     */
+    let prepared = txt;
+    if (typeof txt === "string" && !txt.trimStart().startsWith("v=aid1")) {
+        // Look for one or more quoted segments. If we find them, we use them as
+        // the actual TXT value(s). Otherwise we leave the original string intact
+        // so that the original "startsWith" check will still fail and report the
+        // correct error message.
+        const matches = [...txt.matchAll(/"([^"\\]*(?:\\.[^"\\]*)*)"/g)].map((m) => m[1]);
+        if (matches.length === 1)
+            prepared = matches[0];
+        if (matches.length > 1)
+            prepared = matches;
+    }
+    const fullTxt = Array.isArray(prepared) ? prepared.join("") : prepared;
     const errors = [];
     const keys = new Set();
     if (!fullTxt.startsWith("v=aid1")) {

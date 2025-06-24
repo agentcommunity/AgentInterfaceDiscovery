@@ -60,10 +60,20 @@ This project includes a standalone validation page to test your AID artifacts.
 
 **URL**: `/validate`
 
-You can use this page to validate:
-- Generator Configs (`aid.config.json`)
-- Manifests (`aid.json`)
-- DNS TXT records
-- A pair of a generator config and a manifest
+What's new (June 2025)
 
-The page supports drag-and-drop, file browsing, and pasting raw content. It provides instant feedback on the validity of your artifacts.
+*  📑 **Tabbed artefact selector** – quickly switch between *Manifest*, *Config*, *DNS TXT*, and *Pair* using a compact tab bar.
+*  ✂️ **Paste-first workflow** – the dialog now opens on the *Paste Content* tab, with context-aware placeholder text (e.g. *"Paste your DNS TXT record here…"*).
+*  📝 **Full zone-file TXT support** – you can paste an entire resource-record line such as  
+   `_agent.example.com. 3600 IN TXT "v=aid1;proto=mcp"` and the validator will automatically extract and validate the quoted TXT value.
+
+You can still validate by uploading a file (small *Upload File(s)* button) or by drag-and-drop.
+
+Supported artefacts:
+
+1. Generator Configs (`aid.config.json`)
+2. Manifests (`aid.json`)
+3. DNS TXT record values **or full zone-file lines**
+4. A pair consisting of a generator config and a manifest
+
+The validator gives instant, inline feedback and shows a prettified error list when something doesn't conform.

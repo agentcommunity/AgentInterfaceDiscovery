@@ -1,7 +1,6 @@
 "use client"
 
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface ArtefactSelectorProps {
   value: string
@@ -10,27 +9,17 @@ interface ArtefactSelectorProps {
 
 export function ArtefactSelector({ value, onChange }: ArtefactSelectorProps) {
   return (
-    <RadioGroup
+    <Tabs
       value={value}
       onValueChange={onChange}
-      className="flex items-center justify-center gap-4 mb-6"
+      className="flex items-center justify-center mb-6"
     >
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="manifest" id="manifest" />
-        <Label htmlFor="manifest">Manifest</Label>
-      </div>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="config" id="config" />
-        <Label htmlFor="config">Generator Config</Label>
-      </div>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="txt" id="txt" />
-        <Label htmlFor="txt">DNS TXT</Label>
-      </div>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="pair" id="pair" />
-        <Label htmlFor="pair">Config + Manifest Pair</Label>
-      </div>
-    </RadioGroup>
+      <TabsList className="grid grid-cols-4 w-fit">
+        <TabsTrigger value="manifest">Manifest</TabsTrigger>
+        <TabsTrigger value="config">Config</TabsTrigger>
+        <TabsTrigger value="txt">DNS&nbsp;TXT</TabsTrigger>
+        <TabsTrigger value="pair">Pair</TabsTrigger>
+      </TabsList>
+    </Tabs>
   )
 } 

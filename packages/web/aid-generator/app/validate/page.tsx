@@ -11,11 +11,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArtefactSelector } from "@/components/validator/ArtefactSelector"
 import { DropZone } from "@/components/validator/DropZone"
 import { ValidationReport } from "@/components/validator/ValidationReport"
-import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import type { ValidationResult } from "@aid/conformance"
 import type { AidGeneratorConfig, AidManifest } from "@aid/core/browser"
+import { EditableCodeblock } from "@/components/validator/EditableCodeblock"
 
 type ArtefactType = "config" | "manifest" | "txt" | "pair"
 
@@ -27,6 +27,33 @@ export default function ValidatePage() {
   const [pastedText, setPastedText] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [validatedContent, setValidatedContent] = useState<string>("")
+
+  const artefactDescriptions: Record<ArtefactType, string> = {
+    manifest: "A generated aid.json manifest that describes your service interface.",
+    config: "The generator's config.json file which you use to produce a manifest.",
+    txt: "The DNS TXT record (aid.txt) that you publish under your domain.",
+    pair: "A config.json and its corresponding aid.json for cross-validation.",
+  }
+
+  const artefactPlaceholders: Record<ArtefactType, string> = {
+    manifest: "Paste your manifest JSON (aid.json) here...",
+    config: "Paste your generator config JSON (config.json) here...",
+    txt: "Paste your DNS TXT record here...",
+    pair: "Paste either your config.json or aid.json content here...",
+  }
+
+  const getDropZoneTitle = (type: Exclude<ArtefactType, "pair">): string => {
+    switch (type) {
+      case "manifest":
+        return "Manifest File (aid.json)"
+      case "config":
+        return "Generator Config (config.json)"
+      case "txt":
+        return "DNS TXT (aid.txt)"
+      default:
+        return "File"
+    }
+  }
 
   const resetState = () => {
     setResult(null)
@@ -122,11 +149,14 @@ export default function ValidatePage() {
             value={artefactType}
             onChange={(v) => handleArtefactChange(v as ArtefactType)}
           />
+          <p className="text-sm text-muted-foreground mb-4 text-center">
+            {artefactDescriptions[artefactType]}
+          </p>
 
-          <Tabs defaultValue="upload" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="upload">Upload File(s)</TabsTrigger>
+          <Tabs defaultValue="paste" className="w-full">
+            <TabsList className="inline-flex space-x-2 mb-4">
               <TabsTrigger value="paste">Paste Content</TabsTrigger>
+              <TabsTrigger value="upload">Upload File(s)</TabsTrigger>
             </TabsList>
             <TabsContent value="upload">
               <div className="mt-4">
@@ -135,7 +165,7 @@ export default function ValidatePage() {
                     <DropZone
                       file={file1}
                       onFileDrop={(f) => handleFileDrop(f, 1)}
-                      title="Generator Config"
+                      title={getDropZoneTitle(artefactType as Exclude<ArtefactType, "pair">)}
                     />
                     <DropZone
                       file={file2}
@@ -144,20 +174,23 @@ export default function ValidatePage() {
                     />
                   </div>
                 ) : (
-                  <DropZone file={file1} onFileDrop={(f) => handleFileDrop(f, 1)} />
+                  <DropZone
+                    file={file1}
+                    onFileDrop={(f) => handleFileDrop(f, 1)}
+                    title={getDropZoneTitle(artefactType as Exclude<ArtefactType, "pair">)}
+                  />
                 )}
               </div>
             </TabsContent>
             <TabsContent value="paste">
               <div className="mt-4">
-                <Textarea
-                  placeholder="Paste your JSON or TXT content here..."
+                <EditableCodeblock
                   value={pastedText}
-                  onChange={(e) => {
+                  onChange={(val) => {
                     resetState()
-                    setPastedText(e.target.value)
+                    setPastedText(val)
                   }}
-                  rows={10}
+                  placeholder={artefactPlaceholders[artefactType]}
                 />
               </div>
             </TabsContent>

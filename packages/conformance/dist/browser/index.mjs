@@ -14,7 +14,15 @@ function validateManifest(raw) {
   };
 }
 function validateTxt(txt) {
-  const fullTxt = Array.isArray(txt) ? txt.join("") : txt;
+  let prepared = txt;
+  if (typeof txt === "string" && !txt.trimStart().startsWith("v=aid1")) {
+    const matches = [...txt.matchAll(/"([^"\\]*(?:\\.[^"\\]*)*)"/g)].map(
+      (m) => m[1]
+    );
+    if (matches.length === 1) prepared = matches[0];
+    if (matches.length > 1) prepared = matches;
+  }
+  const fullTxt = Array.isArray(prepared) ? prepared.join("") : prepared;
   const errors = [];
   const keys = /* @__PURE__ */ new Set();
   if (!fullTxt.startsWith("v=aid1")) {
