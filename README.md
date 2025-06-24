@@ -234,6 +234,45 @@ This implementation strictly follows the [AID v1 specification](https://docs.age
 - ✅ OS-specific execution overrides are supported (`windows`, `linux`, `macos`).
 - ✅ The generated JSON Schema is automatically synced to the public documentation repository.
 
+## Conformance Testing (`@aid/conformance`)
+
+To ensure the stability of the AID ecosystem, this repository includes a dedicated conformance testing suite in the [`packages/conformance`](./packages/conformance/) directory. This suite provides a command-line tool, `aid-validate`, for validating manifests, DNS records, and generator configurations against the canonical specification.
+
+This allows vendors and developers to:
+-   Instantly check if their AID artifacts are spec-compliant.
+-   Prevent regressions by integrating validation into their own CI/CD pipelines.
+-   Badge their projects as "AID v1 Compliant."
+
+For more details on its usage and test strategies, please see the [conformance package's dedicated README](./packages/conformance/README.md) (once created).
+
+## Quick-start for the conformance CLI
+
+1. Build workspace (only needed after code changes):
+
+```bash
+pnpm -F @aid/conformance build
+```
+
+2. After a build, make sure the binary is linked (workspace root does this automatically because `@aid/conformance` is now a dev dependency):
+
+```bash
+pnpm install
+```
+
+3. Validate an **AID manifest** (not the generator config) via path:
+
+```bash
+pnpm exec aid-validate manifest path/to/aid.json
+```
+
+4. Convert a generator config to a manifest and validate the pair in one step:
+
+```bash
+pnpm exec aid-validate pair path/to/generator.json path/to/aid.json
+```
+
+Hint: the example files under `packages/examples/public/**/aid.txt` are DNS TXT samples; for them use the `txt` sub-command.
+
 ## License
 
 [MIT](./LICENSE)

@@ -182,3 +182,4 @@ exports.aidGeneratorConfigSchema = zod_1.z.object({
 exports.aidManifestSchema = exports.aidGeneratorConfigSchema.omit({ serviceName: true, domain: true, env: true }).extend({
     name: zod_1.z.string().min(1, "Name is required"),
 });
+//# sourceMappingURL=schemas.js.map

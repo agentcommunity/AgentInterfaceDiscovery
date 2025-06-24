@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "testFiles": [
+    "tests/**/*.test-d.ts"
+  ]
+} 

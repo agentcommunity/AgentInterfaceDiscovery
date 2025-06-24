@@ -1,0 +1,6 @@
+{
+    "name": "Invalid Service",
+    "schemaVersion": "2",
+    "implementations": [],
+    "extraUnknownField": "this should not be here"
+} 

@@ -18,3 +18,4 @@ __exportStar(require("./types"), exports);
 __exportStar(require("./schemas"), exports);
 __exportStar(require("./resolver"), exports);
 __exportStar(require("./common"), exports);
+//# sourceMappingURL=browser.js.map

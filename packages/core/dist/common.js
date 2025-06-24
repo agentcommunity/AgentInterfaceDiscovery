@@ -103,3 +103,4 @@ function buildTxtRecord(cfg, manifestPath = "/.well-known/aid.json", ttl = 3600)
     const recordValue = parts.join(";");
     return `${recordName} ${ttl} IN TXT "${recordValue}"`;
 }
+//# sourceMappingURL=common.js.map

@@ -1,0 +1,45 @@
+name: Conformance Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    name: Run Conformance Suite
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18, 20]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Run conformance package tests
+        run: pnpm -F @aid/conformance test
+
+      - name: Build examples
+        run: pnpm -F @aid/core run build:examples
+      
+      - name: Validate all examples with CLI
+        run: find packages/examples/public -name "aid.json" -print0 | xargs -0 -n1 pnpm exec aid-validate manifest 
