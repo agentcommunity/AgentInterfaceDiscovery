@@ -4,13 +4,15 @@
   "domain": "edge.aid.agentcommunity.org",
   "env": "staging",
   "metadata": {
+    "contentVersion": "2025-06-25",
     "documentation": "https://docs.agentcommunity.org/specs/aid/spec-v1/",
     "revocationURL": "https://api.edge.aid.agentcommunity.org/revoke"
   },
   "implementations": [
     {
       "type": "remote",
-      "name": "Secure API",
+      "name": "secure-api",
+      "title": "Secure API",
       "protocol": "mcp",
       "uri": "https://api.edge.aid.agentcommunity.org/v2",
       "authentication": {
@@ -26,7 +28,8 @@
     },
     {
       "type": "local",
-      "name": "Admin Tool",
+      "name": "admin-tool",
+      "title": "Admin Tool",
       "protocol": "none",
       "status": "deprecated",
       "package": {

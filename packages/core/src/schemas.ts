@@ -25,7 +25,7 @@ const oAuthDetailsSchema = z.object({
     .boolean()
     .optional()
     .describe("If true, signals support for RFC 7591 Dynamic Client Registration."),
-})
+}).strict()
 
 export const authConfigSchema = z.discriminatedUnion("scheme", [
   z.object({ scheme: z.literal("none") }),
@@ -136,7 +136,7 @@ export const baseImplementationSchema = z.object({
   certificate: certificateConfigSchema,
   requiredConfig: z.array(userConfigurableItemSchema).optional(),
   requiredPaths: z.array(requiredPathItemSchema).optional(),
-})
+}).strict()
 
 export const implementationConfigSchema: z.ZodType<ImplementationConfig> = z
   .discriminatedUnion("type", [
@@ -218,7 +218,7 @@ export const aidGeneratorConfigSchema = z.object({
     .optional(),
   implementations: z.array(implementationConfigSchema).min(1, "At least one implementation is required"),
   signature: z.unknown().optional(),
-})
+}).strict()
 
 export const aidManifestSchema = aidGeneratorConfigSchema.omit({ serviceName: true, domain: true, env: true }).extend({
   name: z.string().min(1, "Name is required"),

@@ -1,7 +1,7 @@
 //NOT TO BE REMOVED or CHANGED. 
 
 import { z } from "zod"
-import type { AidGeneratorConfig, ImplementationConfig, ExecutionConfig } from "./types"
+import type { AidGeneratorConfig, ImplementationConfig, ExecutionConfig } from "./types_OLD"
 
 export const authPlacementSchema = z.object({
   in: z.enum(["header", "query", "cli_arg"]),

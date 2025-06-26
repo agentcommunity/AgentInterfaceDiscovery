@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { UrlInput } from "@/components/ui/url-input"
 import type { AidGeneratorConfig } from "@aid/core/browser"
 import { TagsSection } from "./tags-section"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface BasicInfoSectionProps {
   index: number
@@ -16,56 +17,72 @@ interface BasicInfoSectionProps {
 
 export function BasicInfoSection({ index }: BasicInfoSectionProps) {
   const { control } = useFormContext<AidGeneratorConfig>()
+
   return (
     <TooltipProvider>
       <div className="grid grid-cols-2 gap-4">
+        {/* Title */}
         <FormField
           control={control}
-          name={`implementations.${index}.name`}
+          name={`implementations.${index}.title`}
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-2">
-                Name
-                <span className="text-red-500">*</span>
+                Title <span className="text-red-500">*</span>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <HelpCircle className="h-4 w-4 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Human-readable name for this implementation</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Example: &apos;Production API&apos; or &apos;Auth0 MCP (run)&apos;
-                    </p>
+                    <p>A human-readable title for this implementation.</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Example: &apos;Production API&apos;</p>
                   </TooltipContent>
                 </Tooltip>
               </FormLabel>
               <FormControl>
-                <Input placeholder="Auth0 MCP (run)" {...field} />
+                <Input placeholder="Production API" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
+        {/* Name (ID) */}
+        <FormField
+          control={control}
+          name={`implementations.${index}.name`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2">
+                Name (ID) <span className="text-red-500">*</span>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>A short, machine-readable identifier, unique within the manifest.</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Example: &apos;cloud-prod-v1&apos;</p>
+                  </TooltipContent>
+                </Tooltip>
+              </FormLabel>
+              <FormControl>
+                <Input placeholder="cloud-prod-v1" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        {/* Protocol */}
         <FormField
           control={control}
           name={`implementations.${index}.protocol`}
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-2">
-                Protocol
-                <span className="text-red-500">*</span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Communication protocol used by this implementation</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      MCP = Model Context Protocol, A2A = Agent-to-Agent, None = Setup/utility commands
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
+                Protocol <span className="text-red-500">*</span>
               </FormLabel>
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
@@ -84,25 +101,88 @@ export function BasicInfoSection({ index }: BasicInfoSectionProps) {
             </FormItem>
           )}
         />
+
+        {/* MCP Version */}
+        <FormField
+          control={control}
+          name={`implementations.${index}.mcpVersion`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-2">
+                MCP Version <span className="text-sm italic text-muted-foreground">(optional)</span>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>A non-binding hint of the MCP version supported.</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Example: &apos;2025-06-18&apos;</p>
+                  </TooltipContent>
+                </Tooltip>
+              </FormLabel>
+              <FormControl>
+                <Input placeholder="2025-06-18" {...field} value={field.value ?? ""} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      {/* Capabilities */}
+      <div className="space-y-2">
+        <FormLabel className="flex items-center gap-2">
+          Capabilities <span className="text-sm italic text-muted-foreground">(optional)</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <HelpCircle className="h-4 w-4 text-muted-foreground" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>A hint about supported MCP capabilities.</p>
+            </TooltipContent>
+          </Tooltip>
+        </FormLabel>
+        <div className="grid grid-cols-2 gap-4 rounded-md border p-4">
+          <FormField
+            control={control}
+            name={`implementations.${index}.capabilities.structuredOutput`}
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox checked={!!field.value} onCheckedChange={(checked) => field.onChange(checked ? {} : undefined)} />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Structured Output</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={control}
+            name={`implementations.${index}.capabilities.resourceLinks`}
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox checked={!!field.value} onCheckedChange={(checked) => field.onChange(checked ? {} : undefined)} />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Resource Links</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
+        {/* Status */}
         <FormField
           control={control}
           name={`implementations.${index}.status`}
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-2">
-                Status
-                <span className="text-muted-foreground italic text-sm">(optional)</span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Mark this implementation as active or deprecated</p>
-                  </TooltipContent>
-                </Tooltip>
+                Status <span className="text-sm italic text-muted-foreground">(optional)</span>
               </FormLabel>
               <Select onValueChange={field.onChange} value={field.value} defaultValue="active">
                 <FormControl>
@@ -119,26 +199,19 @@ export function BasicInfoSection({ index }: BasicInfoSectionProps) {
             </FormItem>
           )}
         />
+
+        {/* Revocation URL */}
         <FormField
           control={control}
           name={`implementations.${index}.revocationURL`}
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-2">
-                Revocation URL
-                <span className="text-muted-foreground italic text-sm">(optional)</span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Overrides global revocation URL for this implementation</p>
-                  </TooltipContent>
-                </Tooltip>
+                Revocation URL <span className="text-sm italic text-muted-foreground">(optional)</span>
               </FormLabel>
               <FormControl>
                 <UrlInput
-                  value={typeof field.value === "string" ? field.value : ""}
+                  value={field.value ?? ""}
                   onChange={field.onChange}
                   placeholder="example.com/status"
                 />

@@ -16,11 +16,11 @@ interface ConfigVariablesSectionProps {
 
 export function ConfigVariablesSection({ index }: ConfigVariablesSectionProps) {
   const { watch, getValues, setValue, control } = useFormContext<AidGeneratorConfig>()
-  const currentConfig = watch(`implementations.${index}.configuration`) || []
+  const currentConfig = watch(`implementations.${index}.requiredConfig`) || []
 
   const addConfigItem = () => {
-    const current = getValues(`implementations.${index}.configuration`) || []
-    setValue(`implementations.${index}.configuration`, [
+    const current = getValues(`implementations.${index}.requiredConfig`) || []
+    setValue(`implementations.${index}.requiredConfig`, [
       ...current,
       {
         key: "",
@@ -33,24 +33,24 @@ export function ConfigVariablesSection({ index }: ConfigVariablesSectionProps) {
   }
 
   const removeConfigItem = (configIndex: number) => {
-    const current = getValues(`implementations.${index}.configuration`) || []
+    const current = getValues(`implementations.${index}.requiredConfig`) || []
     setValue(
-      `implementations.${index}.configuration`,
+      `implementations.${index}.requiredConfig`,
       current.filter((_, i) => i !== configIndex),
     )
   }
 
   const duplicateConfigItem = (configIndex: number) => {
-    const current = getValues(`implementations.${index}.configuration`) || []
+    const current = getValues(`implementations.${index}.requiredConfig`) || []
     const itemToDuplicate = current[configIndex]
-    setValue(`implementations.${index}.configuration`, [
+    setValue(`implementations.${index}.requiredConfig`, [
       ...current,
       { ...itemToDuplicate, key: `${itemToDuplicate.key}_copy` },
     ])
   }
 
   const clearAllConfigItems = () => {
-    setValue(`implementations.${index}.configuration`, [])
+    setValue(`implementations.${index}.requiredConfig`, [])
   }
 
   const renderConfigItem = (configIndex: number) => (
@@ -58,7 +58,7 @@ export function ConfigVariablesSection({ index }: ConfigVariablesSectionProps) {
       <div className="grid grid-cols-2 gap-4">
         <FormField
           control={control}
-          name={`implementations.${index}.configuration.${configIndex}.key`}
+          name={`implementations.${index}.requiredConfig.${configIndex}.key`}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Key</FormLabel>
@@ -71,7 +71,7 @@ export function ConfigVariablesSection({ index }: ConfigVariablesSectionProps) {
         />
         <FormField
           control={control}
-          name={`implementations.${index}.configuration.${configIndex}.type`}
+          name={`implementations.${index}.requiredConfig.${configIndex}.type`}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Type</FormLabel>
@@ -95,7 +95,7 @@ export function ConfigVariablesSection({ index }: ConfigVariablesSectionProps) {
 
       <FormField
         control={control}
-        name={`implementations.${index}.configuration.${configIndex}.description`}
+        name={`implementations.${index}.requiredConfig.${configIndex}.description`}
         render={({ field }) => (
           <FormItem>
             <FormLabel>Description</FormLabel>
@@ -110,7 +110,7 @@ export function ConfigVariablesSection({ index }: ConfigVariablesSectionProps) {
       <div className="grid grid-cols-2 gap-4 items-center">
         <FormField
           control={control}
-          name={`implementations.${index}.configuration.${configIndex}.defaultValue`}
+          name={`implementations.${index}.requiredConfig.${configIndex}.defaultValue`}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Default Value</FormLabel>
@@ -123,7 +123,7 @@ export function ConfigVariablesSection({ index }: ConfigVariablesSectionProps) {
         />
         <FormField
           control={control}
-          name={`implementations.${index}.configuration.${configIndex}.secret`}
+          name={`implementations.${index}.requiredConfig.${configIndex}.secret`}
           render={({ field }) => (
             <FormItem className="flex flex-row items-center gap-2 pt-8">
               <FormControl>

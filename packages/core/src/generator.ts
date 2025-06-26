@@ -45,7 +45,8 @@ if (require.main === module) {
     implementations: [
       {
         type: "remote",
-        name: "Cloud API (Prod)",
+        name: "cloud-api-prod",
+        title: "Cloud API (Prod)",
         protocol: "mcp",
         uri: "https://api.supabase.com/v1",
         authentication: {

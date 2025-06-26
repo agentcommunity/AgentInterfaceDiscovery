@@ -3,12 +3,14 @@
   "serviceName": "Simple Remote API",
   "domain": "simple.agentcommunity.org",
   "metadata": {
+    "contentVersion": "2025-06-25",
     "documentation": "https://docs.agentcommunity.org/specs/aid/spec-v1/"
   },
   "implementations": [
     {
       "type": "remote",
-      "name": "Primary API Endpoint",
+      "name": "primary-api",
+      "title": "Primary API Endpoint",
       "protocol": "mcp",
       "uri": "https://api.simple.agentcommunity.org/v1",
       "authentication": {
