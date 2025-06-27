@@ -1,14 +1,15 @@
 {
   "name": "Auth0 MCP Server",
   "metadata": {
-    "contentVersion": "2025-06-18",
+    "contentVersion": "2025-06-25",
     "documentation": "https://github.com/auth0/auth0-mcp-server"
   },
   "schemaVersion": "1",
   "implementations": [
     {
       "type": "local",
-      "name": "Auth0 MCP (run)",
+      "name": "auth0-mcp-run",
+      "title": "Auth0 MCP (run)",
       "tags": [
         "local",
         "tools"
@@ -30,14 +31,13 @@
         "scheme": "oauth2_device",
         "description": "Device flow starts on first run",
         "oauth": {
-          "deviceAuthorizationEndpoint": "https://auth0.com/oauth/device/code",
-          "tokenEndpoint": "https://auth0.com/oauth/token",
+          "dynamicClientRegistration": true,
           "scopes": [
             "read:*"
           ]
         }
       },
-      "configuration": [
+      "requiredConfig": [
         {
           "key": "AUTH0_MCP_SCOPES",
           "description": "Scopes to request during init",
@@ -65,7 +65,8 @@
     },
     {
       "type": "local",
-      "name": "Auth0 MCP (init)",
+      "name": "auth0-mcp-init",
+      "title": "Auth0 MCP (init)",
       "tags": [
         "setup"
       ],

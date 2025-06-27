@@ -65,17 +65,17 @@ async function buildExamples() {
         // This prevents invalid JSON from being generated due to unescaped quotes in placeholders.
         const hostedConfig = JSON.parse(JSON.stringify(config)) as AidGeneratorConfig
         for (const impl of hostedConfig.implementations) {
-          if (!impl.configuration) {
+          if (!(impl as any).requiredConfig) {
             continue
           }
 
           const configMap = new Map<string, any>()
-          for (const item of impl.configuration) {
+          for (const item of (impl as any).requiredConfig) {
             configMap.set(item.key, item.defaultValue)
           }
 
           const resolveValue = (placeholder: string): string => {
-            const match = placeholder.match(/^\${config\.([A-Z_0-9]+)}$/)
+            const match = placeholder.match(/^\${requiredConfig\.([A-Z_0-9]+)}$/)
             if (match) {
               const key = match[1]
               const value = configMap.get(key)

@@ -83,7 +83,7 @@ function buildTxtRecord(cfg, manifestPath = "/.well-known/aid.json", ttl = 3600)
     // or if the single implementation is complex (local, or remote with extra config).
     const isComplex = implementations.length > 1 ||
         (implementations.length === 1 && implementations[0].type === "local") ||
-        (implementations.length === 1 && (implementations[0].configuration ||
+        (implementations.length === 1 && (implementations[0].requiredConfig ||
             implementations[0].requiredPaths ||
             implementations[0].certificate ||
             implementations[0].platformOverrides));

@@ -127,7 +127,7 @@ async function* resolveDomain(domain, options) {
 function getImplementations(manifest) {
     return manifest.implementations.map(impl => {
         const actionable = {
-            name: impl.name,
+            name: impl.title,
             type: impl.type,
             protocol: impl.protocol,
             tags: impl.tags,
@@ -137,7 +137,7 @@ function getImplementations(manifest) {
                 description: 'description' in impl.authentication ? impl.authentication.description : '',
                 requiredSecrets: [],
             },
-            requiredConfig: impl.configuration,
+            requiredConfig: impl.requiredConfig,
             certificate: impl.certificate,
             requiredPaths: impl.requiredPaths,
         };

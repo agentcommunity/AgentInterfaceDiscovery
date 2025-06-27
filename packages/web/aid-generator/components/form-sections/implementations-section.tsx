@@ -18,9 +18,9 @@ const newRemoteImplementation: ImplementationConfig = {
   uri: "",
   tags: [],
   authentication: { scheme: "none" },
-  configuration: [],
-  requiredPaths: [],
+  requiredConfig: [],
   status: "active",
+  title: "New Remote API",
 }
 
 // Default empty state for a new local implementation.
@@ -38,9 +38,9 @@ const newLocalImplementation: ImplementationConfig = {
   },
   tags: [],
   authentication: { scheme: "none" },
-  configuration: [],
-  requiredPaths: [],
+  requiredConfig: [],
   status: "active",
+  title: "New Local Tool",
 }
 
 export function ImplementationsSection() {
@@ -77,10 +77,12 @@ export function ImplementationsSection() {
             onClick={() =>
               append({
                 type: "remote",
-                name: "",
+                name: "new-remote",
                 protocol: "mcp",
                 uri: "",
                 authentication: { scheme: "none" },
+                requiredConfig: [],
+                title: "New Remote",
               })
             }
           >
@@ -93,11 +95,13 @@ export function ImplementationsSection() {
             onClick={() =>
               append({
                 type: "local",
-                name: "",
+                name: "new-local",
                 protocol: "mcp",
                 package: { manager: "npx", identifier: "" },
                 execution: { command: "", args: [] },
                 authentication: { scheme: "none" },
+                requiredConfig: [],
+                title: "New Local",
               })
             }
           >

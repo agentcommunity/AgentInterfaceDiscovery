@@ -7,6 +7,7 @@ This web UI is part of a larger monorepo. For details on the core library and th
 ## 🎯 Key Features
 
 -   **Live Generation & Validation**: Instantly see the generated `aid.json` manifest and DNS TXT record as you type. Get immediate, clear feedback on validation errors.
+-   **Schema-Aware Forms (June 2025 update)**: The UI now supports the latest schema additions – `title`, machine-friendly `name`, capability hints, and dynamic OAuth (`dynamicClientRegistration`).
 -   **Fully Responsive Design**: A two-column layout for desktop provides a comprehensive view, which seamlessly transitions to a mobile-friendly single-column layout.
 -   **Centralized, Reactive State**: Built on a modern stack using React Hook Form and Context for robust and predictable state management.
 -   **Browser-Native Core Logic**: Utilizes a browser-safe version of the `@aid/core` library, ensuring 100% spec compliance between the UI and the canonical implementation.
@@ -21,7 +22,7 @@ The new architecture is built around a **single source of truth for form state**
 
 ### Data Flow
 
-The sample configuration files in `/public/samples` are the single source of truth for all examples. The `SampleLoader` component reads the `index.json` in that directory and fetches the corresponding JSON file when a user selects an example from the dropdown. The loaded configuration is then passed directly into the `react-hook-form` provider to populate the UI.
+The sample configuration files in `/public/samples` **now include the new `title`, `requiredConfig`, and OAuth fields**. They are the single source of truth for all examples. The `SampleLoader` component reads the `index.json` in that directory and fetches the corresponding JSON file when a user selects an example from the dropdown. The loaded configuration is then passed directly into the `react-hook-form` provider to populate the UI.
 
 ## 🔧 Core Components
 

@@ -138,7 +138,7 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
 }>, z.ZodObject<{
     scheme: z.ZodLiteral<"basic">;
     description: z.ZodString;
-    credentials: z.ZodArray<z.ZodObject<{
+    credentials: z.ZodOptional<z.ZodArray<z.ZodObject<{
         key: z.ZodString;
         description: z.ZodString;
     }, "strip", z.ZodTypeAny, {
@@ -147,7 +147,7 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
     }, {
         key: string;
         description: string;
-    }>, "atleastone">;
+    }>, "many">>;
     placement: z.ZodOptional<z.ZodObject<{
         in: z.ZodEnum<["header", "query", "cli_arg"]>;
         key: z.ZodString;
@@ -164,13 +164,10 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
 }, "strip", z.ZodTypeAny, {
     description: string;
     scheme: "basic";
-    credentials: [{
+    credentials?: {
         key: string;
         description: string;
-    }, ...{
-        key: string;
-        description: string;
-    }[]];
+    }[] | undefined;
     placement?: {
         in: "header" | "query" | "cli_arg";
         key: string;
@@ -179,13 +176,10 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
 }, {
     description: string;
     scheme: "basic";
-    credentials: [{
+    credentials?: {
         key: string;
         description: string;
-    }, ...{
-        key: string;
-        description: string;
-    }[]];
+    }[] | undefined;
     placement?: {
         in: "header" | "query" | "cli_arg";
         key: string;
@@ -219,25 +213,29 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
 } & {
     scheme: z.ZodLiteral<"oauth2_device">;
     oauth: z.ZodObject<{
+        deviceAuthorizationEndpoint: z.ZodString;
+        tokenEndpoint: z.ZodString;
         scopes: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
         clientId: z.ZodOptional<z.ZodString>;
-        dynamicClientRegistration: z.ZodOptional<z.ZodBoolean>;
-    }, "strict", z.ZodTypeAny, {
+    }, "strip", z.ZodTypeAny, {
+        deviceAuthorizationEndpoint: string;
+        tokenEndpoint: string;
         scopes?: string[] | undefined;
         clientId?: string | undefined;
-        dynamicClientRegistration?: boolean | undefined;
     }, {
+        deviceAuthorizationEndpoint: string;
+        tokenEndpoint: string;
         scopes?: string[] | undefined;
         clientId?: string | undefined;
-        dynamicClientRegistration?: boolean | undefined;
     }>;
 }, "strip", z.ZodTypeAny, {
     description: string;
     scheme: "oauth2_device";
     oauth: {
+        deviceAuthorizationEndpoint: string;
+        tokenEndpoint: string;
         scopes?: string[] | undefined;
         clientId?: string | undefined;
-        dynamicClientRegistration?: boolean | undefined;
     };
     credentials?: {
         key: string;
@@ -252,9 +250,10 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
     description: string;
     scheme: "oauth2_device";
     oauth: {
+        deviceAuthorizationEndpoint: string;
+        tokenEndpoint: string;
         scopes?: string[] | undefined;
         clientId?: string | undefined;
-        dynamicClientRegistration?: boolean | undefined;
     };
     credentials?: {
         key: string;
@@ -293,25 +292,29 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
 } & {
     scheme: z.ZodLiteral<"oauth2_code">;
     oauth: z.ZodObject<{
+        authorizationEndpoint: z.ZodString;
+        tokenEndpoint: z.ZodString;
         scopes: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
         clientId: z.ZodOptional<z.ZodString>;
-        dynamicClientRegistration: z.ZodOptional<z.ZodBoolean>;
-    }, "strict", z.ZodTypeAny, {
+    }, "strip", z.ZodTypeAny, {
+        tokenEndpoint: string;
+        authorizationEndpoint: string;
         scopes?: string[] | undefined;
         clientId?: string | undefined;
-        dynamicClientRegistration?: boolean | undefined;
     }, {
+        tokenEndpoint: string;
+        authorizationEndpoint: string;
         scopes?: string[] | undefined;
         clientId?: string | undefined;
-        dynamicClientRegistration?: boolean | undefined;
     }>;
 }, "strip", z.ZodTypeAny, {
     description: string;
     scheme: "oauth2_code";
     oauth: {
+        tokenEndpoint: string;
+        authorizationEndpoint: string;
         scopes?: string[] | undefined;
         clientId?: string | undefined;
-        dynamicClientRegistration?: boolean | undefined;
     };
     credentials?: {
         key: string;
@@ -326,9 +329,10 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
     description: string;
     scheme: "oauth2_code";
     oauth: {
+        tokenEndpoint: string;
+        authorizationEndpoint: string;
         scopes?: string[] | undefined;
         clientId?: string | undefined;
-        dynamicClientRegistration?: boolean | undefined;
     };
     credentials?: {
         key: string;
@@ -367,25 +371,25 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
 } & {
     scheme: z.ZodLiteral<"oauth2_service">;
     oauth: z.ZodObject<{
+        tokenEndpoint: z.ZodString;
         scopes: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
         clientId: z.ZodOptional<z.ZodString>;
-        dynamicClientRegistration: z.ZodOptional<z.ZodBoolean>;
-    }, "strict", z.ZodTypeAny, {
+    }, "strip", z.ZodTypeAny, {
+        tokenEndpoint: string;
         scopes?: string[] | undefined;
         clientId?: string | undefined;
-        dynamicClientRegistration?: boolean | undefined;
     }, {
+        tokenEndpoint: string;
         scopes?: string[] | undefined;
         clientId?: string | undefined;
-        dynamicClientRegistration?: boolean | undefined;
     }>;
 }, "strip", z.ZodTypeAny, {
     description: string;
     scheme: "oauth2_service";
     oauth: {
+        tokenEndpoint: string;
         scopes?: string[] | undefined;
         clientId?: string | undefined;
-        dynamicClientRegistration?: boolean | undefined;
     };
     credentials?: {
         key: string;
@@ -400,9 +404,9 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
     description: string;
     scheme: "oauth2_service";
     oauth: {
+        tokenEndpoint: string;
         scopes?: string[] | undefined;
         clientId?: string | undefined;
-        dynamicClientRegistration?: boolean | undefined;
     };
     credentials?: {
         key: string;
@@ -477,20 +481,8 @@ export declare const requiredPathItemSchema: z.ZodObject<{
 }>;
 export declare const baseImplementationSchema: z.ZodObject<{
     name: z.ZodString;
-    title: z.ZodString;
     protocol: z.ZodString;
     type: z.ZodEnum<["remote", "local"]>;
-    mcpVersion: z.ZodOptional<z.ZodString>;
-    capabilities: z.ZodOptional<z.ZodObject<{
-        structuredOutput: z.ZodOptional<z.ZodObject<{}, "strip", z.ZodTypeAny, {}, {}>>;
-        resourceLinks: z.ZodOptional<z.ZodObject<{}, "strip", z.ZodTypeAny, {}, {}>>;
-    }, "strip", z.ZodTypeAny, {
-        structuredOutput?: {} | undefined;
-        resourceLinks?: {} | undefined;
-    }, {
-        structuredOutput?: {} | undefined;
-        resourceLinks?: {} | undefined;
-    }>>;
     tags: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
     status: z.ZodOptional<z.ZodEnum<["active", "deprecated"]>>;
     revocationURL: z.ZodUnion<[z.ZodOptional<z.ZodString>, z.ZodLiteral<"">]>;
@@ -609,7 +601,7 @@ export declare const baseImplementationSchema: z.ZodObject<{
     }>, z.ZodObject<{
         scheme: z.ZodLiteral<"basic">;
         description: z.ZodString;
-        credentials: z.ZodArray<z.ZodObject<{
+        credentials: z.ZodOptional<z.ZodArray<z.ZodObject<{
             key: z.ZodString;
             description: z.ZodString;
         }, "strip", z.ZodTypeAny, {
@@ -618,7 +610,7 @@ export declare const baseImplementationSchema: z.ZodObject<{
         }, {
             key: string;
             description: string;
-        }>, "atleastone">;
+        }>, "many">>;
         placement: z.ZodOptional<z.ZodObject<{
             in: z.ZodEnum<["header", "query", "cli_arg"]>;
             key: z.ZodString;
@@ -635,13 +627,10 @@ export declare const baseImplementationSchema: z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         description: string;
         scheme: "basic";
-        credentials: [{
+        credentials?: {
             key: string;
             description: string;
-        }, ...{
-            key: string;
-            description: string;
-        }[]];
+        }[] | undefined;
         placement?: {
             in: "header" | "query" | "cli_arg";
             key: string;
@@ -650,13 +639,10 @@ export declare const baseImplementationSchema: z.ZodObject<{
     }, {
         description: string;
         scheme: "basic";
-        credentials: [{
+        credentials?: {
             key: string;
             description: string;
-        }, ...{
-            key: string;
-            description: string;
-        }[]];
+        }[] | undefined;
         placement?: {
             in: "header" | "query" | "cli_arg";
             key: string;
@@ -690,25 +676,29 @@ export declare const baseImplementationSchema: z.ZodObject<{
     } & {
         scheme: z.ZodLiteral<"oauth2_device">;
         oauth: z.ZodObject<{
+            deviceAuthorizationEndpoint: z.ZodString;
+            tokenEndpoint: z.ZodString;
             scopes: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
             clientId: z.ZodOptional<z.ZodString>;
-            dynamicClientRegistration: z.ZodOptional<z.ZodBoolean>;
-        }, "strict", z.ZodTypeAny, {
+        }, "strip", z.ZodTypeAny, {
+            deviceAuthorizationEndpoint: string;
+            tokenEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         }, {
+            deviceAuthorizationEndpoint: string;
+            tokenEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         }>;
     }, "strip", z.ZodTypeAny, {
         description: string;
         scheme: "oauth2_device";
         oauth: {
+            deviceAuthorizationEndpoint: string;
+            tokenEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         };
         credentials?: {
             key: string;
@@ -723,9 +713,10 @@ export declare const baseImplementationSchema: z.ZodObject<{
         description: string;
         scheme: "oauth2_device";
         oauth: {
+            deviceAuthorizationEndpoint: string;
+            tokenEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         };
         credentials?: {
             key: string;
@@ -764,25 +755,29 @@ export declare const baseImplementationSchema: z.ZodObject<{
     } & {
         scheme: z.ZodLiteral<"oauth2_code">;
         oauth: z.ZodObject<{
+            authorizationEndpoint: z.ZodString;
+            tokenEndpoint: z.ZodString;
             scopes: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
             clientId: z.ZodOptional<z.ZodString>;
-            dynamicClientRegistration: z.ZodOptional<z.ZodBoolean>;
-        }, "strict", z.ZodTypeAny, {
+        }, "strip", z.ZodTypeAny, {
+            tokenEndpoint: string;
+            authorizationEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         }, {
+            tokenEndpoint: string;
+            authorizationEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         }>;
     }, "strip", z.ZodTypeAny, {
         description: string;
         scheme: "oauth2_code";
         oauth: {
+            tokenEndpoint: string;
+            authorizationEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         };
         credentials?: {
             key: string;
@@ -797,9 +792,10 @@ export declare const baseImplementationSchema: z.ZodObject<{
         description: string;
         scheme: "oauth2_code";
         oauth: {
+            tokenEndpoint: string;
+            authorizationEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         };
         credentials?: {
             key: string;
@@ -838,25 +834,25 @@ export declare const baseImplementationSchema: z.ZodObject<{
     } & {
         scheme: z.ZodLiteral<"oauth2_service">;
         oauth: z.ZodObject<{
+            tokenEndpoint: z.ZodString;
             scopes: z.ZodOptional<z.ZodArray<z.ZodString, "many">>;
             clientId: z.ZodOptional<z.ZodString>;
-            dynamicClientRegistration: z.ZodOptional<z.ZodBoolean>;
-        }, "strict", z.ZodTypeAny, {
+        }, "strip", z.ZodTypeAny, {
+            tokenEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         }, {
+            tokenEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         }>;
     }, "strip", z.ZodTypeAny, {
         description: string;
         scheme: "oauth2_service";
         oauth: {
+            tokenEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         };
         credentials?: {
             key: string;
@@ -871,9 +867,9 @@ export declare const baseImplementationSchema: z.ZodObject<{
         description: string;
         scheme: "oauth2_service";
         oauth: {
+            tokenEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         };
         credentials?: {
             key: string;
@@ -913,7 +909,7 @@ export declare const baseImplementationSchema: z.ZodObject<{
         source: "file" | "enrollment";
         enrollmentEndpoint?: string | undefined;
     }>>;
-    requiredConfig: z.ZodOptional<z.ZodArray<z.ZodObject<{
+    configuration: z.ZodOptional<z.ZodArray<z.ZodObject<{
         key: z.ZodString;
         description: z.ZodString;
         type: z.ZodEnum<["string", "boolean", "integer"]>;
@@ -945,10 +941,9 @@ export declare const baseImplementationSchema: z.ZodObject<{
         description: string;
         type?: "file" | "directory" | undefined;
     }>, "many">>;
-}, "strict", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
     type: "remote" | "local";
     name: string;
-    title: string;
     protocol: string;
     authentication: {
         scheme: "none";
@@ -981,13 +976,10 @@ export declare const baseImplementationSchema: z.ZodObject<{
     } | {
         description: string;
         scheme: "basic";
-        credentials: [{
+        credentials?: {
             key: string;
             description: string;
-        }, ...{
-            key: string;
-            description: string;
-        }[]];
+        }[] | undefined;
         placement?: {
             in: "header" | "query" | "cli_arg";
             key: string;
@@ -997,9 +989,10 @@ export declare const baseImplementationSchema: z.ZodObject<{
         description: string;
         scheme: "oauth2_device";
         oauth: {
+            deviceAuthorizationEndpoint: string;
+            tokenEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         };
         credentials?: {
             key: string;
@@ -1014,9 +1007,10 @@ export declare const baseImplementationSchema: z.ZodObject<{
         description: string;
         scheme: "oauth2_code";
         oauth: {
+            tokenEndpoint: string;
+            authorizationEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         };
         credentials?: {
             key: string;
@@ -1031,9 +1025,9 @@ export declare const baseImplementationSchema: z.ZodObject<{
         description: string;
         scheme: "oauth2_service";
         oauth: {
+            tokenEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         };
         credentials?: {
             key: string;
@@ -1052,18 +1046,13 @@ export declare const baseImplementationSchema: z.ZodObject<{
         scheme: "custom";
     };
     status?: "active" | "deprecated" | undefined;
-    mcpVersion?: string | undefined;
-    capabilities?: {
-        structuredOutput?: {} | undefined;
-        resourceLinks?: {} | undefined;
-    } | undefined;
     tags?: string[] | undefined;
     revocationURL?: string | undefined;
     certificate?: {
         source: "file" | "enrollment";
         enrollmentEndpoint?: string | undefined;
     } | undefined;
-    requiredConfig?: {
+    configuration?: {
         type: "string" | "boolean" | "integer";
         key: string;
         description: string;
@@ -1078,7 +1067,6 @@ export declare const baseImplementationSchema: z.ZodObject<{
 }, {
     type: "remote" | "local";
     name: string;
-    title: string;
     protocol: string;
     authentication: {
         scheme: "none";
@@ -1111,13 +1099,10 @@ export declare const baseImplementationSchema: z.ZodObject<{
     } | {
         description: string;
         scheme: "basic";
-        credentials: [{
+        credentials?: {
             key: string;
             description: string;
-        }, ...{
-            key: string;
-            description: string;
-        }[]];
+        }[] | undefined;
         placement?: {
             in: "header" | "query" | "cli_arg";
             key: string;
@@ -1127,9 +1112,10 @@ export declare const baseImplementationSchema: z.ZodObject<{
         description: string;
         scheme: "oauth2_device";
         oauth: {
+            deviceAuthorizationEndpoint: string;
+            tokenEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         };
         credentials?: {
             key: string;
@@ -1144,9 +1130,10 @@ export declare const baseImplementationSchema: z.ZodObject<{
         description: string;
         scheme: "oauth2_code";
         oauth: {
+            tokenEndpoint: string;
+            authorizationEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         };
         credentials?: {
             key: string;
@@ -1161,9 +1148,9 @@ export declare const baseImplementationSchema: z.ZodObject<{
         description: string;
         scheme: "oauth2_service";
         oauth: {
+            tokenEndpoint: string;
             scopes?: string[] | undefined;
             clientId?: string | undefined;
-            dynamicClientRegistration?: boolean | undefined;
         };
         credentials?: {
             key: string;
@@ -1182,18 +1169,13 @@ export declare const baseImplementationSchema: z.ZodObject<{
         scheme: "custom";
     };
     status?: "active" | "deprecated" | undefined;
-    mcpVersion?: string | undefined;
-    capabilities?: {
-        structuredOutput?: {} | undefined;
-        resourceLinks?: {} | undefined;
-    } | undefined;
     tags?: string[] | undefined;
     revocationURL?: string | undefined;
     certificate?: {
         source: "file" | "enrollment";
         enrollmentEndpoint?: string | undefined;
     } | undefined;
-    requiredConfig?: {
+    configuration?: {
         type: "string" | "boolean" | "integer";
         key: string;
         description: string;
@@ -1227,7 +1209,7 @@ export declare const aidGeneratorConfigSchema: z.ZodObject<{
     }>>;
     implementations: z.ZodArray<z.ZodType<ImplementationConfig, z.ZodTypeDef, ImplementationConfig>, "many">;
     signature: z.ZodOptional<z.ZodUnknown>;
-}, "strict", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
     schemaVersion: "1";
     serviceName: string;
     domain: string;
@@ -1274,7 +1256,7 @@ export declare const aidManifestSchema: z.ZodObject<Omit<{
     signature: z.ZodOptional<z.ZodUnknown>;
 }, "serviceName" | "domain" | "env"> & {
     name: z.ZodString;
-}, "strict", z.ZodTypeAny, {
+}, "strip", z.ZodTypeAny, {
     name: string;
     schemaVersion: "1";
     implementations: ImplementationConfig[];

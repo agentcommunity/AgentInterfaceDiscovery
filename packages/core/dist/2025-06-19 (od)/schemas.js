@@ -16,14 +16,6 @@ const baseOAuthSchema = zod_1.z.object({
     credentials: zod_1.z.array(exports.credentialItemSchema).optional(),
     placement: exports.authPlacementSchema.optional(),
 });
-const oAuthDetailsSchema = zod_1.z.object({
-    scopes: zod_1.z.array(zod_1.z.string()).optional(),
-    clientId: zod_1.z.string().optional(),
-    dynamicClientRegistration: zod_1.z
-        .boolean()
-        .optional()
-        .describe("If true, signals support for RFC 7591 Dynamic Client Registration."),
-}).strict();
 exports.authConfigSchema = zod_1.z.discriminatedUnion("scheme", [
     zod_1.z.object({ scheme: zod_1.z.literal("none") }),
     zod_1.z.object({
@@ -35,7 +27,7 @@ exports.authConfigSchema = zod_1.z.discriminatedUnion("scheme", [
     }),
     zod_1.z.object({
         scheme: zod_1.z.literal("apikey"),
-        description: zod_1.z.string().min(1, "Description is required"),
+        description: zod_1.z.string().min(1, "Description isrequired"),
         tokenUrl: zod_1.z.string().url().optional().or(zod_1.z.literal("")),
         credentials: zod_1.z.array(exports.credentialItemSchema).optional(),
         placement: exports.authPlacementSchema.optional(),
@@ -43,23 +35,34 @@ exports.authConfigSchema = zod_1.z.discriminatedUnion("scheme", [
     zod_1.z.object({
         scheme: zod_1.z.literal("basic"),
         description: zod_1.z.string().min(1, "Description is required"),
-        credentials: zod_1.z.array(exports.credentialItemSchema)
-            .nonempty({
-            message: "Username and password credentials are required for basic auth.",
-        }),
+        credentials: zod_1.z.array(exports.credentialItemSchema).optional(),
         placement: exports.authPlacementSchema.optional(),
     }),
     baseOAuthSchema.extend({
         scheme: zod_1.z.literal("oauth2_device"),
-        oauth: oAuthDetailsSchema,
+        oauth: zod_1.z.object({
+            deviceAuthorizationEndpoint: zod_1.z.string().url("Must be a valid URL"),
+            tokenEndpoint: zod_1.z.string().url("Must be a valid URL"),
+            scopes: zod_1.z.array(zod_1.z.string()).optional(),
+            clientId: zod_1.z.string().optional(),
+        }),
     }),
     baseOAuthSchema.extend({
         scheme: zod_1.z.literal("oauth2_code"),
-        oauth: oAuthDetailsSchema,
+        oauth: zod_1.z.object({
+            authorizationEndpoint: zod_1.z.string().url("Must be a valid URL"),
+            tokenEndpoint: zod_1.z.string().url("Must be a valid URL"),
+            scopes: zod_1.z.array(zod_1.z.string()).optional(),
+            clientId: zod_1.z.string().optional(),
+        }),
     }),
     baseOAuthSchema.extend({
         scheme: zod_1.z.literal("oauth2_service"),
-        oauth: oAuthDetailsSchema,
+        oauth: zod_1.z.object({
+            tokenEndpoint: zod_1.z.string().url("Must be a valid URL"),
+            scopes: zod_1.z.array(zod_1.z.string()).optional(),
+            clientId: zod_1.z.string().optional(),
+        }),
     }),
     zod_1.z.object({
         scheme: zod_1.z.literal("mtls"),
@@ -74,7 +77,6 @@ exports.authConfigSchema = zod_1.z.discriminatedUnion("scheme", [
 const osExecutionSchema = zod_1.z.object({
     command: zod_1.z.string().min(1, "Command is required").optional(),
     args: zod_1.z.array(zod_1.z.string()).optional(),
-    digest: zod_1.z.string().optional().describe("An optional content digest for a platform-specific package."),
 });
 exports.executionConfigSchema = zod_1.z.object({
     command: zod_1.z.string().min(1, "Command is required"),
@@ -104,30 +106,17 @@ exports.requiredPathItemSchema = zod_1.z.object({
     type: zod_1.z.enum(["file", "directory"]).optional(),
 });
 exports.baseImplementationSchema = zod_1.z.object({
-    name: zod_1.z.string().min(1, "A machine-friendly identifier is required, unique within the manifest."),
-    title: zod_1.z.string().min(1, "A human-readable title is required."),
+    name: zod_1.z.string().min(1, "Name is required"),
     protocol: zod_1.z.string().min(1, "Protocol is required"),
     type: zod_1.z.enum(["remote", "local"]),
-    mcpVersion: zod_1.z
-        .string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/, "MCP Version must be in YYYY-MM-DD format.")
-        .optional()
-        .describe("A non-binding hint of the MCP version supported, e.g. '2025-06-18'"),
-    capabilities: zod_1.z
-        .object({
-        structuredOutput: zod_1.z.object({}).optional(),
-        resourceLinks: zod_1.z.object({}).optional(),
-    })
-        .optional()
-        .describe("A hint about supported MCP capabilities."),
     tags: zod_1.z.array(zod_1.z.string()).optional(),
     status: zod_1.z.enum(["active", "deprecated"]).optional(),
     revocationURL: zod_1.z.string().url().optional().or(zod_1.z.literal("")),
     authentication: exports.authConfigSchema,
     certificate: exports.certificateConfigSchema,
-    requiredConfig: zod_1.z.array(exports.userConfigurableItemSchema).optional(),
+    configuration: zod_1.z.array(exports.userConfigurableItemSchema).optional(),
     requiredPaths: zod_1.z.array(exports.requiredPathItemSchema).optional(),
-}).strict();
+});
 exports.implementationConfigSchema = zod_1.z
     .discriminatedUnion("type", [
     exports.baseImplementationSchema.extend({
@@ -163,16 +152,13 @@ exports.implementationConfigSchema = zod_1.z
     message: "Authentication Placement is required for this remote authentication scheme",
     path: ["authentication", "placement"],
 })
-    .refine((impl) => {
-    // rule applies only when scheme == mtls
-    if (impl.authentication.scheme !== "mtls")
-        return true;
-    // certificate object must exist *and* contain at least one key
-    return (impl.certificate != null &&
-        (impl.certificate.source !== undefined ||
-            impl.certificate.enrollmentEndpoint !== undefined));
+    .refine((data) => {
+    if (data.authentication.scheme === "mtls") {
+        return data.certificate !== undefined && data.certificate !== null;
+    }
+    return true;
 }, {
-    message: "For 'mtls' authentication, the 'certificate' object is required and must contain either a 'source' or an 'enrollmentEndpoint'.",
+    message: "A 'certificate' object is required when authentication.scheme is 'mtls'.",
     path: ["certificate"],
 });
 exports.aidGeneratorConfigSchema = zod_1.z.object({
@@ -181,8 +167,7 @@ exports.aidGeneratorConfigSchema = zod_1.z.object({
     domain: zod_1.z
         .string()
         .min(1, "Domain is required")
-        .regex(/^(https?:\/\/)?[a-z0-9.-]+$/i, "Domain must be a bare domain or start with http(s):// and contain only letters, numbers, dots, and hyphens")
-        .describe("The bare domain (e.g., 'example.com') where the agent's `_agent` TXT record is published. This is used to construct the well-known URL for the manifest and as a default for other domain-related fields."),
+        .regex(/^(https?:\/\/)?[a-z0-9.-]+$/i, "Domain must be a bare domain or start with http(s):// and contain only letters, numbers, dots, and hyphens"),
     env: zod_1.z.string().optional(),
     metadata: zod_1.z
         .object({
@@ -193,7 +178,7 @@ exports.aidGeneratorConfigSchema = zod_1.z.object({
         .optional(),
     implementations: zod_1.z.array(exports.implementationConfigSchema).min(1, "At least one implementation is required"),
     signature: zod_1.z.unknown().optional(),
-}).strict();
+});
 exports.aidManifestSchema = exports.aidGeneratorConfigSchema.omit({ serviceName: true, domain: true, env: true }).extend({
     name: zod_1.z.string().min(1, "Name is required"),
 });

@@ -15,13 +15,14 @@ describe("validateManifest", () => {
         "mixed.json",
         "multi.json",
         "supabase.json",
+        "capabilities.json",
     ];
     validFixtures.forEach((fixture) => {
         it(`should return OK for valid fixture: ${fixture}`, () => {
             const content = (0, fs_1.readFileSync)((0, path_1.join)(validFixturesDir, fixture), "utf-8");
-            const config = JSON.parse(content);
-            const manifest = (0, core_1.buildManifest)(config); // Build manifest first
-            const result = (0, validators_1.validateManifest)(manifest); // Then validate it
+            const manifest = JSON.parse(content);
+            const manifestToValidate = "serviceName" in manifest ? (0, core_1.buildManifest)(manifest) : manifest;
+            const result = (0, validators_1.validateManifest)(manifestToValidate);
             expect(result.ok).toBe(true);
             expect(result.errors).toBeUndefined();
         });
@@ -89,6 +90,27 @@ describe("validateTxt", () => {
   },
 ]
 `);
+    });
+});
+describe("Advanced Schema Validation", () => {
+    it("should reject a manifest with legacy static OAuth endpoints", () => {
+        const fixturePath = (0, path_1.join)(__dirname, "fixtures/invalid/legacy-oauth.json");
+        const content = (0, fs_1.readFileSync)(fixturePath, "utf-8");
+        const json = JSON.parse(content);
+        const result = (0, validators_1.validateManifest)(json);
+        expect(result.ok).toBe(false);
+        expect(result.errors).not.toBeUndefined();
+        // Check for a more specific error message related to unrecognized keys in the oauth object
+        const hasLegacyOauthError = result.errors?.some(e => e.message.includes("Unrecognized key(s) in object: 'deviceAuthorizationEndpoint'"));
+        expect(hasLegacyOauthError).toBe(true);
+    });
+    it("should correctly validate a manifest with new capabilities fields", () => {
+        const fixturePath = (0, path_1.join)(__dirname, "fixtures/valid/capabilities.json");
+        const content = (0, fs_1.readFileSync)(fixturePath, "utf-8");
+        const json = JSON.parse(content);
+        const result = (0, validators_1.validateManifest)(json);
+        expect(result.ok).toBe(true);
+        expect(result.errors).toBeUndefined();
     });
 });
 //# sourceMappingURL=conformance.test.js.map

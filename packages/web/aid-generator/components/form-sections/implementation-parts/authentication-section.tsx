@@ -13,13 +13,16 @@ import { UrlInput } from "@/components/ui/url-input"
 import { Badge } from "@/components/ui/badge"
 import type { AidGeneratorConfig } from "@aid/core/browser"
 import { PlacementSection } from "./placement-section"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface AuthenticationSectionProps {
   index: number
 }
 
-// Helper function to determine if a scheme needs placement configuration
-const needsPlacement = (scheme: string) => {
+// Helper function to determine if a scheme needs placement configuration.
+// Placement is only required for REMOTE implementations using token-based schemes.
+const needsPlacement = (scheme: string, implType?: string) => {
+  if (implType !== "remote") return false
   return scheme !== "none" && scheme !== "mtls" && scheme !== ""
 }
 
@@ -94,6 +97,7 @@ const getSchemeInfo = (scheme: string): { label: string; description: string; co
 export function AuthenticationSection({ index }: AuthenticationSectionProps) {
   const { watch, getValues, setValue, control } = useFormContext<AidGeneratorConfig>()
   const authScheme = watch(`implementations.${index}.authentication.scheme`) || ""
+  const implType = watch(`implementations.${index}.type`) || ""
   const currentCredentials = watch(`implementations.${index}.authentication.credentials`) || []
   const schemeInfo = getSchemeInfo(authScheme)
 
@@ -316,124 +320,58 @@ export function AuthenticationSection({ index }: AuthenticationSectionProps) {
 
           {/* OAuth-specific fields */}
           {isOAuthScheme(authScheme) && (
-            <div className="space-y-4 pb-4">
-              <h4 className="text-sm font-medium text-muted-foreground">OAuth Configuration</h4>
-              <FormField
-                control={control}
-                name={`implementations.${index}.authentication.oauth.tokenEndpoint`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2">
-                      Token Endpoint
-                      <span className="text-muted-foreground italic text-sm">(optional)</span>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>OAuth endpoint for exchanging codes/credentials for tokens</p>
-                          <p className="text-xs text-muted-foreground mt-1">Example: auth0.com/oauth/token</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </FormLabel>
-                    <FormControl>
-                      <UrlInput value={field.value ?? ""} onChange={field.onChange} placeholder="auth0.com/oauth/token" autoHttps={false} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {authScheme === "oauth2_device" && (
-                <FormField
-                  control={control}
-                  name={`implementations.${index}.authentication.oauth.deviceAuthorizationEndpoint`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        Device Authorization Endpoint
-                        <span className="text-muted-foreground italic text-sm">(optional)</span>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>OAuth endpoint for device flow authorization</p>
-                            <p className="text-xs text-muted-foreground mt-1">Example: auth0.com/oauth/device/code</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </FormLabel>
-                      <FormControl>
-                        <UrlInput
-                          value={field.value ?? ""}
-                          onChange={field.onChange}
-                          placeholder="auth0.com/oauth/device/code"
-                          autoHttps={false}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              {authScheme === "oauth2_code" && (
-                <FormField
-                  control={control}
-                  name={`implementations.${index}.authentication.oauth.authorizationEndpoint`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        Authorization Endpoint
-                        <span className="text-muted-foreground italic text-sm">(optional)</span>
-                      </FormLabel>
-                      <FormControl>
-                        <UrlInput value={field.value ?? ""} onChange={field.onChange} placeholder="auth0.com/authorize" autoHttps={false} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              <FormField
-                control={control}
-                name={`implementations.${index}.authentication.oauth.scopes`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center gap-2">
-                      Scopes
-                      <span className="text-muted-foreground italic text-sm">(optional)</span>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>OAuth scopes to request, one per line</p>
-                          <p className="text-xs text-muted-foreground mt-1">Use &quot;${"${"}config.VAR{"}"}&quot; for user-configurable scopes</p>
-                          <p className="text-xs text-muted-foreground">
-                            Examples: read:*, write:users, &quot;${"${"}config.AUTH0_MCP_SCOPES{"}"}&quot;
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder={`read:*\n\${config.AUTH0_MCP_SCOPES}`}
-                        value={Array.isArray(field.value) ? field.value.join("\n") : ""}
-                        onChange={(e) => {
-                          const values = e.target.value.split("\n").filter(Boolean)
-                          field.onChange(values.length > 0 ? values : undefined)
-                        }}
-                        rows={3}
-                      />
-                    </FormControl>
-                    <FormDescription>One scope per line. Use &quot;${"${"}config.VARIABLE_NAME{"}"}&quot; for configuration substitution.</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <>
+              <Separator />
+              <div className="space-y-4 pb-4">
+                <h4 className="text-sm font-medium text-muted-foreground">OAuth2 Configuration</h4>
+                <div className="space-y-4 rounded-md border p-4">
+                  <FormField
+                    control={control}
+                    name={`implementations.${index}.authentication.oauth.dynamicClientRegistration`}
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            id={`dynamic-client-${index}`}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel htmlFor={`dynamic-client-${index}`} className="flex items-center gap-2">
+                            Dynamic Client Registration
+                          </FormLabel>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={control}
+                    name={`implementations.${index}.authentication.oauth.scopes`}
+                    render={({ field }) => {
+                      // Handle conversion between array and comma-separated string
+                      const value = Array.isArray(field.value) ? field.value.join(", ") : ""
+                      const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                        const arr = e.target.value.split(",").map(s => s.trim()).filter(Boolean)
+                        field.onChange(arr)
+                      }
+                      return (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            Scopes
+                            <span className="text-muted-foreground italic text-sm">(optional)</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="read:*, write:users" value={value} onChange={onChange} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )
+                    }}
+                  />
+                </div>
+              </div>
+            </>
           )}
 
           {/* mTLS-specific fields */}
@@ -487,7 +425,7 @@ export function AuthenticationSection({ index }: AuthenticationSectionProps) {
           )}
 
           {/* Authentication Placement */}
-          {needsPlacement(authScheme) && <PlacementSection index={index} />}
+          {needsPlacement(authScheme, implType) && <PlacementSection index={index} />}
         </div>
       </div>
     </TooltipProvider>

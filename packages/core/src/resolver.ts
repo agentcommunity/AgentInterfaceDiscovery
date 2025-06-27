@@ -204,7 +204,7 @@ export async function* resolveDomain(domain: string, options?: { manifestProxy?:
 export function getImplementations(manifest: AidManifest): ActionableImplementation[] {
     return manifest.implementations.map(impl => {
         const actionable: ActionableImplementation = {
-            name: impl.name,
+            name: impl.title,
             type: impl.type,
             protocol: impl.protocol,
             tags: (impl as any).tags,
@@ -214,7 +214,7 @@ export function getImplementations(manifest: AidManifest): ActionableImplementat
                 description: 'description' in impl.authentication ? impl.authentication.description : '',
                 requiredSecrets: [],
             },
-            requiredConfig: impl.configuration,
+            requiredConfig: impl.requiredConfig,
             certificate: impl.certificate,
             requiredPaths: impl.requiredPaths,
         };

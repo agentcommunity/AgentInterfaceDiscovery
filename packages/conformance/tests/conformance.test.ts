@@ -14,14 +14,15 @@ describe("validateManifest", () => {
     "mixed.json",
     "multi.json",
     "supabase.json",
+    "capabilities.json",
   ];
 
   validFixtures.forEach((fixture) => {
     it(`should return OK for valid fixture: ${fixture}`, () => {
       const content = readFileSync(join(validFixturesDir, fixture), "utf-8");
-      const config = JSON.parse(content);
-      const manifest = buildManifest(config); // Build manifest first
-      const result = validateManifest(manifest); // Then validate it
+      const manifest = JSON.parse(content);
+      const manifestToValidate = "serviceName" in manifest ? buildManifest(manifest) : manifest;
+      const result = validateManifest(manifestToValidate);
       expect(result.ok).toBe(true);
       expect(result.errors).toBeUndefined();
     });
@@ -95,4 +96,27 @@ describe("validateTxt", () => {
 ]
 `);
     });
+});
+
+describe("Advanced Schema Validation", () => {
+  it("should reject a manifest with legacy static OAuth endpoints", () => {
+    const fixturePath = join(__dirname, "fixtures/invalid/legacy-oauth.json");
+    const content = readFileSync(fixturePath, "utf-8");
+    const json = JSON.parse(content);
+    const result = validateManifest(json);
+    expect(result.ok).toBe(false);
+    expect(result.errors).not.toBeUndefined();
+    // Check for a more specific error message related to unrecognized keys in the oauth object
+    const hasLegacyOauthError = result.errors?.some(e => e.message.includes("Unrecognized key(s) in object: 'deviceAuthorizationEndpoint'"));
+    expect(hasLegacyOauthError).toBe(true);
+  });
+
+  it("should correctly validate a manifest with new capabilities fields", () => {
+    const fixturePath = join(__dirname, "fixtures/valid/capabilities.json");
+    const content = readFileSync(fixturePath, "utf-8");
+    const json = JSON.parse(content);
+    const result = validateManifest(json);
+    expect(result.ok).toBe(true);
+    expect(result.errors).toBeUndefined();
+  });
 }); 

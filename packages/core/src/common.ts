@@ -105,7 +105,7 @@ export function buildTxtRecord(
     implementations.length > 1 ||
     (implementations.length === 1 && implementations[0].type === "local") ||
     (implementations.length === 1 && (
-        (implementations[0] as any).configuration ||
+        (implementations[0] as any).requiredConfig ||
         (implementations[0] as any).requiredPaths ||
         (implementations[0] as any).certificate ||
         (implementations[0] as any).platformOverrides

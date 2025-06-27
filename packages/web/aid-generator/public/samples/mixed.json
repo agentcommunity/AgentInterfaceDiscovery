@@ -3,12 +3,14 @@
   "serviceName": "Mixed Mode Service",
   "domain": "mixed.aid.agentcommunity.org",
   "metadata": {
+    "contentVersion": "2025-06-25",
     "documentation": "https://docs.agentcommunity.org/specs/aid/spec-v1/"
   },
   "implementations": [
     {
       "type": "remote",
-      "name": "Cloud API",
+      "name": "cloud-api",
+      "title": "Cloud API",
       "protocol": "mcp",
       "uri": "https://api.mixed.aid.agentcommunity.org/v1",
       "authentication": {
@@ -23,7 +25,8 @@
     },
     {
       "type": "local",
-      "name": "Management CLI",
+      "name": "management-cli",
+      "title": "Management CLI",
       "tags": ["cli", "admin"],
       "protocol": "none",
       "package": {

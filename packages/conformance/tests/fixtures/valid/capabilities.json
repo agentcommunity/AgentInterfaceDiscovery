@@ -1,0 +1,25 @@
+{
+    "schemaVersion": "1",
+    "name": "Capabilities Test Service",
+    "metadata": {
+      "contentVersion": "2025-06-25",
+      "documentation": "https://docs.agentcommunity.org/specs/aid/spec-v1/"
+    },
+    "implementations": [
+      {
+        "type": "remote",
+        "name": "capability-rich-api",
+        "title": "Capability-Rich API",
+        "protocol": "mcp",
+        "mcpVersion": "2025-06-18",
+        "capabilities": {
+          "structuredOutput": {},
+          "resourceLinks": {}
+        },
+        "uri": "https://api.capabilities.agentcommunity.org/v1",
+        "authentication": {
+          "scheme": "none"
+        }
+      }
+    ]
+  } 

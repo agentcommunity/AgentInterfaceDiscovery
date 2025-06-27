@@ -1,14 +1,15 @@
 {
   "name": "Supabase MCP",
   "metadata": {
-    "contentVersion": "2025-06-23",
+    "contentVersion": "2025-06-25",
     "documentation": "https://supabase.com/docs/guides/getting-started/mcp?queryGroups=os&os=mac"
   },
   "schemaVersion": "1",
   "implementations": [
     {
       "type": "local",
-      "name": "Supabase MCP Server",
+      "name": "supabase-mcp-server",
+      "title": "Supabase MCP Server",
       "tags": [
         "cli",
         "database"
@@ -38,7 +39,7 @@
           }
         ]
       },
-      "configuration": [
+      "requiredConfig": [
         {
           "key": "SUPABASE_PROJECT_REF",
           "description": "The project reference for your Supabase project (e.g., abcdefghijklmnopqrst).",
