@@ -2,9 +2,38 @@
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import chalk from "chalk";
 import { readFileSync } from "fs";
 import { validateManifest, validateTxt, validatePair } from "./validators";
 import { AidGeneratorConfig, AidManifest } from "@aid/core";
+
+// -------------------------
+// Utility helpers for pretty output
+// -------------------------
+
+function printManifestErrors(errors?: { path?: (string | number)[]; message: string }[]) {
+  if (!errors || errors.length === 0) return;
+
+  console.log();
+  console.log(chalk.bold.red("Validation errors:"));
+
+  for (const issue of errors) {
+    const path = issue.path && issue.path.length ? issue.path.map(String).join(".") : "(root)";
+    const line = `${chalk.yellow(path.padEnd(40))} ${chalk.red(issue.message)}`;
+    console.log(`  • ${line}`);
+  }
+}
+
+function printSimpleErrors(errors?: { message: string }[]) {
+  if (!errors || errors.length === 0) return;
+
+  console.log();
+  console.log(chalk.bold.red("Validation errors:"));
+
+  for (const issue of errors) {
+    console.log(`  • ${chalk.red(issue.message)}`);
+  }
+}
 
 yargs(hideBin(process.argv))
   .command(
@@ -23,6 +52,7 @@ yargs(hideBin(process.argv))
 
       for (const file of argv.files) {
         console.log(`\nValidating manifest: ${file}`);
+        console.log(chalk.bold(`\nValidating manifest: ${file}`));
         try {
           const content = readFileSync(file, "utf-8");
           const json = JSON.parse(content);
@@ -30,18 +60,16 @@ yargs(hideBin(process.argv))
           results[file] = result;
 
           if (result.ok) {
-            console.log("✅ OK");
+            console.log(chalk.green("✔ Valid"));
           } else {
             overallSuccess = false;
-            console.log("❌ FAILED");
-            result.errors?.forEach((err) => {
-              console.log(`  - Path: ${err.path?.join(".") || "N/A"}, Error: ${err.message}`);
-            });
+            console.log(chalk.red("✖ Invalid"));
+            printManifestErrors(result.errors);
           }
         } catch (e: any) {
           overallSuccess = false;
           results[file] = { ok: false, errors: [{ message: e.message }] };
-          console.log(`❌ ERROR: ${e.message}`);
+          console.log(chalk.red(`⚠ Error: ${e.message}`));
         }
       }
 
@@ -65,13 +93,11 @@ yargs(hideBin(process.argv))
     (argv) => {
         const result = validateTxt(argv.records);
         if (result.ok) {
-            console.log("✅ OK");
+            console.log(chalk.green("✔ Valid"));
             process.exit(0);
         } else {
-            console.log("❌ FAILED");
-            result.errors?.forEach((err) => {
-                console.log(`  - ${err.message}`);
-            });
+            console.log(chalk.red("✖ Invalid"));
+            printSimpleErrors(result.errors);
             process.exit(1);
         }
     }
@@ -100,13 +126,11 @@ yargs(hideBin(process.argv))
 
             const result = validatePair(config, manifest, { strict: argv.strict as boolean });
             if (result.ok) {
-                console.log("✅ OK: Config and manifest are equivalent.");
+                console.log(chalk.green("✔ Config and manifest are equivalent."));
                 process.exit(0);
             } else {
-                console.log("❌ FAILED: Config and manifest are not equivalent.");
-                result.errors?.forEach((err) => {
-                    console.log(`  - ${err.message}`);
-                });
+                console.log(chalk.red("✖ Config and manifest are not equivalent."));
+                printSimpleErrors(result.errors);
                 process.exit(1);
             }
 

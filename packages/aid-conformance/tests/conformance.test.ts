@@ -19,14 +19,9 @@ describe("validateManifest", () => {
 
   validFixtures.forEach((fixture) => {
     it(`should return OK for valid fixture: ${fixture}`, () => {
-      // Resolve the fixture path. In the repo layout, most of these files are
-      // symlinks pointing to the canonical examples under
-      // `packages/examples/public/**/.well-known/aid.json`.  When running
-      // inside certain test environments (or when the symlink target is not
-      // packaged), those links may be unresolved. To make the tests resilient
-      // we fallback to the real examples directory if the local file is
-      // missing.
-
+      // Resolve the fixture path.
+      // In many environments the symlinked test fixtures may not exist.
+      // Fallback to the canonical examples directory used by the web UI.
       const localPath = join(validFixturesDir, fixture);
       const examplesPath = join(
         __dirname,
