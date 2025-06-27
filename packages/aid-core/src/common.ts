@@ -114,7 +114,7 @@ export function buildTxtRecord(
   // Find a primary remote implementation to use for TXT hints.
   const primaryRemote = implementations.find(
     (impl) => impl.type === "remote"
-  ) as (Extract<typeof implementations[0], { type: "remote" }> | undefined);
+  );
 
   if (primaryRemote) {
     parts.push(`uri=${primaryRemote.uri}`);
