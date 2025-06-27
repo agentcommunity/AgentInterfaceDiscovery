@@ -17,7 +17,7 @@ importers:
     devDependencies:
       '@aid/conformance':
         specifier: workspace:*
-        version: link:packages/conformance
+        version: link:packages/aid-conformance
       '@types/node':
         specifier: ^20.11.20
         version: 20.19.1
@@ -25,11 +25,11 @@ importers:
         specifier: ^5.3.3
         version: 5.8.3
 
-  packages/conformance:
+  packages/aid-conformance:
     dependencies:
       '@aid/core':
         specifier: workspace:*
-        version: link:../core
+        version: link:../aid-core
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -62,7 +62,7 @@ importers:
         specifier: ^5.3.3
         version: 5.8.3
 
-  packages/core:
+  packages/aid-core:
     dependencies:
       zod:
         specifier: ^3.25.67
@@ -82,10 +82,10 @@ importers:
     dependencies:
       '@aid/conformance':
         specifier: workspace:*
-        version: link:../../conformance
+        version: link:../../aid-conformance
       '@aid/core':
         specifier: workspace:*
-        version: link:../../core
+        version: link:../../aid-core
       '@hookform/resolvers':
         specifier: ^3.3.4
         version: 3.10.0(react-hook-form@7.58.1)
