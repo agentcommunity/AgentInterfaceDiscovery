@@ -1,6 +1,6 @@
 import { validateManifest, validateTxt } from "../src/validators";
 import { buildManifest } from "@aid/core"
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 
 describe("validateManifest", () => {
@@ -19,7 +19,26 @@ describe("validateManifest", () => {
 
   validFixtures.forEach((fixture) => {
     it(`should return OK for valid fixture: ${fixture}`, () => {
-      const content = readFileSync(join(validFixturesDir, fixture), "utf-8");
+      // Resolve the fixture path. In the repo layout, most of these files are
+      // symlinks pointing to the canonical examples under
+      // `packages/examples/public/**/.well-known/aid.json`.  When running
+      // inside certain test environments (or when the symlink target is not
+      // packaged), those links may be unresolved. To make the tests resilient
+      // we fallback to the real examples directory if the local file is
+      // missing.
+
+      const localPath = join(validFixturesDir, fixture);
+      const examplesPath = join(
+        __dirname,
+        "../../examples/public",
+        fixture.replace(/\.json$/, ""),
+        ".well-known",
+        "aid.json",
+      );
+
+      const targetPath = existsSync(localPath) ? localPath : examplesPath;
+
+      const content = readFileSync(targetPath, "utf-8");
       const manifest = JSON.parse(content);
       const manifestToValidate = "serviceName" in manifest ? buildManifest(manifest) : manifest;
       const result = validateManifest(manifestToValidate);
