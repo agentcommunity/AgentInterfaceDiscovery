@@ -2,3 +2,7 @@ NEXTSTEPS.md
 node_modules
 
 .vercel
+
+# Ignore temporary spec bump planning docs
+schema_bump.md
+packages/core/src/spcification.md
