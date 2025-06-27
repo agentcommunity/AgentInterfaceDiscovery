@@ -3,6 +3,6 @@ module.exports = {
     testEnvironment: 'node',
     testMatch: ['<rootDir>/tests/**/*.test.ts'],
     moduleNameMapper: {
-      '^@aid/core/(.*)$': '<rootDir>/../core/src/$1',
+      '^@aid/core/(.*)$': '<rootDir>/../aid-core/src/$1',
     },
 }; 
