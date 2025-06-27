@@ -320,3 +320,4 @@ Step 1 📦 Repo hygiene (A-tasks above)
  1.1 Purge `dist` folders & extend `.gitignore`.
  1.2 Apply directory moves; update import paths; run Web UI smoke test.
  1.3 Add root `tsconfig.json` + package references; verify `pnpm build`
+
