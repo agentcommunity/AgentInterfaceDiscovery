@@ -59,7 +59,6 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
 }, "strip", z.ZodTypeAny, {
     description: string;
     scheme: "pat";
-    tokenUrl?: string | undefined;
     credentials?: {
         key: string;
         description: string;
@@ -69,10 +68,10 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
         key: string;
         format?: string | undefined;
     } | undefined;
+    tokenUrl?: string | undefined;
 }, {
     description: string;
     scheme: "pat";
-    tokenUrl?: string | undefined;
     credentials?: {
         key: string;
         description: string;
@@ -82,6 +81,7 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
         key: string;
         format?: string | undefined;
     } | undefined;
+    tokenUrl?: string | undefined;
 }>, z.ZodObject<{
     scheme: z.ZodLiteral<"apikey">;
     description: z.ZodString;
@@ -112,7 +112,6 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
 }, "strip", z.ZodTypeAny, {
     description: string;
     scheme: "apikey";
-    tokenUrl?: string | undefined;
     credentials?: {
         key: string;
         description: string;
@@ -122,10 +121,10 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
         key: string;
         format?: string | undefined;
     } | undefined;
+    tokenUrl?: string | undefined;
 }, {
     description: string;
     scheme: "apikey";
-    tokenUrl?: string | undefined;
     credentials?: {
         key: string;
         description: string;
@@ -135,6 +134,7 @@ export declare const authConfigSchema: z.ZodDiscriminatedUnion<"scheme", [z.ZodO
         key: string;
         format?: string | undefined;
     } | undefined;
+    tokenUrl?: string | undefined;
 }>, z.ZodObject<{
     scheme: z.ZodLiteral<"basic">;
     description: z.ZodString;
@@ -522,7 +522,6 @@ export declare const baseImplementationSchema: z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         description: string;
         scheme: "pat";
-        tokenUrl?: string | undefined;
         credentials?: {
             key: string;
             description: string;
@@ -532,10 +531,10 @@ export declare const baseImplementationSchema: z.ZodObject<{
             key: string;
             format?: string | undefined;
         } | undefined;
+        tokenUrl?: string | undefined;
     }, {
         description: string;
         scheme: "pat";
-        tokenUrl?: string | undefined;
         credentials?: {
             key: string;
             description: string;
@@ -545,6 +544,7 @@ export declare const baseImplementationSchema: z.ZodObject<{
             key: string;
             format?: string | undefined;
         } | undefined;
+        tokenUrl?: string | undefined;
     }>, z.ZodObject<{
         scheme: z.ZodLiteral<"apikey">;
         description: z.ZodString;
@@ -575,7 +575,6 @@ export declare const baseImplementationSchema: z.ZodObject<{
     }, "strip", z.ZodTypeAny, {
         description: string;
         scheme: "apikey";
-        tokenUrl?: string | undefined;
         credentials?: {
             key: string;
             description: string;
@@ -585,10 +584,10 @@ export declare const baseImplementationSchema: z.ZodObject<{
             key: string;
             format?: string | undefined;
         } | undefined;
+        tokenUrl?: string | undefined;
     }, {
         description: string;
         scheme: "apikey";
-        tokenUrl?: string | undefined;
         credentials?: {
             key: string;
             description: string;
@@ -598,6 +597,7 @@ export declare const baseImplementationSchema: z.ZodObject<{
             key: string;
             format?: string | undefined;
         } | undefined;
+        tokenUrl?: string | undefined;
     }>, z.ZodObject<{
         scheme: z.ZodLiteral<"basic">;
         description: z.ZodString;
@@ -950,7 +950,6 @@ export declare const baseImplementationSchema: z.ZodObject<{
     } | {
         description: string;
         scheme: "pat";
-        tokenUrl?: string | undefined;
         credentials?: {
             key: string;
             description: string;
@@ -960,10 +959,10 @@ export declare const baseImplementationSchema: z.ZodObject<{
             key: string;
             format?: string | undefined;
         } | undefined;
+        tokenUrl?: string | undefined;
     } | {
         description: string;
         scheme: "apikey";
-        tokenUrl?: string | undefined;
         credentials?: {
             key: string;
             description: string;
@@ -973,6 +972,7 @@ export declare const baseImplementationSchema: z.ZodObject<{
             key: string;
             format?: string | undefined;
         } | undefined;
+        tokenUrl?: string | undefined;
     } | {
         description: string;
         scheme: "basic";
@@ -1073,7 +1073,6 @@ export declare const baseImplementationSchema: z.ZodObject<{
     } | {
         description: string;
         scheme: "pat";
-        tokenUrl?: string | undefined;
         credentials?: {
             key: string;
             description: string;
@@ -1083,10 +1082,10 @@ export declare const baseImplementationSchema: z.ZodObject<{
             key: string;
             format?: string | undefined;
         } | undefined;
+        tokenUrl?: string | undefined;
     } | {
         description: string;
         scheme: "apikey";
-        tokenUrl?: string | undefined;
         credentials?: {
             key: string;
             description: string;
@@ -1096,6 +1095,7 @@ export declare const baseImplementationSchema: z.ZodObject<{
             key: string;
             format?: string | undefined;
         } | undefined;
+        tokenUrl?: string | undefined;
     } | {
         description: string;
         scheme: "basic";

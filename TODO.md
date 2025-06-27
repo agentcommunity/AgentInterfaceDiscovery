@@ -7,6 +7,8 @@ This document outlines the execution plan for maturing the Agent Interface Disco
 - `[P2 - IMPORTANT]`: Essential for a good open-source project and community adoption.
 - `[P3 - POLISH]`: Nice-to-have features that improve developer experience and project aesthetics.
 
+FYI schema.ts NOT to be changed! 
+
 ---
 
 ### **Execution Plan**
@@ -89,6 +91,42 @@ The work is broken into three phases, designed to deliver value incrementally wh
 - **Web UI Must Not Break:** After every significant step, a smoke test must be performed on the `/packages/web` application to ensure its functionality is not impacted by the refactoring.
 
 ---
+
+## Next Steps (Post-Schema-Bump — tag 2025-05-25)
+
+This section supersedes the earlier Phase 4-6 outline and merges it with outstanding items in this TODO.
+
+### 0. Hygiene Sprint  (🔛 first)
+1. **Purge `dist/**` dirs** from repo & add to `.gitignore`.
+2. Root **`tsconfig.json` + project references**.
+3. Shared **ESLint + Prettier** config; run autofix.
+4. **Changesets** bootstrap & guard script `schema:check`.
+5. `.github/workflows/conformance.yml` covering build → schema-check → tests → coverage → bundle-size.
+6. Badges: CI, coverage, core browser bundle gz-size.
+7. Nightly fuzz tests (fast-check) on core & conformance.
+
+### 1. Phase 5 — CLI Migration & Polish
+1. Add `--migrate` flag to **`aid-validate`** to auto-convert old manifests/configs.
+2. Enhance CLI UX: auto-detect artefact type, pretty error table, `--schema-version`, `--quiet`.
+3. Reach **100 % branch coverage** on validator + migrator.
+4. Publish **@aid/conformance v0.2** with prebuilt binary (npx-friendly, no ts-node).
+
+### 2. Phase 6 — Release Automation & Monitoring
+1. Release workflow via **Changesets** to publish *core / conformance / schema* & GitHub releases.
+2. Monitoring hooks:
+   - Nightly conformance run on `examples/**`.
+   - Gzip-size guard (<15 kB) for core browser bundle.
+   - Dependabot / Renovate.
+
+### 3. Language SDK Bootstrap
+1. Generator script to emit typed models for other runtimes from canonical JSON-Schema.
+2. **Python** first: create `aid-core-py` repo & PyPI package with validation helpers.
+3. **Go** second: generate `types.go`; weekly GitHub Action (`schedule: cron('@weekly')`) runs `go test ./...` to validate schema compatibility — free minutes on OSS.
+
+### 4. Documentation
+1. Move local `packages/core/src/spcification.md` content to **central mkdocs repo**.
+2. Quick-start snippets for JS / Python CLI.
+
 ---
 
 *The original PRDs are preserved below for detailed requirements.*

@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/conformance" },
+    { "path": "./packages/web/aid-generator" }
+  ]
+} 
