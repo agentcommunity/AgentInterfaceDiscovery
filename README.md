@@ -128,21 +128,24 @@ _agent.domain.com. 3600 IN TXT "v=aid1;config=https://domain.com/.well-known/aid
   "schemaVersion": "1",
   "serviceName": "My API",
   "domain": "myapi.com",
-  "implementations": [{
-    "type": "remote",
-    "name": "Production API",
-    "protocol": "mcp",
-    "uri": "https://api.myapi.com/v1",
-    "authentication": {
-      "scheme": "pat",
-      "description": "Get token from dashboard",
-      "placement": {
-        "in": "header", 
-        "key": "Authorization",
-        "format": "Bearer {token}"
+  "implementations": [
+    {
+      "type": "remote",
+      "name": "prod-api",
+      "title": "Production API",
+      "protocol": "mcp",
+      "uri": "https://api.myapi.com/v1",
+      "authentication": {
+        "scheme": "pat",
+        "description": "Get token from dashboard",
+        "placement": {
+          "in": "header", 
+          "key": "Authorization",
+          "format": "Bearer {token}"
+        }
       }
     }
-  }]
+  ]
 }
 ```
 
@@ -153,25 +156,28 @@ _agent.domain.com. 3600 IN TXT "v=aid1;config=https://domain.com/.well-known/aid
   "schemaVersion": "1", 
   "serviceName": "Database Tool",
   "domain": "dbtool.io",
-  "implementations": [{
-    "type": "local",
-    "name": "CLI Tool",
-    "protocol": "mcp",
-    "package": {
-      "manager": "npx",
-      "identifier": "@company/db-mcp"
-    },
-    "execution": {
-      "command": "npx",
-      "args": ["-y", "@company/db-mcp", "--host", "${config.DB_HOST}"]
-    },
-    "authentication": { "scheme": "none" },
-    "configuration": [{
-      "key": "DB_HOST",
-      "description": "Database hostname",
-      "type": "string"
-    }]
-  }]
+  "implementations": [
+    {
+      "type": "local",
+      "name": "cli-tool",
+      "title": "CLI Tool",
+      "protocol": "mcp",
+      "package": {
+        "manager": "npx",
+        "identifier": "@company/db-mcp"
+      },
+      "execution": {
+        "command": "npx",
+        "args": ["-y", "@company/db-mcp", "--host", "${requiredConfig.DB_HOST}"]
+      },
+      "authentication": { "scheme": "none" },
+      "requiredConfig": [{
+        "key": "DB_HOST",
+        "description": "Database hostname",
+        "type": "string"
+      }]
+    }
+  ]
 }
 ```
 
@@ -284,3 +290,12 @@ The new /validate page provides a way to validate AID manifests against the cano
 To use the validation feature, you can use the `aid-validate` command-line tool. This tool allows you to validate either an AID manifest or a pair of a generator configuration and an AID manifest.
 
 For more details on how to use the validation feature and the conformance CLI, please see the [conformance package's dedicated README](./packages/conformance/README.md).
+
+🚨 **June 2025 Schema Bump Highlights**
+
+•   Each implementation now has both a **`name`** (machine-friendly ID) *and* a human-readable **`title`**.
+•   `configuration` → `requiredConfig` – clearer semantics, same structure.
+•   OAuth2 details are now discovered dynamically. Static endpoint fields were removed and replaced with a boolean flag **`dynamicClientRegistration`**.
+•   Optional capability hints – `mcpVersion`, `capabilities.structuredOutput`, `capabilities.resourceLinks` – help clients choose the best implementation.
+
+All docs, types, and the JSON schema have been updated accordingly.

@@ -21,7 +21,8 @@ describe("validateManifest", () => {
     it(`should return OK for valid fixture: ${fixture}`, () => {
       const content = readFileSync(join(validFixturesDir, fixture), "utf-8");
       const manifest = JSON.parse(content);
-      const result = validateManifest(manifest); // Directly validate the manifest
+      const manifestToValidate = "serviceName" in manifest ? buildManifest(manifest) : manifest;
+      const result = validateManifest(manifestToValidate);
       expect(result.ok).toBe(true);
       expect(result.errors).toBeUndefined();
     });

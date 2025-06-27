@@ -19,8 +19,10 @@ interface AuthenticationSectionProps {
   index: number
 }
 
-// Helper function to determine if a scheme needs placement configuration
-const needsPlacement = (scheme: string) => {
+// Helper function to determine if a scheme needs placement configuration.
+// Placement is only required for REMOTE implementations using token-based schemes.
+const needsPlacement = (scheme: string, implType?: string) => {
+  if (implType !== "remote") return false
   return scheme !== "none" && scheme !== "mtls" && scheme !== ""
 }
 
@@ -95,6 +97,7 @@ const getSchemeInfo = (scheme: string): { label: string; description: string; co
 export function AuthenticationSection({ index }: AuthenticationSectionProps) {
   const { watch, getValues, setValue, control } = useFormContext<AidGeneratorConfig>()
   const authScheme = watch(`implementations.${index}.authentication.scheme`) || ""
+  const implType = watch(`implementations.${index}.type`) || ""
   const currentCredentials = watch(`implementations.${index}.authentication.credentials`) || []
   const schemeInfo = getSchemeInfo(authScheme)
 
@@ -422,7 +425,7 @@ export function AuthenticationSection({ index }: AuthenticationSectionProps) {
           )}
 
           {/* Authentication Placement */}
-          {needsPlacement(authScheme) && <PlacementSection index={index} />}
+          {needsPlacement(authScheme, implType) && <PlacementSection index={index} />}
         </div>
       </div>
     </TooltipProvider>
