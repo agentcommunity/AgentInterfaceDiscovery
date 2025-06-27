@@ -9,6 +9,7 @@
 		"dev": "pnpm --filter aid-web run dev",
 		"lint": "eslint . --ext .ts,.tsx,.js,.mjs",
 		"lint:fix": "eslint . --ext .ts,.tsx,.js,.mjs --fix",
+		"schema:check": "node scripts/schema-check.js",
 		"test": "pnpm --recursive run test"
 	},
 	"devDependencies": {

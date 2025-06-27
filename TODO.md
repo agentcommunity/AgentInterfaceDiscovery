@@ -101,7 +101,7 @@ This section supersedes the earlier Phase 4-6 outline and merges it with outstan
 2. Root **`tsconfig.json` + project references**. ✅ _done 2025-06-27_
 2a. **Consolidate package layout** (`core`, `conformance`, `web`) renamed to `aid-*` folders. ✅ _done 2025-06-27_
 3. **Shared ESLint + Prettier** config; run autofix. 🔧 _config added 2025-06-27_
-4. **Changesets** bootstrap & guard script `schema:check`. ⏳
+4. **Changesets** bootstrap & guard script `schema:check`. ✅ _setup 2025-06-27_
 5. `.github/workflows/conformance.yml` covering build → schema-check → tests → coverage → bundle-size. ⏳
 6. Badges: CI, coverage, core browser bundle gz-size. ⏳
 7. Nightly fuzz tests (fast-check) on core & conformance. ⏳
