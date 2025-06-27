@@ -7,6 +7,8 @@ This document outlines the execution plan for maturing the Agent Interface Disco
 - `[P2 - IMPORTANT]`: Essential for a good open-source project and community adoption.
 - `[P3 - POLISH]`: Nice-to-have features that improve developer experience and project aesthetics.
 
+FYI schema.ts NOT to be changed! 
+
 ---
 
 ### **Execution Plan**
@@ -89,6 +91,43 @@ The work is broken into three phases, designed to deliver value incrementally wh
 - **Web UI Must Not Break:** After every significant step, a smoke test must be performed on the `/packages/web` application to ensure its functionality is not impacted by the refactoring.
 
 ---
+
+## Next Steps (Post-Schema-Bump — tag 2025-05-25)
+
+This section supersedes the earlier Phase 4-6 outline and merges it with outstanding items in this TODO.
+
+### 0. Hygiene Sprint  (🔛 In progress)
+1. **Purge `dist/**` dirs** from repo & add to `.gitignore**. ✅ _done 2025-06-27_
+2. Root **`tsconfig.json` + project references**. ✅ _done 2025-06-27_
+2a. **Consolidate package layout** (`core`, `conformance`, `web`) renamed to `aid-*` folders. ✅ _done 2025-06-27_
+3. **Shared ESLint + Prettier** config; run autofix. 🔧 _config added 2025-06-27_
+4. **Changesets** bootstrap & guard script `schema:check`. ✅ _setup 2025-06-27_
+5. `.github/workflows/conformance.yml` covering build → schema-check → tests → coverage → bundle-size. ⏳
+6. Badges: CI, coverage, core browser bundle gz-size. ⏳
+7. Nightly fuzz tests (fast-check) on core & conformance. ⏳
+
+### 1. Phase 5 — CLI Migration & Polish
+1. Add `--migrate` flag to **`aid-validate`** to auto-convert old manifests/configs.
+2. Enhance CLI UX: auto-detect artefact type, pretty error table, `--schema-version`, `--quiet`.
+3. Reach **100 % branch coverage** on validator + migrator.
+4. Publish **@aid/conformance v0.2** with prebuilt binary (npx-friendly, no ts-node).
+
+### 2. Phase 6 — Release Automation & Monitoring
+1. Release workflow via **Changesets** to publish *core / conformance / schema* & GitHub releases.
+2. Monitoring hooks:
+   - Nightly conformance run on `examples/**`.
+   - Gzip-size guard (<15 kB) for core browser bundle.
+   - Dependabot / Renovate.
+
+### 3. Language SDK Bootstrap
+1. Generator script to emit typed models for other runtimes from canonical JSON-Schema.
+2. **Python** first: create `aid-core-py` repo & PyPI package with validation helpers.
+3. **Go** second: generate `types.go`; weekly GitHub Action (`schedule: cron('@weekly')`) runs `go test ./...` to validate schema compatibility — free minutes on OSS.
+
+### 4. Documentation
+1. Move local `packages/core/src/spcification.md` content to **central mkdocs repo**.
+2. Quick-start snippets for JS / Python CLI.
+
 ---
 
 *The original PRDs are preserved below for detailed requirements.*
@@ -280,33 +319,4 @@ Step 0 Create a `cleanup/` branch.
 Step 1 📦 Repo hygiene (A-tasks above)
  1.1 Purge `dist` folders & extend `.gitignore`.
  1.2 Apply directory moves; update import paths; run Web UI smoke test.
- 1.3 Add root `tsconfig.json` + package references; verify `pnpm build` still works.
- 1.4 Add ESLint/Prettier configs; run `pnpm lint --fix`.
- 1.5 Install & initialise Changesets.
- 1.6 Commit & open PR (#Cleanup).
-
-Step 2 PRD-1 (@aid/core)
- 2.1 Milestone M1 → isolate Node imports, etc.
- … (follow PRD-1 milestones) …
-
-Step 3 PRD-3 (@aid/schema)
- 3.1 Scaffold package, hook into generate-schema script.
-
-Step 4 PRD-2 (@aid/conformance)
- 4.1 Close test gaps, enforce branch coverage, publish.
-
-Step 5 PRD-4 (Repo-wide CI)
- 5.1 Author `conformance.yml` workflow using core/conformance builds.
- 5.2 Add size/coverage badges to README footers.
-
-Step 6 Release & Docs
- 6.1 Merge all PRs, trigger Changesets release workflow.
- 6.2 Verify docs site auto-syncs via `sync-schema.yml`.
-
-Step 7 Post-launch polish
- • Add Dependabot config.
- • Introduce ADR template for schema evolution.
- • Explore Vitest migration for faster test loop.
-
-════════════════════════════════════════
-NOTE  Any refactor **must** keep `/packages/web` building and loading the same public APIs from `@aid/core` & `@aid/conformance`.  Smoke-test the Web UI after every major step.
+ 1.3 Add root `tsconfig.json` + package references; verify `pnpm build`

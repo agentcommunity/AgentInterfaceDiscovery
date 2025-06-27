@@ -6,7 +6,7 @@ import type { AidGeneratorConfig, ImplementationConfig } from "../src/types"
 const rootDir = path.resolve(__dirname, "../../..")
 const examplesDir = path.resolve(rootDir, "packages/examples")
 const publicDir = path.resolve(examplesDir, "public")
-const samplesDir = path.resolve(rootDir, "packages/web/aid-generator/public/samples")
+const samplesDir = path.resolve(rootDir, "packages/aid-web/public/samples")
 
 interface VercelRewrite {
   source: string
@@ -19,7 +19,7 @@ interface VercelRewrite {
 
 /**
  * This script automates the generation of all AID example artifacts.
- * It uses the JSON files in `packages/web/aid-generator/public/samples`
+ * It uses the JSON files in `packages/aid-web/public/samples`
  * as the single source of truth.
  *
  * It performs the following functions:
@@ -34,7 +34,7 @@ interface VercelRewrite {
  *     specified in the config.
  */
 async function buildExamples() {
-  console.log("🚀 Building examples from single source of truth: /web/aid-generator/public/samples")
+  console.log("🚀 Building examples from single source of truth: /aid-web/public/samples")
 
   try {
     // 1. Clean and prepare output directories

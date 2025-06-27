@@ -177,7 +177,7 @@ export default function ValidatePage() {
                   <DropZone
                     file={file1}
                     onFileDrop={(f) => handleFileDrop(f, 1)}
-                    title={getDropZoneTitle(artefactType as Exclude<ArtefactType, "pair">)}
+                    title={getDropZoneTitle(artefactType)}
                   />
                 )}
               </div>

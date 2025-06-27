@@ -1,4 +1,4 @@
-# AID Generator Web UI
+# AID Web UI
 
 A Next.js web application for generating and validating Agent Interface Discovery (AID) manifests in real-time. This tool provides an intuitive, responsive, form-based interface for creating AID configurations that comply with the official specification.
 
@@ -42,14 +42,14 @@ This component provides the real-time feedback loop. It was refactored to fix a 
 ```bash
 # From the root of the monorepo
 pnpm install
-pnpm -F aid-generator dev
+pnpm -F aid-web dev
 ```
 
 ### Development Workflow
 
 1.  **Type & Logic Changes**: All changes to the data model or generation logic **must** be made in the `@aid/core` package first.
 2.  **Build Core**: After changing `@aid/core`, run `pnpm build` from the root to compile the changes and make them available to the web UI.
-3.  **UI Development**: The web UI in `packages/web/aid-generator` will automatically pick up the updated types and functions. Adjust form fields and components as needed.
+3.  **UI Development**: The web UI in `packages/aid-web` will automatically pick up the updated types and functions. Adjust form fields and components as needed.
 
 ## 📄 License
 

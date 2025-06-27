@@ -52,7 +52,7 @@ The project is a `pnpm` monorepo with the following key components:
 │   │       └── build-examples.ts  # Builds examples & syncs them to the web UI
 │   ├── examples/           # A collection of canonical example configs
 │   └── web/
-│       └── aid-generator/  # Next.js web application for building manifests
+│       └── aid-web/       # Next.js web application for building manifests
 └── schema/
     └── v1/
         └── aid.schema.json # The generated canonical JSON Schema artifact
@@ -79,11 +79,11 @@ To make changes to the AID manifest structure, follow this workflow:
 -   `pnpm build`: Build all packages in the monorepo.
 -   `pnpm -F @aid/core run schema:generate`: Regenerate the canonical JSON schema.
 -   `pnpm -F @aid/core run build:examples`: Generate the hosted example artifacts (`aid.json`, `aid.txt`) in `packages/examples/public/` using the configs from the web UI's samples directory as the source of truth.
--   `pnpm -F aid-generator dev`: Run the web UI in development mode.
+-   `pnpm -F aid-web dev`: Run the web UI in development mode.
 
-The `build:examples` script is used to generate the publicly hosted manifests that are used for testing the resolver. It reads all configurations from `packages/web/aid-generator/public/samples`, resolves any template variables, and writes the final `aid.json` and `aid.txt` files to `packages/examples/public/`. This ensures our hosted examples are always in sync with the samples used in the web UI.
+This script is used to generate the publicly hosted manifests that are used for testing the resolver. It reads all configurations from `packages/aid-web/public/samples`, resolves any template variables, and writes the final `aid.json` and `aid.txt` files to `packages/examples/public/`. This ensures our hosted examples are always in sync with the samples used in the web UI.
 
-## Web UI (`packages/web/aid-generator`)
+## Web UI (`packages/aid-web`)
 
 This project includes a powerful, user-friendly web application for generating and validating AID manifests in real-time. It's built with Next.js and provides a rich form-based interface that uses the `@aid/core` library as its single source of truth for generation logic.
 
@@ -93,7 +93,7 @@ Key features include:
 - A responsive interface optimized for both desktop and mobile use.
 - Pre-built examples for common use cases.
 
-For detailed information on its architecture, components, and development workflow, please see the [web UI's dedicated README](./packages/web/aid-generator/README.md).
+For detailed information on its architecture, components, and development workflow, please see the [web UI's dedicated README](./packages/aid-web/README.md).
 
 ## Generator ([`packages/core/src/common.ts`](./packages/core/src/common.ts))
 

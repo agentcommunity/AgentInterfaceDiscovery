@@ -6,3 +6,6 @@ node_modules
 # Ignore temporary spec bump planning docs
 schema_bump.md
 packages/core/src/spcification.md
+
+# Ignore build artifacts
+**/dist/

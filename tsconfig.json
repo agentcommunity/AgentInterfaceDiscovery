@@ -1,0 +1,7 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/aid-core" },
+    { "path": "./packages/aid-conformance" }
+  ]
+} 

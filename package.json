@@ -6,14 +6,22 @@
 	"packageManager": "pnpm@8.15.5",
 	"scripts": {
 		"build": "pnpm --recursive run build",
-		"dev": "pnpm --filter aid-generator run dev",
-		"lint": "pnpm --recursive run lint",
+		"dev": "pnpm --filter aid-web run dev",
+		"lint": "eslint . --ext .ts,.tsx,.js,.mjs",
+		"lint:fix": "eslint . --ext .ts,.tsx,.js,.mjs --fix",
+		"schema:check": "node scripts/schema-check.js",
 		"test": "pnpm --recursive run test"
 	},
 	"devDependencies": {
+		"@aid/conformance": "workspace:*",
+		"@eslint/js": "^9.0.0",
 		"@types/node": "^20.11.20",
-		"typescript": "^5.3.3",
-		"@aid/conformance": "workspace:*"
+		"@typescript-eslint/eslint-plugin": "^8.35.0",
+		"@typescript-eslint/parser": "^8.35.0",
+		"eslint": "^9.29.0",
+		"eslint-config-prettier": "^10.1.5",
+		"prettier": "^3.2.5",
+		"typescript": "^5.3.3"
 	},
 	"keywords": [
 		"ai",
