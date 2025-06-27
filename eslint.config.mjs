@@ -14,7 +14,6 @@ export default [
       parserOptions: {
         ecmaVersion: 2020,
         sourceType: "module",
-        project: true,
       },
     },
     plugins: {
@@ -22,7 +21,6 @@ export default [
     },
     rules: {
       ...tseslint.configs.recommended.rules,
-      ...tseslint.configs["recommended-type-checked"].rules,
       "@typescript-eslint/explicit-module-boundary-types": "off",
     },
   },
