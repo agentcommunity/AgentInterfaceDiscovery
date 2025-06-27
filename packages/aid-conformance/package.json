@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "@aid/core": "workspace:*",
+    "chalk": "4.1.2",
     "yargs": "^17.7.2",
     "zod": "^3.22.4"
   },
@@ -43,4 +44,4 @@
     "tsup": "^8.0.2",
     "typescript": "^5.3.3"
   }
-} 
+}
