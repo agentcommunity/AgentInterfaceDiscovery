@@ -6,6 +6,8 @@ export default [
   {
     files: ["**/*.js", "**/*.mjs"],
     ...js.configs.recommended,
+    languageOptions: { ecmaVersion: 2020, sourceType: "module" },
+    env: { node: true },
   },
   {
     files: ["**/*.ts", "**/*.tsx"],
@@ -22,6 +24,16 @@ export default [
     rules: {
       ...tseslint.configs.recommended.rules,
       "@typescript-eslint/explicit-module-boundary-types": "off",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-floating-promises": "warn",
+      "@typescript-eslint/no-unsafe-assignment": "warn",
+      "@typescript-eslint/no-unsafe-member-access": "warn",
+      "@typescript-eslint/no-unsafe-call": "warn",
+      "@typescript-eslint/no-unsafe-return": "warn",
+      "@typescript-eslint/no-misused-promises": "warn",
+      "@typescript-eslint/prefer-promise-reject-errors": "warn",
+      "@typescript-eslint/no-require-imports": "warn",
     },
   },
   {
