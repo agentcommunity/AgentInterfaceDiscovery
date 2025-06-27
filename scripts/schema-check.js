@@ -14,7 +14,7 @@ try {
   run("git diff --exit-code -- schema/v1/aid.schema.json")
 
   console.log("✅ Schema is in sync. No drift detected.")
-} catch (err) {
+} catch (_err) {
   console.error("❌ Schema drift detected! Commit updated schema or set BREAKING_SCHEMA_CHANGE=true to bypass.")
   process.exit(1)
 } 
