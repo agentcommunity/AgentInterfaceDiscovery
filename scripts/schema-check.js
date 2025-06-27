@@ -15,7 +15,6 @@ try {
 
   console.log("✅ Schema is in sync. No drift detected.")
 } catch (_err) {
-  void _err;
   console.error("❌ Schema drift detected! Commit updated schema or set BREAKING_SCHEMA_CHANGE=true to bypass.")
   process.exit(1)
 } 

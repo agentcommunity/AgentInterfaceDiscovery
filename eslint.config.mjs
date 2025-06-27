@@ -17,6 +17,9 @@ export default [
         console: "readonly",
       },
     },
+    rules: {
+      "no-unused-vars": "off",
+    },
   },
   {
     files: ["**/*.ts", "**/*.tsx"],
