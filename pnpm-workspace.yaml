@@ -1,4 +1,4 @@
 packages:
-  - 'packages/core'
-  - 'packages/conformance'
+  - 'packages/aid-core'
+  - 'packages/aid-conformance'
   - 'packages/web/aid-generator'
