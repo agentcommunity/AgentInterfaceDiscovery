@@ -1,5 +1,7 @@
 # Agent Interface Discovery (AID) - Core Library
 
+[![CI](https://github.com/agentcommunity/AgentInterfaceDiscovery/actions/workflows/conformance.yml/badge.svg)](https://github.com/agentcommunity/AgentInterfaceDiscovery/actions/workflows/conformance.yml)
+
 This repository contains the reference TypeScript implementation for the [Agent Interface Discovery (AID) v1 specification](https://docs.agentcommunity.org/specs/aid/spec-v1/). It provides a robust set of tools for generating and resolving AID profiles, enabling standardized agent-to-agent communication.
 
 As the ecosystem of AI agents and agentic services expands, a fundamental interoperability challenge emerges: *How can a client application or another agent discover the endpoint and configuration for a service, given only its domain name?* Current methods rely on manual configuration, proprietary client-specific files, and fragmented documentation. This hinders scalability and creates a poor user experience.
