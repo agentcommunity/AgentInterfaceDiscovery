@@ -6,8 +6,16 @@ export default [
   {
     files: ["**/*.js", "**/*.mjs"],
     ...js.configs.recommended,
-    languageOptions: { ecmaVersion: 2020, sourceType: "module" },
-    env: { node: true },
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: "module",
+      globals: {
+        module: "readonly",
+        require: "readonly",
+        __dirname: "readonly",
+        process: "readonly",
+      },
+    },
   },
   {
     files: ["**/*.ts", "**/*.tsx"],
