@@ -5,15 +5,18 @@
 	"description": "A monorepo for the Agent Interface Discovery (AID) specification and tools.",
 	"packageManager": "pnpm@8.15.5",
 	"scripts": {
-		"build": "pnpm --recursive run build",
+		"build:schema": "pnpm -F @aid/core run schema:generate",
+		"build": "pnpm run build:schema && pnpm -r --filter ./packages/** run build",
 		"dev": "pnpm --filter aid-web run dev",
 		"lint": "eslint . --ext .ts,.tsx,.js,.mjs",
 		"lint:fix": "eslint . --ext .ts,.tsx,.js,.mjs --fix",
 		"schema:check": "node scripts/schema-check.js",
-		"test": "pnpm --recursive run test"
+		"test": "pnpm --recursive run test",
+		"release": "changeset publish"
 	},
 	"devDependencies": {
 		"@aid/conformance": "workspace:*",
+		"@changesets/cli": "^2.29.5",
 		"@eslint/js": "^9.0.0",
 		"@types/node": "^20.11.20",
 		"@typescript-eslint/eslint-plugin": "^8.35.0",
@@ -29,7 +32,11 @@
 		"discovery",
 		"dns"
 	],
-	"author": "Agent Community",
+	"author": {
+		"name": "The Agent Community",
+		"email": "github@agentcommunity.org",
+		"url": "https://github.com/agentcommunity"
+	},
 	"license": "MIT",
 	"dependencies": {
 		"react-markdown": "^10.1.0",

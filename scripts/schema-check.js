@@ -1,17 +1,17 @@
 #!/usr/bin/env node
-import { execSync } from "node:child_process"
+const { execSync } = require("node:child_process")
 
 const run = (cmd) => execSync(cmd, { stdio: "inherit", shell: true })
 
 try {
   console.log("🛠️  Building @aid/core ...")
-  run("pnpm -F aid-core run build")
+  run("pnpm -F @aid/core run build")
 
   console.log("🔄 Regenerating schema ...")
-  run("pnpm -F aid-core run schema:generate")
+  run("pnpm -F @aid/core run schema:generate")
 
   console.log("🔍 Checking for drift in generated schema ...")
-  run("git diff --exit-code -- schema/v1/aid.schema.json")
+  run("git diff --exit-code -- packages/aid-schema/aid.schema.json")
 
   console.log("✅ Schema is in sync. No drift detected.")
 } catch (_err) {
