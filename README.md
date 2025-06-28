@@ -29,7 +29,7 @@ The entire system is driven by the Zod schemas defined in **[`packages/core/src/
 
 This source of truth generates:
 1.  **TypeScript Types:** All static types in [`packages/core/src/types.ts`](./packages/core/src/types.ts) are automatically inferred from the Zod schemas using `z.infer<T>`. This means the types you code against are guaranteed to match the validation logic.
-2.  **Canonical JSON Schema:** The [`schema/v1/aid.schema.json`](./schema/v1/aid.schema.json) file is programmatically generated from the Zod schemas. This file is the public, machine-readable contract for the AID v1 manifest.
+2.  **Canonical JSON Schema:** The [`packages/aid-schema/aid.schema.json`](./packages/aid-schema/aid.schema.json) file is programmatically generated from the Zod schemas.
 
 This approach eliminates drift between validation, static types, and public documentation.
 
@@ -55,8 +55,8 @@ The project is a `pnpm` monorepo with the following key components:
 │   ├── examples/           # A collection of canonical example configs
 │   └── web/
 │       └── aid-web/       # Next.js web application for building manifests
-└── schema/
-    └── v1/
+└── packages/
+    └── aid-schema/
         └── aid.schema.json # The generated canonical JSON Schema artifact
 ```
 
@@ -72,7 +72,7 @@ To make changes to the AID manifest structure, follow this workflow:
     ```bash
     pnpm -F @aid/core run schema:generate
     ```
-4.  **Commit Changes:** Commit all modified files, including `schemas.ts`, `types.ts`, and the newly generated [`schema/v1/aid.schema.json`](./schema/v1/aid.schema.json).
+4.  **Commit Changes:** Commit all modified files, including `schemas.ts`, `types.ts`, and the newly generated [`packages/aid-schema/aid.schema.json`](./packages/aid-schema/aid.schema.json).
 5.  **Push to `main`:** Pushing to the `main` branch will trigger the `sync-schema.yml` GitHub Action, which automatically pushes the updated `aid.schema.json` to the public `agentcommunity/docs` repository.
 
 ## Key Scripts
@@ -301,3 +301,29 @@ For more details on how to use the validation feature and the conformance CLI, p
 •   Optional capability hints – `mcpVersion`, `capabilities.structuredOutput`, `capabilities.resourceLinks` – help clients choose the best implementation.
 
 All docs, types, and the JSON schema have been updated accordingly.
+
+## Release Automation
+
+This repository uses [Changesets](https://github.com/changesets/changesets) together with a dedicated GitHub Action to handle versioning and publishing. Whenever commits land on `main` that include a Changeset, the **Release** workflow automatically:
+
+1. Opens a PR that bumps package versions and updates changelogs.
+2. After that PR is merged, builds all public `@aid/*` packages.
+3. Publishes the new versions to the **@agentcommunity** scope on npm using the organisation-wide `NPM_TOKEN` secret.
+
+The full configuration lives in [`.github/workflows/release.yml`](./.github/workflows/release.yml).
+
+## Stand-alone JSON Schema (`@aid/schema`)
+
+If you only need the canonical JSON Schema (for example to validate manifests in another programming language), install just:
+
+```bash
+npm install @aid/schema
+```
+
+A copy of the schema is also published to the CDN at:
+
+```
+https://unpkg.com/@aid/schema/aid.schema.json
+```
+
+This file is generated automatically from the Zod definitions in `@aid/core` every time the schema changes.

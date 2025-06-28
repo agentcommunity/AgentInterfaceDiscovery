@@ -109,8 +109,8 @@ This section supersedes the earlier Phase 4-6 outline and merges it with outstan
 ### 1. Phase 5 — CLI Migration & Polish
 1. Add `--migrate` flag to **`aid-validate`** to auto-convert old manifests/configs.
 2. Enhance CLI UX: auto-detect artefact type, pretty error table, `--schema-version`, `--quiet`.
-3. Reach **100 % branch coverage** on validator + migrator.
-4. Publish **@aid/conformance v0.2** with prebuilt binary (npx-friendly, no ts-node).
+3. ✅ Reach **100 % branch coverage** on validator + migrator. _done 2025-06-27_
+4. ✅ Publish **@aid/conformance v0.2** with prebuilt binary (npx-friendly, no ts-node). _ready after release workflow_
 
 ### 2. Phase 6 — Release Automation & Monitoring
 1. Release workflow via **Changesets** to publish *core / conformance / schema* & GitHub releases.
@@ -320,3 +320,17 @@ Step 1 📦 Repo hygiene (A-tasks above)
  1.1 Purge `dist` folders & extend `.gitignore`.
  1.2 Apply directory moves; update import paths; run Web UI smoke test.
  1.3 Add root `tsconfig.json` + package references; verify `pnpm build`
+
+#### Kick-off files for `feat/release-automation`
+
+- `.github/workflows/release.yml` – ✅ _added 2025-06-28_  (automated publishing)
+- `package.json` (root) – ✅ _scripts verified 2025-06-28_
+- `packages/aid-core/package.json` & `packages/aid-conformance/package.json` – ✅ _publishConfig public & build scripts OK_
+- `.changeset/config.json` – ✅ _access set to public_
+- `scripts/` (any helper e.g. bundle-size guard)._pending_
+
+Start the branch from an up-to-date `main`.
+
+- `scripts/` (any helper e.g. bundle-size guard)._pending_
+- - `packages/aid-schema` – ✅ _created 2025-06-28_ (canonical JSON Schema)
+- - `.github/workflows/sync-schema.yml` – ✅ _updated path_
