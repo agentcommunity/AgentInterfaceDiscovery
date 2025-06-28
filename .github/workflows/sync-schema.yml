@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'schema/v1/aid.schema.json'
+      - 'packages/aid-schema/aid.schema.json'
 
 jobs:
   sync-schema:
@@ -26,7 +26,7 @@ jobs:
       - name: Copy Schema to Docs Repo
         run: |
           mkdir -p ./docs-repo/docs/aid/v1
-          cp ./schema/v1/aid.schema.json ./docs-repo/docs/aid/v1/aid.schema.json
+          cp ./packages/aid-schema/aid.schema.json ./docs-repo/docs/aid/v1/aid.schema.json
           echo "Schema file copied to docs/aid/v1/aid.schema.json"
 
       - name: Commit and Push to Docs Repo

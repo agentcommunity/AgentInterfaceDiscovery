@@ -26,7 +26,8 @@
     "build:examples": "ts-node scripts/build-examples.ts",
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "schema:generate": "ts-node ./scripts/generate-schema.ts"
+    "schema:generate": "ts-node ./scripts/generate-schema.ts",
+    "build:schema": "pnpm run schema:generate"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
@@ -37,5 +38,12 @@
     "zod": "^3.25.67"
   },
   "keywords": [],
-  "author": ""
+  "author": {
+    "name": "The Agent Community",
+    "email": "github@agentcommunity.org",
+    "url": "https://github.com/agentcommunity"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

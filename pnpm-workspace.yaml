@@ -2,3 +2,4 @@ packages:
   - 'packages/aid-core'
   - 'packages/aid-conformance'
   - 'packages/aid-web'
+  - 'packages/aid-schema'
