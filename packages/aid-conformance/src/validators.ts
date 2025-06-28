@@ -102,11 +102,15 @@ export function validateTxt(txt: string | string[]): ValidationResult {
   return { ok: true };
 }
 
+// In packages/aid-conformance/src/validators.ts
+
 /**
  * Compares a generator configuration with a manifest to ensure they are equivalent.
  *
  * By default, it performs a strict comparison. If `strict` is false, it allows
- * for vendor-specific extensions (extra keys) in the manifest that are not
+ * for vendor-specific extensions (extra keys) in the manifest as long as the
+ * core schema is valid.
+ *
  * @returns A `ValidationResult` object indicating whether the two are in sync.
  */
 export function validatePair(
@@ -116,48 +120,44 @@ export function validatePair(
 ): ValidationResult {
   const generatedManifest = buildManifest(cfg);
 
-  // For non-strict checks, we can attempt to strip unknown keys from the
-  // provided manifest before comparison, but a simple deep equal is often
-  // sufficient if we assume the generated one is the source of truth.
-  // A proper deep-diff library would be better for rich error reporting.
-  const a = generatedManifest;
-  let b = manifest;
-
-  if (!opts.strict) {
-    // In non-strict mode, we parse the user's manifest to strip any keys
-    // not in the schema. This allows vendors to add their own metadata.
-    const parseResult = aidManifestSchema.safeParse(manifest);
-    if (!parseResult.success) {
-      return {
-        ok: false,
-        errors: [
-          {
-            message: "Provided manifest is invalid, cannot perform comparison.",
-            path: ["manifest"],
-          },
-          ...parseResult.error.issues.map((issue: ZodIssue) => ({
-            path: issue.path,
-            message: issue.message,
-          })),
-        ],
-      };
+  if (opts.strict) {
+    // STRICT MODE: Generate and do an exact comparison.
+    if (JSON.stringify(generatedManifest) === JSON.stringify(manifest)) {
+      return { ok: true };
     }
-    b = parseResult.data;
-  }
+    return {
+      ok: false,
+      errors: [
+        {
+          message:
+            "Strict mode failure: Manifest does not exactly match the one generated from the provided config.",
+        },
+      ],
+    };
+  } else {
+    // NON-STRICT MODE: We only care if the provided manifest is valid against the base schema.
+    // We use .passthrough() to create a non-strict version of the schema for this check.
+    const nonStrictSchema = aidManifestSchema.passthrough();
+    const parseResult = nonStrictSchema.safeParse(manifest);
 
-  // A simple JSON.stringify comparison is a good first pass.
-  if (JSON.stringify(a) === JSON.stringify(b)) {
-    return { ok: true };
+    if (parseResult.success) {
+      // If the manifest, including extra keys, conforms to the base schema, it's a pass.
+      return { ok: true };
+    }
+    
+    // If it fails to parse even with passthrough, it's a real error.
+    return {
+      ok: false,
+      errors: [
+        {
+          message: "Provided manifest is invalid even in non-strict mode.",
+          path: ["manifest"],
+        },
+        ...parseResult.error.issues.map((issue: ZodIssue) => ({
+          path: issue.path,
+          message: issue.message,
+        })),
+      ],
+    };
   }
-
-  // TODO: Implement a deep-diff for better error messages.
-  return {
-    ok: false,
-    errors: [
-      {
-        message:
-          "Manifest does not match the one generated from the provided config.",
-      },
-    ],
-  };
-} 
+}

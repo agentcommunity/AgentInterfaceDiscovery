@@ -24,7 +24,8 @@
 		"eslint": "^9.29.0",
 		"eslint-config-prettier": "^10.1.5",
 		"prettier": "^3.2.5",
-		"typescript": "^5.3.3"
+		"typescript": "^5.3.3",
+		"@changesets/cli": "^2.29.5"
 	},
 	"keywords": [
 		"ai",
