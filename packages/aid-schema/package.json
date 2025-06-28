@@ -3,17 +3,13 @@
   "version": "0.1.0",
   "description": "Canonical JSON Schema for AID manifests (v1)",
   "main": "aid.schema.json",
-  "files": [
-    "aid.schema.json"
-  ],
+  "files": ["aid.schema.json"],
   "type": "commonjs",
-  "publishConfig": {
-    "access": "public"
-  },
+  "publishConfig": { "access": "public" },
   "author": {
     "name": "The Agent Community",
     "email": "github@agentcommunity.org",
     "url": "https://github.com/agentcommunity"
   },
   "license": "MIT"
-} 
+}
