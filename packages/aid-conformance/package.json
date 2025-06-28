@@ -1,9 +1,11 @@
 {
   "name": "@aid/conformance",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": false,
   "description": "Conformance test suite for Agent Interface Discovery (AID) specifications.",
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": {
     "name": "The Agent Community",
     "email": "github@agentcommunity.org",
