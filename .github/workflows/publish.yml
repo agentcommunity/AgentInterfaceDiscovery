@@ -1,0 +1,37 @@
+name: Publish Packages
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # This runs ONLY when a version tag is pushed
+
+jobs:
+  publish:
+    name: Publish to NPM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm and Node.js
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build All Packages
+        # Use the safe, root build script
+        run: pnpm run build
+
+      - name: Publish to NPM
+        # The -r flag publishes all public packages in the workspace
+        # --no-git-checks is needed because CI is a detached head
+        run: pnpm publish -r --no-git-checks
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }} 
