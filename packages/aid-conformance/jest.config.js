@@ -22,6 +22,7 @@ module.exports = {
   },
 
   moduleNameMapper: {
-    '^@aid/core/(.*)$': '<rootDir>/../aid-core/src/$1',
+    '^@agentcommunity/aid-core/(.*)$': '<rootDir>/../aid-core/src/$1',
+    '^@agentcommunity/aid-core$': '<rootDir>/../aid-core/src/index.ts',
   },
-};
+}
