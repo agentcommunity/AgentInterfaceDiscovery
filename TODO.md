@@ -29,7 +29,7 @@ This plan has been updated to reflect the completion of the initial package publ
 
 3.  **Repository Housekeeping:**
     - [x] Run `eslint --fix` across the monorepo to standardize code style.
-    - [ ] Configure Dependabot or Renovate for automated dependency updates.
+    - [x] Configure Renovate for automated dependency updates.
 
 ### 🚀 Next: Ecosystem & Documentation
 *Goal: Expand the project's reach with more language support and better documentation.*
