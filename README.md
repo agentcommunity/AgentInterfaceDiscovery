@@ -304,13 +304,34 @@ All docs, types, and the JSON schema have been updated accordingly.
 
 ## Release Automation
 
-This repository uses [Changesets](https://github.com/changesets/changesets) together with a dedicated GitHub Action to handle versioning and publishing. Whenever commits land on `main` that include a Changeset, the **Release** workflow automatically:
+This repository uses [Changesets](https://github.com/changesets/changesets) with **two dedicated GitHub workflows** that keep versioning and publishing completely separate.
 
-1. Opens a PR that bumps package versions and updates changelogs.
-2. After that PR is merged, builds all public `@aid/*` packages.
-3. Publishes the new versions to the **@agentcommunity** scope on npm using the organisation-wide `NPM_TOKEN` secret.
+1. **`release.yml`** – runs on every push to `main`.
+   * If any unapplied Changesets are found, it opens (or updates) an *Upcoming Release: Version Packages* PR that bumps every affected package and updates the changelogs.
+   * If no Changesets exist, the workflow exits quickly.
+2. **`publish.yml`** – runs **only when a Git tag that matches `v*.*.*` is pushed**. That tag is created automatically by Changesets once the Version-Packages PR is merged. The workflow:
+   * installs dependencies,
+   * runs `pnpm changeset publish`, and
+   * publishes all public `@agentcommunity/*` packages for that version to npm using the organisation-wide `NPM_TOKEN`.
 
-The full configuration lives in [`.github/workflows/release.yml`](./.github/workflows/release.yml).
+The full release cycle therefore looks like this:
+
+```text
+(commit with changeset) ─▶ push to main
+        │
+        ▼
+ release.yml opens Version-Packages PR
+        │
+        ▼
+ maintainer merges the PR (new tag `vX.Y.Z`)
+        │
+        ▼
+   publish.yml runs on the tag and publishes to npm
+```
+
+Workflow locations:
+* [`release.yml`](./.github/workflows/release.yml)
+* [`publish.yml`](./.github/workflows/publish.yml)
 
 ## Stand-alone JSON Schema (`@agentcommunity/aid-schema`)
 

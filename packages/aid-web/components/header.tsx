@@ -36,7 +36,7 @@ export function Header() {
             Validator
           </Link>
           <a
-            href="https://docs.agentcommunity.org/specs/aid/spec-v1/"
+            href="https://docs.agentcommunity.org/specs/aid/"
             target="_blank"
             rel="noopener noreferrer"
             className={cn(buttonVariants({ variant: "ghost" }), "gap-2")}
