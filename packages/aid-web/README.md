@@ -42,7 +42,7 @@ This component provides the real-time feedback loop. It was refactored to fix a 
 ```bash
 # From the root of the monorepo
 pnpm install
-pnpm -F aid-web dev
+pnpm -F @aid/web dev
 ```
 
 ### Development Workflow

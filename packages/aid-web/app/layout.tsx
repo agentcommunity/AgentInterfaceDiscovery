@@ -15,8 +15,8 @@ const geistMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AID Generator",
-  description: "Generate validated Agent Interface Discovery (AID) manifests and DNS records in real-time",
+  title: "Agent Interface Discovery (AID)",
+  description: "A universal specification for discovering AI agents.",
 };
 
 export default function RootLayout({

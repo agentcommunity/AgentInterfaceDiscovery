@@ -81,7 +81,7 @@ To make changes to the AID manifest structure, follow this workflow:
 -   `pnpm build`: Build all packages in the monorepo.
 -   `pnpm -F @aid/core run schema:generate`: Regenerate the canonical JSON schema.
 -   `pnpm -F @aid/core run build:examples`: Generate the hosted example artifacts (`aid.json`, `aid.txt`) in `packages/examples/public/` using the configs from the web UI's samples directory as the source of truth.
--   `pnpm -F aid-web dev`: Run the web UI in development mode.
+-   `pnpm -F @aid/web dev`: Run the web UI in development mode.
 
 This script is used to generate the publicly hosted manifests that are used for testing the resolver. It reads all configurations from `packages/aid-web/public/samples`, resolves any template variables, and writes the final `aid.json` and `aid.txt` files to `packages/examples/public/`. This ensures our hosted examples are always in sync with the samples used in the web UI.
 
