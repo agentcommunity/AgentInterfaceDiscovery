@@ -70,7 +70,7 @@ To make changes to the AID manifest structure, follow this workflow:
 2.  **Update Types:** The TypeScript types in [`packages/core/src/types.ts`](./packages/core/src/types.ts) will update automatically as they are inferred from the schemas. You may need to adjust code that uses these types.
 3.  **Regenerate the JSON Schema:** Run the generator script to create an updated `aid.schema.json`.
     ```bash
-    pnpm -F @aid/core run schema:generate
+    pnpm -F @agentcommunity/aid-core run schema:generate
     ```
 4.  **Commit Changes:** Commit all modified files, including `schemas.ts`, `types.ts`, and the newly generated [`packages/aid-schema/aid.schema.json`](./packages/aid-schema/aid.schema.json).
 5.  **Push to `main`:** Pushing to the `main` branch will trigger the `sync-schema.yml` GitHub Action, which automatically pushes the updated `aid.schema.json` to the public `agentcommunity/docs` repository.
@@ -79,15 +79,15 @@ To make changes to the AID manifest structure, follow this workflow:
 
 -   `pnpm install`: Install all dependencies.
 -   `pnpm build`: Build all packages in the monorepo.
--   `pnpm -F @aid/core run schema:generate`: Regenerate the canonical JSON schema.
--   `pnpm -F @aid/core run build:examples`: Generate the hosted example artifacts (`aid.json`, `aid.txt`) in `packages/examples/public/` using the configs from the web UI's samples directory as the source of truth.
+-   `pnpm -F @agentcommunity/aid-core run schema:generate`: Regenerate the canonical JSON schema.
+-   `pnpm -F @agentcommunity/aid-core run build:examples`: Generate the hosted example artifacts (`aid.json`, `aid.txt`) in `packages/examples/public/` using the configs from the web UI's samples directory as the source of truth.
 -   `pnpm -F @aid/web dev`: Run the web UI in development mode.
 
 This script is used to generate the publicly hosted manifests that are used for testing the resolver. It reads all configurations from `packages/aid-web/public/samples`, resolves any template variables, and writes the final `aid.json` and `aid.txt` files to `packages/examples/public/`. This ensures our hosted examples are always in sync with the samples used in the web UI.
 
 ## Web UI (`packages/aid-web`)
 
-This project includes a powerful, user-friendly web application for generating and validating AID manifests in real-time. It's built with Next.js and provides a rich form-based interface that uses the `@aid/core` library as its single source of truth for generation logic.
+This project includes a powerful, user-friendly web application for generating and validating AID manifests in real-time. It's built with Next.js and provides a rich form-based interface that uses the `@agentcommunity/aid-core` library as its single source of truth for generation logic.
 
 Key features include:
 - Live preview of the generated `aid.json` and DNS TXT record.
@@ -209,7 +209,7 @@ Note how the `platformOverrides` keys are `windows`, `linux`, and `macos` as per
 The resolver is an async generator that consumes a domain and yields the steps of the AID discovery process, from DNS lookup to manifest validation. This is ideal for building UIs that show the discovery process in real-time.
 
 ```typescript
-import { resolveDomain } from '@aid/core';
+import { resolveDomain } from '@agentcommunity/aid-core';
 
 async function main() {
   const domain = "agentcommunity.org";
@@ -242,7 +242,7 @@ This implementation strictly follows the [AID v1 specification](https://docs.age
 - ✅ OS-specific execution overrides are supported (`windows`, `linux`, `macos`).
 - ✅ The generated JSON Schema is automatically synced to the public documentation repository.
 
-## Conformance Testing (`@aid/conformance`)
+## Conformance Testing (`@agentcommunity/aid-conformance`)
 
 To ensure the stability of the AID ecosystem, this repository includes a dedicated conformance testing suite in the [`packages/conformance`](./packages/conformance/) directory. This suite provides a command-line tool, `aid-validate`, for validating manifests, DNS records, and generator configurations against the canonical specification.
 
@@ -258,10 +258,10 @@ For more details on its usage and test strategies, please see the [conformance p
 1. Build workspace (only needed after code changes):
 
 ```bash
-pnpm -F @aid/conformance build
+pnpm -F @agentcommunity/aid-conformance build
 ```
 
-2. After a build, make sure the binary is linked (workspace root does this automatically because `@aid/conformance` is now a dev dependency):
+2. After a build, make sure the binary is linked (workspace root does this automatically because `@agentcommunity/aid-conformance` is now a dev dependency):
 
 ```bash
 pnpm install
@@ -326,4 +326,4 @@ A copy of the schema is also published to the CDN at:
 https://unpkg.com/@agentcommunity/aid-schema/aid.schema.json
 ```
 
-This file is generated automatically from the Zod definitions in `@aid/core` every time the schema changes.
+This file is generated automatically from the Zod definitions in `@agentcommunity/aid-core` every time the schema changes.

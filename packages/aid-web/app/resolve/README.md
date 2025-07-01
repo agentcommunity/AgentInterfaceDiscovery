@@ -1,12 +1,12 @@
 # AID Resolver Playground: Reference Implementation
 
-This directory contains a complete, best-practices reference implementation for an **Agent Interface Discovery (AID) Client**. It is built on top of the canonical `@aid/core` library to provide a polished, interactive, and developer-friendly UI for exploring AID-enabled domains.
+This directory contains a complete, best-practices reference implementation for an **Agent Interface Discovery (AID) Client**. It is built on top of the canonical `@agentcommunity/aid-core` library to provide a polished, interactive, and developer-friendly UI for exploring AID-enabled domains.
 
 ## Architecture
 
-The implementation is broken into two key parts: the **core resolver engine** (which lives in `@aid/core`) and a suite of **React UI components** in this directory that render the resolution process.
+The implementation is broken into two key parts: the **core resolver engine** (which lives in `@agentcommunity/aid-core`) and a suite of **React UI components** in this directory that render the resolution process.
 
-### 1. The Core Resolver Engine (`@aid/core/resolver.ts`)
+### 1. The Core Resolver Engine (`@agentcommunity/aid-core/resolver.ts`)
 
 This is the heart of any AID client. It's a framework-agnostic module that could be used in any TypeScript environment.
 
@@ -36,9 +36,9 @@ This resolver is a reference implementation designed to perform live, spec-compl
 
 ## Implementation Guide for Your Own Client
 
-To build your own AID client, you should depend directly on the `@aid/core` package.
+To build your own AID client, you should depend directly on the `@agentcommunity/aid-core` package.
 
-1.  **Use the Resolver Engine**: Import and use `resolveDomain` from `@aid/core/resolver` to handle the discovery logic.
+1.  **Use the Resolver Engine**: Import and use `resolveDomain` from `@agentcommunity/aid-core/resolver` to handle the discovery logic.
 2.  **Render the Process**: Iterate through the yielded steps from `resolveDomain` to provide real-time feedback to the user. On a `validation_error`, check for the `data.manifestContent` property to display the invalid source to the user, improving the debugging experience.
 3.  **Get the Actionable Profile**: On a `validation_success` or `actionable_profile` step, use `getImplementations` to generate an `ActionableImplementation[]` array.
 4.  **Build Your UI Dynamically**: Loop through the `ActionableImplementation[]` array and inspect its properties (`type`, `execution`, `auth`, `requiredConfig`) to dynamically render the appropriate UI controls for the user. This reference implementation provides a robust example (`ImplementationCard.tsx`) of how to accomplish this.

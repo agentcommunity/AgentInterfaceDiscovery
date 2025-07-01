@@ -2,7 +2,7 @@
 
 This directory contains canonical examples of `AidGeneratorConfig` files and serves as a standalone Vercel project for hosting their generated `aid.json` manifests.
 
-Each subdirectory (e.g., `/auth0`, `/simple`) contains only a `config.json` file. All other artifacts (`aid.json`, `aid.txt`) are **generated automatically** by the `build:examples` script, which uses the canonical `@aid/core` library.
+Each subdirectory (e.g., `/auth0`, `/simple`) contains only a `config.json` file. All other artifacts (`aid.json`, `aid.txt`) are **generated automatically** by the `build:examples` script, which uses the canonical `@agentcommunity/aid-core` library.
 
 ## Hosting Architecture
 
@@ -15,13 +15,13 @@ The `vercel.json` file in this directory is **generated automatically** by the `
 To regenerate all artifacts and the `vercel.json` routing file, run the following command from the root of the monorepo:
 
 ```bash
-pnpm --filter @aid/core build:examples
+pnpm --filter @agentcommunity/aid-core build:examples
 ```
 
 This script will:
 1. Find all `config.json` files within `packages/examples`.
 2. Assemble the final configuration objects (including aggregating the `landing-mcp` profile).
-3. Call the canonical `buildManifest` and `buildTxtRecord` functions from `@aid/core`.
+3. Call the canonical `buildManifest` and `buildTxtRecord` functions from `@agentcommunity/aid-core`.
 4. Place the generated files into `packages/examples/public/[example-name]/`.
 5. Automatically generate the `vercel.json` file.
 

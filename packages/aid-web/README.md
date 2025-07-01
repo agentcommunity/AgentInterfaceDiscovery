@@ -10,7 +10,7 @@ This web UI is part of a larger monorepo. For details on the core library and th
 -   **Schema-Aware Forms (June 2025 update)**: The UI now supports the latest schema additions – `title`, machine-friendly `name`, capability hints, and dynamic OAuth (`dynamicClientRegistration`).
 -   **Fully Responsive Design**: A two-column layout for desktop provides a comprehensive view, which seamlessly transitions to a mobile-friendly single-column layout.
 -   **Centralized, Reactive State**: Built on a modern stack using React Hook Form and Context for robust and predictable state management.
--   **Browser-Native Core Logic**: Utilizes a browser-safe version of the `@aid/core` library, ensuring 100% spec compliance between the UI and the canonical implementation.
+-   **Browser-Native Core Logic**: Utilizes a browser-safe version of the `@agentcommunity/aid-core` library, ensuring 100% spec compliance between the UI and the canonical implementation.
 -   **Full Spec Support**: All authentication schemes and implementation types (remote, local) are supported.
 -   **Sample Templates**: Load pre-built examples for common use cases like Auth0, Supabase, and multi-implementation profiles.
 
@@ -29,7 +29,7 @@ The sample configuration files in `/public/samples` **now include the new `title
 ### 1. `GeneratorFormProvider`
 The heart of the application. It initializes `react-hook-form` and wraps the entire form, providing global state access to every component. This centralization is key to the app's stability and scalability.
 
-### 2. `@aid/core/browser`
+### 2. `@agentcommunity/aid-core/browser`
 The engine for all generation logic. The UI exclusively imports from the `/browser` entry point of the core library. This is critical because it guarantees that only browser-safe code (without Node.js dependencies like `fs`) is bundled, preventing client-side errors.
 
 ### 3. `OutputPanel.tsx`
@@ -47,8 +47,8 @@ pnpm -F @aid/web dev
 
 ### Development Workflow
 
-1.  **Type & Logic Changes**: All changes to the data model or generation logic **must** be made in the `@aid/core` package first.
-2.  **Build Core**: After changing `@aid/core`, run `pnpm build` from the root to compile the changes and make them available to the web UI.
+1.  **Type & Logic Changes**: All changes to the data model or generation logic **must** be made in the `@agentcommunity/aid-core` package first.
+2.  **Build Core**: After changing `@agentcommunity/aid-core`, run `pnpm build` from the root to compile the changes and make them available to the web UI.
 3.  **UI Development**: The web UI in `packages/aid-web` will automatically pick up the updated types and functions. Adjust form fields and components as needed.
 
 ## 📄 License
