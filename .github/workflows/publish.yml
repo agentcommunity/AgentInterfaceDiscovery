@@ -9,6 +9,8 @@ jobs:
   publish:
     name: Publish to NPM
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -29,9 +31,10 @@ jobs:
         # Use the safe, root build script
         run: pnpm run build
 
-      - name: Publish to NPM
-        # The -r flag publishes all public packages in the workspace
-        # --no-git-checks is needed because CI is a detached head
-        run: pnpm publish -r --no-git-checks
+      - name: Publish to npm via Changesets
+        uses: changesets/action@v1
+        with:
+          publish: pnpm changeset publish
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }} 
