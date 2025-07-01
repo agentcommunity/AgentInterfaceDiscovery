@@ -1,5 +1,16 @@
 # @aid/conformance
 
+## 2.0.0
+
+### Major Changes
+
+- 3edb419: feat: Initial public release under the @agentcommunity scope. Aligns all packages to v1.0.0 and includes a complete validation toolkit, CLI, and official JSON Schema.
+
+### Patch Changes
+
+- Updated dependencies [3edb419]
+  - @aid/core@1.0.2
+
 ## 1.0.0
 
 ### Major Changes
