@@ -28,7 +28,7 @@ This plan has been updated to reflect the completion of the initial package publ
     - [ ] (Optional) Investigate a `--quiet` flag for CI-friendly output.
 
 3.  **Repository Housekeeping:**
-    - [ ] Run `eslint --fix` across the monorepo to standardize code style.
+    - [x] Run `eslint --fix` across the monorepo to standardize code style.
     - [ ] Configure Dependabot or Renovate for automated dependency updates.
 
 ### 🚀 Next: Ecosystem & Documentation
