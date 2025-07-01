@@ -1,5 +1,13 @@
 # @aid/conformance
 
+## 1.0.1
+
+### Patch Changes
+
+- dabfdd7: feat: Initial public release with corrected `@agentcommunity/aid-*` package names. Aligns package names and prepares for unified 1.0.x release.
+- Updated dependencies [3edb419]
+  - @agentcommunity/aid-core@1.0.1
+
 ## 1.0.0
 
 ### Major Changes
