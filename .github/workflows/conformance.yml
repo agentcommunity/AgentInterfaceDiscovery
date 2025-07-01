@@ -45,10 +45,23 @@ jobs:
       - name: 🔟 Bundle size check (browser build)
         run: |
           gzip -c packages/aid-core/dist/browser/index.mjs | wc -c > size.txt
-          LIMIT=16000
+          LIMIT=15000
           SIZE=$(cat size.txt)
           echo "Browser bundle size: $SIZE bytes (limit $LIMIT)"
           if [ "$SIZE" -gt "$LIMIT" ]; then
             echo "::error::Browser bundle exceeds limit!"
             exit 1
-          fi 
+          fi
+
+      - name: 1️⃣1️⃣ Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: packages/aid-conformance/coverage
+          retention-days: 7
+
+      - name: 1️⃣2️⃣ Summary – coverage
+        run: |
+          echo "### Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          npx --yes coverage-summary-cli -p packages/aid-conformance/coverage/coverage-summary.json >> $GITHUB_STEP_SUMMARY 

@@ -1,6 +1,8 @@
 # Agent Interface Discovery (AID) - Core Library
 
 [![CI](https://github.com/agentcommunity/AgentInterfaceDiscovery/actions/workflows/conformance.yml/badge.svg)](https://github.com/agentcommunity/AgentInterfaceDiscovery/actions/workflows/conformance.yml)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](./packages/aid-conformance/coverage)
+[![Bundle Size](https://img.shields.io/badge/bundle_size-%3C15kB-blue)](./packages/aid-core/dist/browser)
 
 This repository contains the reference TypeScript implementation for the [Agent Interface Discovery (AID) v1 specification](https://docs.agentcommunity.org/specs/aid/spec-v1/). It provides a robust set of tools for generating and resolving AID profiles, enabling standardized agent-to-agent communication.
 
