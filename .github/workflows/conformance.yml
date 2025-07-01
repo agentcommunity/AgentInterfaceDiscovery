@@ -37,7 +37,7 @@ jobs:
         run: pnpm run schema:check
 
       - name: 8️⃣ Unit tests with coverage
-        run: pnpm --filter @agentcommunity/aid-conformance run test -- --coverage
+        run: pnpm --filter @agentcommunity/aid-conformance run test
 
       - name: 9️⃣ Validate committed examples
         run: pnpm --filter @agentcommunity/aid-conformance run test:conformance ./packages/examples/public || echo "conformance script not yet implemented"
