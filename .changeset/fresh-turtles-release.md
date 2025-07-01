@@ -1,5 +1,4 @@
 ---
-"@agentcommunity/aid-core": patch
 "@agentcommunity/aid-conformance": patch
 "@agentcommunity/aid-schema": patch
 ---

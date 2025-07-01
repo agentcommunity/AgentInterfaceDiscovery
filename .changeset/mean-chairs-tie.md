@@ -1,7 +1,7 @@
 ---
-'@aid/conformance': major
-'@agentcommunity/aid-schema': major
-'@aid/core': patch
+'@agentcommunity/aid-core': none
+'@agentcommunity/aid-conformance': none
+'@agentcommunity/aid-schema': none
 ---
 
-feat: Initial public release under the @agentcommunity scope. Aligns all packages to v1.0.0 and includes a complete validation toolkit, CLI, and official JSON Schema.
+chore: obsolete changeset superseded by fresh-turtles-release
