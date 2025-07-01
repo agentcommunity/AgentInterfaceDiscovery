@@ -34,7 +34,9 @@ jobs:
         with:
           # This command creates the "Version Packages" PR.
           version: pnpm changeset version
+          publish: pnpm changeset publish
           # We add a descriptive title to the PR
           title: "Upcoming Release: Version Packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
