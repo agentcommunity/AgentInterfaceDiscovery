@@ -18,8 +18,8 @@ export function Header() {
         </Link>
         <nav className="flex items-center gap-1">
           <Link
-            href="/"
-            className={cn(buttonVariants({ variant: pathname === "/" ? "secondary" : "ghost" }))}
+            href="/generate"
+            className={cn(buttonVariants({ variant: pathname === "/generate" ? "secondary" : "ghost" }))}
           >
             Generator
           </Link>
