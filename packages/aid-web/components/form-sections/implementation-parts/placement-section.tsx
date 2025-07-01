@@ -4,7 +4,7 @@ import { useFormContext } from "react-hook-form"
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import type { AidGeneratorConfig } from "@aid/core/browser"
+import type { AidGeneratorConfig } from "@agentcommunity/aid-core/browser"
 
 interface PlacementSectionProps {
   index: number

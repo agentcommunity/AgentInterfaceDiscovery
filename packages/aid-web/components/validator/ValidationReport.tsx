@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/alert"
 import { Codeblock } from "@/components/resolver/Codeblock"
 import { ShieldCheck, AlertTriangle } from "lucide-react"
-import { ValidationResult } from "@aid/conformance"
+import { ValidationResult } from "@agentcommunity/aid-conformance"
 
 interface ValidationReportProps {
   result: ValidationResult | null

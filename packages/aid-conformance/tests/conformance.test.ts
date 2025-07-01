@@ -1,5 +1,5 @@
 import { validateManifest, validateTxt } from "../src/validators";
-import { buildManifest } from "@aid/core"
+import { buildManifest } from "@agentcommunity/aid-core"
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
 

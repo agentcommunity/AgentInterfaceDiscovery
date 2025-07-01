@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { type AidGeneratorConfig } from "@aid/core/browser"
+import { type AidGeneratorConfig } from "@agentcommunity/aid-core/browser"
 
 interface Sample {
   name: string

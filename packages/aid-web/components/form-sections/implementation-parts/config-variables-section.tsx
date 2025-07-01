@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { HelpCircle } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import type { AidGeneratorConfig } from "@aid/core/browser"
+import type { AidGeneratorConfig } from "@agentcommunity/aid-core/browser"
 import { CollapsibleList } from "./collapsible-list"
 
 interface ConfigVariablesSectionProps {

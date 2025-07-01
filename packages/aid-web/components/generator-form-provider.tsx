@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FormProvider } from "react-hook-form"
-import { aidGeneratorConfigSchema, type AidGeneratorConfig } from "@aid/core/browser"
+import { aidGeneratorConfigSchema, type AidGeneratorConfig } from "@agentcommunity/aid-core/browser"
 
 // Default empty state for the form, matching the AidGeneratorConfig structure.
 const emptyConfig: AidGeneratorConfig = {

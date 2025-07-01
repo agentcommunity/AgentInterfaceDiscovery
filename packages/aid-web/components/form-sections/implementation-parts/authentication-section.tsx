@@ -11,7 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Separator } from "@/components/ui/separator"
 import { UrlInput } from "@/components/ui/url-input"
 import { Badge } from "@/components/ui/badge"
-import type { AidGeneratorConfig } from "@aid/core/browser"
+import type { AidGeneratorConfig } from "@agentcommunity/aid-core/browser"
 import { PlacementSection } from "./placement-section"
 import { Checkbox } from "@/components/ui/checkbox"
 

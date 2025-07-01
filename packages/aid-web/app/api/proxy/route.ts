@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { buildManifest, AidGeneratorConfig } from '@aid/core';
+import { buildManifest, AidGeneratorConfig } from '@agentcommunity/aid-core';
 
 // These are the special domains for our examples that rely on Vercel rewrites.
 const exampleDomains = [

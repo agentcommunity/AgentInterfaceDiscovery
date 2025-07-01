@@ -65,10 +65,10 @@ export default function LandingPage() {
         <h2 className="text-3xl md:text-4xl font-bold">What's in the box?</h2>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
           <li>
-            <strong className="text-foreground">@aid/core</strong> — build &amp; resolve manifests programmatically.
+            <strong className="text-foreground">@agentcommunity/aid-core</strong> — build &amp; resolve manifests programmatically.
           </li>
           <li>
-            <strong className="text-foreground">@aid/conformance</strong> — CLI &amp; test-suite to guarantee spec compliance.
+            <strong className="text-foreground">@agentcommunity/aid-conformance</strong> — CLI &amp; test-suite to guarantee spec compliance.
           </li>
           <li>
             <strong className="text-foreground">@agentcommunity/aid-schema</strong> — the canonical JSON Schema, ready for any language.

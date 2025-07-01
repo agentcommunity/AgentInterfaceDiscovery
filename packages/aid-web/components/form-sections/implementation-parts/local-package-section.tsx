@@ -10,7 +10,7 @@ import { Terminal } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { HelpCircle } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import type { AidGeneratorConfig } from "@aid/core/browser"
+import type { AidGeneratorConfig } from "@agentcommunity/aid-core/browser"
 
 interface LocalPackageSectionProps {
   index: number

@@ -1,6 +1,6 @@
 'use client';
 
-import { ActionableImplementation } from '@aid/core';
+import { ActionableImplementation } from '@agentcommunity/aid-core';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Pickaxe, Milestone, Terminal, KeyRound, Variable, FolderOpen, File, Link as LinkIcon } from 'lucide-react';

@@ -5,7 +5,7 @@ import {
   validateManifest,
   validateTxt,
   validatePair,
-} from "@aid/conformance"
+} from "@agentcommunity/aid-conformance"
 import { buildManifest } from "@agentcommunity/aid-core/browser"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArtefactSelector } from "@/components/validator/ArtefactSelector"
@@ -13,7 +13,7 @@ import { DropZone } from "@/components/validator/DropZone"
 import { ValidationReport } from "@/components/validator/ValidationReport"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import type { ValidationResult } from "@aid/conformance"
+import type { ValidationResult } from "@agentcommunity/aid-conformance"
 import type { AidGeneratorConfig, AidManifest } from "@agentcommunity/aid-core/browser"
 import { EditableCodeblock } from "@/components/validator/EditableCodeblock"
 
