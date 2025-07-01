@@ -16,7 +16,7 @@
     "rootDir": ".",
     "types": ["jest", "node"],
     "paths": {
-      "@aid/core/browser": ["../aid-core/src/browser.ts"]
+      "@agentcommunity/aid-core/browser": ["../aid-core/src/browser.ts"]
     }
   },
   "include": ["src", "tests", "typings"],

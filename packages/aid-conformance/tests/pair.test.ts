@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 import { join } from "path";
-import { buildManifest } from "@aid/core";
+import { buildManifest } from "@agentcommunity/aid-core";
 import { validatePair, validateTxt } from "../src/validators";
 
 // Define paths once at the top

@@ -20,11 +20,11 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@aid/core": ["../aid-core/src/index.ts"],
-      "@aid/core/*": ["../aid-core/src/*"],
-      "@aid/conformance": ["../aid-conformance/src/index.ts"],
-      "@aid/conformance/*": ["../aid-conformance/src/*"],
-      "@aid/core/browser": ["../aid-core/src/browser.ts"]
+      "@agentcommunity/aid-core": ["../aid-core/src/index.ts"],
+      "@agentcommunity/aid-core/*": ["../aid-core/src/*"],
+      "@agentcommunity/aid-conformance": ["../aid-conformance/src/index.ts"],
+      "@agentcommunity/aid-conformance/*": ["../aid-conformance/src/*"],
+      "@agentcommunity/aid-core/browser": ["../aid-core/src/browser.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

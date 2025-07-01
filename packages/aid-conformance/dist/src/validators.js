@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateManifest = validateManifest;
 exports.validateTxt = validateTxt;
 exports.validatePair = validatePair;
-const browser_1 = require("@aid/core/browser");
+const browser_1 = require("@agentcommunity/aid-core/browser");
 /**
  * Validates a raw JavaScript object against the canonical AID manifest schema.
  *

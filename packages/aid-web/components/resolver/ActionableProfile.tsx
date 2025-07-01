@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ActionableImplementation } from '@/lib/resolver';
-import { AidManifest } from '@aid/core';
+import { AidManifest } from '@agentcommunity/aid-core';
 import { Terminal, ShieldCheck } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ImplementationCard } from './ImplementationCard';

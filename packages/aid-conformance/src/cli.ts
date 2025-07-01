@@ -5,7 +5,7 @@ import { hideBin } from "yargs/helpers";
 import chalk from "chalk";
 import { readFileSync } from "fs";
 import { validateManifest, validateTxt, validatePair } from "./validators";
-import { AidGeneratorConfig, AidManifest } from "@aid/core";
+import { AidGeneratorConfig, AidManifest } from "@agentcommunity/aid-core";
 
 // -------------------------
 // Utility helpers for pretty output

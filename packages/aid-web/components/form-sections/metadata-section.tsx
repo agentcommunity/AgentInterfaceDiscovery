@@ -4,7 +4,7 @@ import { useFormContext } from "react-hook-form"
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { UrlInput } from "@/components/ui/url-input"
-import type { AidGeneratorConfig } from "@aid/core"
+import type { AidGeneratorConfig } from "@agentcommunity/aid-core"
 import { cn } from "@/lib/utils"
 
 export function MetadataSection() {

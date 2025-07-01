@@ -1,4 +1,4 @@
-import { aidManifestSchema, buildManifest, AidGeneratorConfig, AidManifest } from "@aid/core/browser";
+import { aidManifestSchema, buildManifest, AidGeneratorConfig, AidManifest } from "@agentcommunity/aid-core/browser";
 import { z, ZodIssue } from "zod";
 
 export type ValidationResult = {

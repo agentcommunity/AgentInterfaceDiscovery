@@ -1,1 +1,1 @@
-export * from "@aid/core/browser";
+export * from "@agentcommunity/aid-core/browser";

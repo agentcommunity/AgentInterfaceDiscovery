@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Plus, X, HelpCircle } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import type { AidGeneratorConfig } from "@aid/core/browser"
+import type { AidGeneratorConfig } from "@agentcommunity/aid-core/browser"
 
 interface TagsSectionProps {
   index: number

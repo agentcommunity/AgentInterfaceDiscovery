@@ -1,5 +1,5 @@
 import { expectType, expectAssignable } from 'tsd';
-import { AidManifest, aidManifestSchema } from '@aid/core';
+import { AidManifest, aidManifestSchema } from '@agentcommunity/aid-core';
 import { z } from 'zod';
 
 type InferredManifest = z.infer<typeof aidManifestSchema>;

@@ -1,4 +1,4 @@
-import { AidGeneratorConfig, AidManifest } from "@aid/core/browser";
+import { AidGeneratorConfig, AidManifest } from "@agentcommunity/aid-core/browser";
 export type ValidationResult = {
     ok: boolean;
     errors?: {

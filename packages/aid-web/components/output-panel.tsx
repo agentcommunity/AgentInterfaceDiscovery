@@ -4,13 +4,13 @@ import { useEffect, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { aidGeneratorConfigSchema, buildManifest, buildTxtRecord } from "@aid/core/browser"
+import { aidGeneratorConfigSchema, buildManifest, buildTxtRecord } from "@agentcommunity/aid-core/browser"
 import { Codeblock } from "@/components/resolver/Codeblock"
 import { pruneEmpty } from "@/lib/prune"
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
 import { ShieldAlert, ShieldCheck, Terminal } from "lucide-react"
 import type { ZodIssue } from "zod"
-import { AidGeneratorConfig } from "@aid/core"
+import { AidGeneratorConfig } from "@agentcommunity/aid-core"
 
 export function OutputPanel() {
   const { watch, getValues } = useFormContext<AidGeneratorConfig>()

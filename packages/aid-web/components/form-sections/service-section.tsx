@@ -5,7 +5,7 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { UrlInput } from "@/components/ui/url-input"
-import type { AidGeneratorConfig } from "@aid/core"
+import type { AidGeneratorConfig } from "@agentcommunity/aid-core"
 import { cn } from "@/lib/utils"
 import { SampleLoader } from "../sample-loader"
 

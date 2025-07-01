@@ -2,9 +2,9 @@
 
 import { useState, useRef, useEffect, Suspense } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { getImplementations, resolveDomain, ActionableImplementation } from "@aid/core/browser";
+import { getImplementations, resolveDomain, ActionableImplementation } from "@agentcommunity/aid-core/browser";
 import { cn } from '@/lib/utils';
-import { AidManifest } from '@aid/core';
+import { AidManifest } from '@agentcommunity/aid-core';
 
 // New Component Imports
 import { ResolverHeader } from '@/components/resolver/ResolverHeader';
