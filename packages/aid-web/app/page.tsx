@@ -71,7 +71,7 @@ export default function LandingPage() {
             <strong className="text-foreground">@aid/conformance</strong> — CLI &amp; test-suite to guarantee spec compliance.
           </li>
           <li>
-            <strong className="text-foreground">@aid/schema</strong> — the canonical JSON Schema, ready for any language.
+            <strong className="text-foreground">@agentcommunity/aid-schema</strong> — the canonical JSON Schema, ready for any language.
           </li>
           <li>
             <strong className="text-foreground">Web Tools</strong> — interactive generator, resolver, and validator (see navigation).

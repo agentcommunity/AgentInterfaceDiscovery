@@ -37,10 +37,10 @@ jobs:
         run: pnpm run schema:check
 
       - name: 8️⃣ Unit tests with coverage
-        run: pnpm --filter aid-conformance run test -- --coverage
+        run: pnpm --filter @agentcommunity/aid-conformance run test -- --coverage
 
       - name: 9️⃣ Validate committed examples
-        run: pnpm --filter aid-conformance run test:conformance ./packages/examples/public || echo "conformance script not yet implemented"
+        run: pnpm --filter @agentcommunity/aid-conformance run test:conformance ./packages/examples/public || echo "conformance script not yet implemented"
 
       - name: 🔟 Bundle size check (browser build)
         run: |

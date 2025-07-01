@@ -312,18 +312,18 @@ This repository uses [Changesets](https://github.com/changesets/changesets) toge
 
 The full configuration lives in [`.github/workflows/release.yml`](./.github/workflows/release.yml).
 
-## Stand-alone JSON Schema (`@aid/schema`)
+## Stand-alone JSON Schema (`@agentcommunity/aid-schema`)
 
 If you only need the canonical JSON Schema (for example to validate manifests in another programming language), install just:
 
 ```bash
-npm install @aid/schema
+npm install @agentcommunity/aid-schema
 ```
 
 A copy of the schema is also published to the CDN at:
 
 ```
-https://unpkg.com/@aid/schema/aid.schema.json
+https://unpkg.com/@agentcommunity/aid-schema/aid.schema.json
 ```
 
 This file is generated automatically from the Zod definitions in `@aid/core` every time the schema changes.

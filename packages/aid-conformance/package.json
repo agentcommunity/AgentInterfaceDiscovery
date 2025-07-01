@@ -1,5 +1,5 @@
 {
-  "name": "@aid/conformance",
+  "name": "@agentcommunity/aid-conformance",
   "version": "1.0.0",
   "private": false,
   "description": "Conformance test suite for Agent Interface Discovery (AID) specifications.",
@@ -37,7 +37,7 @@
     "test:types": "tsd"
   },
   "dependencies": {
-    "@aid/core": "workspace:*",
+    "@agentcommunity/aid-core": "workspace:*",
     "chalk": "4.1.2",
     "yargs": "^17.7.2",
     "zod": "^3.22.4"

@@ -1,5 +1,5 @@
 {
-  "name": "@aid/schema",
+  "name": "@agentcommunity/aid-schema",
   "version": "1.0.0",
   "description": "Canonical JSON Schema for AID manifests (v1)",
   "main": "aid.schema.json",

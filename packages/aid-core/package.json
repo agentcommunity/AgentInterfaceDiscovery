@@ -1,5 +1,5 @@
 {
-  "name": "@aid/core",
+  "name": "@agentcommunity/aid-core",
   "version": "1.0.1",
   "description": "Core library for Agent Interface Discovery (AID) types, generators, and resolvers.",
   "main": "./dist/index.js",

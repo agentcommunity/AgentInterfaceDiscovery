@@ -1,6 +1,6 @@
 ---
 '@aid/conformance': major
-'@aid/schema': major
+'@agentcommunity/aid-schema': major
 '@aid/core': patch
 ---
 

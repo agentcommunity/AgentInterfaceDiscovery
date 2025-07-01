@@ -15,7 +15,7 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1
     devDependencies:
-      '@aid/conformance':
+      '@agentcommunity/aid-conformance':
         specifier: workspace:*
         version: link:packages/aid-conformance
       '@changesets/cli':
@@ -48,7 +48,7 @@ importers:
 
   packages/aid-conformance:
     dependencies:
-      '@aid/core':
+      '@agentcommunity/aid-core':
         specifier: workspace:*
         version: link:../aid-core
       chalk:
@@ -106,10 +106,10 @@ importers:
 
   packages/aid-web:
     dependencies:
-      '@aid/conformance':
+      '@agentcommunity/aid-conformance':
         specifier: workspace:*
         version: link:../aid-conformance
-      '@aid/core':
+      '@agentcommunity/aid-core':
         specifier: workspace:*
         version: link:../aid-core
       '@hookform/resolvers':
