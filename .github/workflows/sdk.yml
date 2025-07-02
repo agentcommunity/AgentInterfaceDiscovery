@@ -6,71 +6,70 @@ on:
     branches: [main, feat/sdk-generator]
 
 jobs:
+  # Job 1: Setup and generate the code ONCE
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      
+      - name: Install pnpm and dependencies
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+          # This will run `pnpm install` and correctly configure the PATH
+          run_install: true
+
+      - name: Generate All SDKs
+        run: pnpm run sdk:generate
+
+      - name: Upload Generated SDKs as an artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-sdks
+          path: .
+
+  # Job 2: Test the Python SDK
   python-sdk:
+    needs: setup
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.9", "3.11"]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Download Generated SDKs
+        uses: actions/download-artifact@v4
         with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-          run_install: false
-
-      - name: Install deps
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate SDKs
-        run: pnpm run sdk:generate
+          name: generated-sdks
 
       - name: Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: 'pip'
 
-      - name: Install Python test deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install jsonschema pytest rich
+      - name: Install Python test dependencies
+        run: python -m pip install -r packages/aid-core-py/requirements.txt # Assuming you create a requirements.txt
 
       - name: Run Python tests
-        run: pytest packages/aid-core-py/tests -q
-        env:
-          PYTHONPATH: packages/aid-core-py
+        run: |
+          cd packages/aid-core-py
+          pytest
 
+  # Job 3: Test the Go SDK
   go-sdk:
+    needs: setup
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Download Generated SDKs
+        uses: actions/download-artifact@v4
         with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 8
-          run_install: false
-
-      - name: Install deps
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate SDKs
-        run: pnpm run sdk:generate
+          name: generated-sdks
 
       - name: Setup Go
         uses: actions/setup-go@v5
@@ -80,4 +79,4 @@ jobs:
       - name: Run Go tests
         run: |
           cd packages/aid-core-go
-          go test ./... 
+          go test ./...
