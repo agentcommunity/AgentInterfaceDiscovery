@@ -3,5 +3,12 @@
   "references": [
     { "path": "./packages/aid-core" },
     { "path": "./packages/aid-conformance" }
-  ]
+  ],
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ]
+  }
 } 

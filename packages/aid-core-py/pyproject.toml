@@ -1,0 +1,21 @@
+[project]
+name = "aid-core-py"
+version = "0.1.0"
+description = "Python helpers for Agent Interface Discovery (AID) v1"
+authors = [{ name = "Agent Community", email = "github@agentcommunity.org" }]
+requires-python = ">=3.9"
+readme = "README.md"
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Homepage = "https://github.com/agentcommunity/AgentInterfaceDiscovery"
+
+[project.optional-dependencies]
+cli = ["jsonschema~=4.22", "rich>=13"]
+tests = ["pytest>=8"]
+
+[project.scripts]
+aid-validate = "aid_core_py.cli:main" 
