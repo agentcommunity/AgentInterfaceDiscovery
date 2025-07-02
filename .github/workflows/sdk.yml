@@ -2,8 +2,20 @@ name: SDK Matrix
 
 on:
   pull_request:
+    paths:
+      - 'packages/aid-core-py/**'
+      - 'packages/aid-core-go/**'
+      - 'packages/aid-schema/aid.schema.json'
+      - 'scripts/generate-sdk.ts'
+      - '.github/workflows/sdk.yml'
   push:
     branches: [main, feat/sdk-generator]
+    paths:
+      - 'packages/aid-core-py/**'
+      - 'packages/aid-core-go/**'
+      - 'packages/aid-schema/aid.schema.json'
+      - 'scripts/generate-sdk.ts'
+      - '.github/workflows/sdk.yml'
 
 jobs:
   # Job 1: Setup and generate the code ONCE
