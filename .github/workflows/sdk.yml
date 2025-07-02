@@ -53,13 +53,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
 
-      - name: Install Python test dependencies
-        run: python -m pip install -r packages/aid-core-py/requirements.txt # Assuming you create a requirements.txt
-
-      - name: Run Python tests
+      - name: Install dependencies and run tests
         run: |
-          cd packages/aid-core-py
-          pytest
+          python -m pip install -r packages/aid-core-py/requirements.txt
+          python -m pip install -e packages/aid-core-py
+          pytest packages/aid-core-py/tests
 
   # Job 3: Test the Go SDK
   go-sdk:
