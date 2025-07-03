@@ -1,8 +1,9 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/aid-core" },
-    { "path": "./packages/aid-conformance" }
+    { "path": "packages/aid-core" },
+    { "path": "packages/aid-conformance" },
+    { "path": "packages/aid-web" }
   ],
   "compilerOptions": {
     "esModuleInterop": true,
