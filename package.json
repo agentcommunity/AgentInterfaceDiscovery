@@ -6,7 +6,8 @@
 	"packageManager": "pnpm@8.15.5",
 	"scripts": {
 		"build:schema": "pnpm -F @agentcommunity/aid-core run schema:generate",
-		"build": "pnpm run build:schema && pnpm -r --filter ./packages/** --workspace-concurrency 1 run build",
+		"build:ts": "tsc -b -v",
+		"build": "pnpm run build:schema && pnpm run build:ts && pnpm --filter @agentcommunity/aid-conformance exec tsup",
 		"dev": "pnpm --filter aid-web run dev",
 		"lint": "eslint . --ext .ts,.tsx,.js,.mjs",
 		"lint:fix": "eslint . --ext .ts,.tsx,.js,.mjs --fix",

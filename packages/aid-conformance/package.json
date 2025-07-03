@@ -30,8 +30,7 @@
     "aid:validate": "dist/src/cli.js"
   },
   "scripts": {
-    "build": "pnpm run build:node && tsup",
-    "build:node": "tsc --build",
+    "build": "tsup",
     "dev": "tsc --build --watch",
     "test": "jest --coverage",
     "test:types": "tsd"

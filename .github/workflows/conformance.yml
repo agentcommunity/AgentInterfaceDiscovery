@@ -27,10 +27,8 @@ jobs:
         # Use --ignore-scripts to prevent bin link errors before build
         run: pnpm install --frozen-lockfile --ignore-scripts
 
-      - name: 4️⃣ Build all packages sequentially
-        # This is the key fix. We tell pnpm to build with no parallelism,
-        # and its internal dependency graph will ensure aid-core builds first.
-        run: pnpm -r --stream --filter="./packages/**" build
+      - name: 4️⃣ Build TypeScript graph and bundle
+        run: pnpm run build
 
       - name: 5️⃣ Lint
         run: pnpm run lint
