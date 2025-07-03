@@ -30,7 +30,7 @@
     "aid:validate": "dist/src/cli.js"
   },
   "scripts": {
-    "build": "tsc -b && tsup",
+    "build": "vite build",
     "dev": "tsc --build --watch",
     "test": "jest --coverage",
     "test:types": "tsd"
@@ -48,7 +48,8 @@
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2",
     "tsd": "^0.31.0",
-    "tsup": "^8.0.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vite": "^5.2.0",
+    "vite-plugin-dts": "^3.5.1"
   }
 }
