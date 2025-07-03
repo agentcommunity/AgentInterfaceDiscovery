@@ -37,7 +37,10 @@ jobs:
         run: pnpm run schema:check
 
       - name: 8️⃣ Build Core Package Explicitly
-        run: pnpm --filter @agentcommunity/aid-core... build
+        run: pnpm --filter @agentcommunity/aid-core build
+
+      - name: 'Debug: List generated files'
+        run: ls -R packages
 
       - name: 9️⃣ Unit tests with coverage
         run: pnpm --filter @agentcommunity/aid-conformance run test
@@ -54,4 +57,4 @@ jobs:
           if [ "$SIZE" -gt "$LIMIT" ]; then
             echo "::error::Browser bundle exceeds limit!"
             exit 1
-          fi 
+          fi
