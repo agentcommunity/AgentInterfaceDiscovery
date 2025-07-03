@@ -8,5 +8,5 @@
     "isolatedModules": true
   },
   "include": ["src", "tests", "typings"],
-  "references": []
+  "references": [{ "path": "../aid-core" }]
 } 
