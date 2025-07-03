@@ -15,12 +15,7 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "rootDir": ".",
-    "types": ["jest", "node"],
-    "paths": {
-      "@agentcommunity/aid-core": ["../aid-core/src"],
-      "@agentcommunity/aid-core/*": ["../aid-core/src/*"],
-      "@agentcommunity/aid-core/browser": ["../aid-core/src/browser.ts"]
-    }
+    "types": ["jest", "node"]
   },
   "include": ["src", "tests", "typings"],
   "references": [
