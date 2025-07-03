@@ -5,14 +5,11 @@ module.exports = {
   transform: {
     '^.+\\.ts$': [
       'ts-jest',
-      {
-        isolatedModules: true,
-      },
     ],
   },
   moduleNameMapper: {
-    '^@agentcommunity/aid-core/(.*)$': '<rootDir>/../aid-core/dist/$1',
-    '^@agentcommunity/aid-core$': '<rootDir>/../aid-core/dist',
+    '^@agentcommunity/aid-core/browser$': '<rootDir>/../aid-core/dist/browser.js',
+    '^@agentcommunity/aid-core$': '<rootDir>/../aid-core/dist/index.js',
   },
   coverageThreshold: {
     global: {
