@@ -22,6 +22,7 @@
   },
   "scripts": {
     "build": "tsc -b",
+    "prepare": "pnpm run build",
     "dev": "tsc --watch",
     "build:examples": "ts-node scripts/build-examples.ts",
     "lint": "eslint .",
