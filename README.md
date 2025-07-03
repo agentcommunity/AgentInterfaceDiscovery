@@ -39,25 +39,15 @@ The project is a `pnpm` monorepo with the following key components:
 
 ```
 .
-├── .github/workflows/    # CI/CD automation
-│   └── sync-schema.yml   # Action to sync the JSON schema to the docs repo
+├── .github/workflows/      # CI/CD automation
 ├── packages/
-│   ├── core/             # The canonical library for all AID logic
-│   │   ├── src/
-│   │   │   ├── schemas.ts    # The single source of truth (Zod schemas)
-│   │   │   ├── types.ts      # Inferred TypeScript types (auto-generated)
-│   │   │   ├── common.ts     # Browser-safe generators (manifest, TXT)
-│   │   │   ├── generator.ts  # Node.js file writers for manifests
-│   │   │   └── resolver.ts   # Logic for resolving an AID profile
-│   │   └── scripts/
-│   │       ├── generate-schema.ts # Generates the canonical JSON schema
-│   │       └── build-examples.ts  # Builds examples & syncs them to the web UI
-│   ├── examples/           # A collection of canonical example configs
-│   └── web/
-│       └── aid-web/       # Next.js web application for building manifests
-└── packages/
-    └── aid-schema/
-        └── aid.schema.json # The generated canonical JSON Schema artifact
+│   ├── aid-core/           # Canonical TypeScript/JS SDK
+│   ├── aid-core-py/        # Canonical Python SDK
+│   ├── aid-core-go/        # Canonical Go SDK
+│   ├── aid-conformance/    # Validation CLI and test suite
+│   ├── aid-schema/         # The generated canonical JSON Schema
+│   └── aid-web/            # Next.js web application for building manifests
+└── scripts/                # Generation and build scripts
 ```
 
 A key design feature is the separation of browser-safe and Node.js-specific code. [`packages/core/src/common.ts`](./packages/core/src/common.ts) contains pure data transformation logic (`buildManifest`, `buildTxtRecord`) that can run in any JavaScript environment. [`packages/core/src/generator.ts`](./packages/core/src/generator.ts) contains file system operations (`writeManifest`) and is intended for Node.js environments only. This ensures the library is lightweight and versatile.
@@ -242,16 +232,76 @@ This implementation strictly follows the [AID v1 specification](https://docs.age
 - ✅ OS-specific execution overrides are supported (`windows`, `linux`, `macos`).
 - ✅ The generated JSON Schema is automatically synced to the public documentation repository.
 
+## Multi-language Support & SDKs
+
+This project provides official, auto-generated SDKs for multiple languages, ensuring consistent and compliant AID manifest handling across different ecosystems. All SDKs are generated from the single-source-of-truth [JSON Schema](./packages/aid-schema/aid.schema.json).
+
+### TypeScript / JavaScript
+
+The canonical implementation is written in TypeScript and is the source from which all other SDKs and schemas are derived.
+
+- **Package:** [`@agentcommunity/aid-core`](./packages/aid-core/)
+- **Installation:** `npm install @agentcommunity/aid-core`
+- **Usage:**
+  ```typescript
+  import { resolveDomain, getImplementations } from '@agentcommunity/aid-core';
+
+  for await (const step of resolveDomain("agentcommunity.org")) {
+    if (step.type === 'validation_success') {
+      const implementations = getImplementations(step.data.manifest);
+      console.log(implementations);
+    }
+  }
+  ```
+
+### Python
+
+The Python SDK provides Pydantic V2 models and validation helpers.
+
+- **Package:** [`aid-core-py`](./packages/aid-core-py/)
+- **Installation:** `pip install aid-core-py`
+- **Usage:**
+  ```python
+  import json
+  from aid_core_py import validate_manifest
+  from aid_core_py.models import AidManifest
+
+  with open("path/to/your/aid.json", "r") as f:
+      manifest_dict = json.load(f)
+
+  is_valid, error = validate_manifest(manifest_dict)
+  if is_valid:
+      manifest = AidManifest.model_validate(manifest_dict)
+      print(f"Validated manifest for '{manifest.service_name}'")
+  ```
+
+### Go
+
+The Go SDK provides canonical structs and validation helpers.
+
+- **Package:** [`aid-core-go`](./packages/aid-core-go/)
+- **Installation:** `go get github.com/agentcommunity/AgentInterfaceDiscovery/packages/aid-core-go/aidcore`
+- **Usage:**
+  ```go
+  import "github.com/agentcommunity/AgentInterfaceDiscovery/packages/aid-core-go/aidcore"
+
+  manifestBytes, _ := os.ReadFile("path/to/your/aid.json")
+  isValid, err := aidcore.ValidateManifest(manifestBytes)
+  if isValid {
+	  fmt.Println("Manifest is valid!")
+  }
+  ```
+
 ## Conformance Testing (`@agentcommunity/aid-conformance`)
 
-To ensure the stability of the AID ecosystem, this repository includes a dedicated conformance testing suite in the [`packages/conformance`](./packages/conformance/) directory. This suite provides a command-line tool, `aid-validate`, for validating manifests, DNS records, and generator configurations against the canonical specification.
+To ensure the stability of the AID ecosystem, this repository includes a dedicated conformance testing suite in the [`packages/aid-conformance`](./packages/aid-conformance/) directory. This suite provides a command-line tool, `aid-validate`, for validating manifests, DNS records, and generator configurations against the canonical specification.
 
 This allows vendors and developers to:
 -   Instantly check if their AID artifacts are spec-compliant.
 -   Prevent regressions by integrating validation into their own CI/CD pipelines.
 -   Badge their projects as "AID v1 Compliant."
 
-For more details on its usage and test strategies, please see the [conformance package's dedicated README](./packages/conformance/README.md) (once created).
+For more details on its usage and test strategies, please see the [conformance package's dedicated README](./packages/aid-conformance/README.md).
 
 ## Quick-start for the conformance CLI
 
@@ -291,7 +341,7 @@ The new /validate page provides a way to validate AID manifests against the cano
 
 To use the validation feature, you can use the `aid-validate` command-line tool. This tool allows you to validate either an AID manifest or a pair of a generator configuration and an AID manifest.
 
-For more details on how to use the validation feature and the conformance CLI, please see the [conformance package's dedicated README](./packages/conformance/README.md).
+For more details on how to use the validation feature and the conformance CLI, please see the [conformance package's dedicated README](./packages/aid-conformance/README.md).
 
 🚨 **June 2025 Schema Bump Highlights**
 
