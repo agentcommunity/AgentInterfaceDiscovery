@@ -12,9 +12,10 @@ jobs:
     steps:
       - name: 1️⃣ Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Required for turbo caching
 
-      - name: 2️⃣ Setup pnpm and Node.js
-        # This action correctly sets up Node and then pnpm
+      - name: 2️⃣ Setup pnpm, Node.js, and Turbo
         uses: pnpm/action-setup@v3
         with:
           version: 8
@@ -22,29 +23,28 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
+      - name: Setup Turbo
+        uses: vercel/turbo-caching-for-github-actions@v1
 
       - name: 3️⃣ Install dependencies
-        run: pnpm install --frozen-lockfile --ignore-scripts
+        run: pnpm install --frozen-lockfile
 
-      - name: 4️⃣ Build aid-core
-        run: pnpm --filter @agentcommunity/aid-core build
+      - name: 4️⃣ Build
+        run: pnpm run build
 
-      - name: 5️⃣ Build aid-conformance
-        run: pnpm --filter @agentcommunity/aid-conformance build
-
-      - name: 6️⃣ Lint
+      - name: 5️⃣ Lint
         run: pnpm run lint
 
-      - name: 7️⃣ Schema drift guard
+      - name: 6️⃣ Schema drift guard
         run: pnpm run schema:check
 
-      - name: 8️⃣ Unit tests with coverage
-        run: pnpm --filter @agentcommunity/aid-conformance test
+      - name: 7️⃣ Unit tests with coverage
+        run: pnpm run test
 
-      - name: 9️⃣ Validate committed examples
+      - name: 8️⃣ Validate committed examples
         run: pnpm --filter @agentcommunity/aid-conformance run test:conformance ./packages/examples/public || echo "conformance script not yet implemented"
 
-      - name: 🔟 Bundle size check
+      - name: 9️⃣ Bundle size check
         run: |
           gzip -c packages/aid-core/dist/browser/index.mjs | wc -c > size.txt
           LIMIT=16000
