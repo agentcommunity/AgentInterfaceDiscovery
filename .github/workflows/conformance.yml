@@ -23,22 +23,28 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      - name: 3️⃣ Install dependencies & Build
-        run: pnpm install --frozen-lockfile
+      - name: 3️⃣ Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
 
-      - name: 4️⃣ Lint
+      - name: 4️⃣ Build aid-core
+        run: pnpm --filter @agentcommunity/aid-core build
+
+      - name: 5️⃣ Build aid-conformance
+        run: pnpm --filter @agentcommunity/aid-conformance build
+
+      - name: 6️⃣ Lint
         run: pnpm run lint
 
-      - name: 5️⃣ Schema drift guard
+      - name: 7️⃣ Schema drift guard
         run: pnpm run schema:check
 
-      - name: 6️⃣ Unit tests with coverage
+      - name: 8️⃣ Unit tests with coverage
         run: pnpm --filter @agentcommunity/aid-conformance test
 
-      - name: 7️⃣ Validate committed examples
+      - name: 9️⃣ Validate committed examples
         run: pnpm --filter @agentcommunity/aid-conformance run test:conformance ./packages/examples/public || echo "conformance script not yet implemented"
 
-      - name: 8️⃣ Bundle size check
+      - name: 🔟 Bundle size check
         run: |
           gzip -c packages/aid-core/dist/browser/index.mjs | wc -c > size.txt
           LIMIT=16000

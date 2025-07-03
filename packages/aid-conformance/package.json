@@ -31,7 +31,6 @@
   },
   "scripts": {
     "build": "tsc -b && tsup",
-    "prepare": "pnpm run build",
     "dev": "tsc --build --watch",
     "test": "jest --coverage",
     "test:types": "tsd"
