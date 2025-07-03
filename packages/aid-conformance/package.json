@@ -30,7 +30,7 @@
     "aid:validate": "dist/src/cli.js"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsc -b && tsup",
     "dev": "tsc --build --watch",
     "test": "jest --coverage",
     "test:types": "tsd"

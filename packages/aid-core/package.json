@@ -21,7 +21,7 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "dev": "tsc --watch",
     "build:examples": "ts-node scripts/build-examples.ts",
     "lint": "eslint .",
