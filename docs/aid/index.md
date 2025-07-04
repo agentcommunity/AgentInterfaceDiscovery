@@ -76,8 +76,8 @@ stateDiagram-v2
     [*] --> DNSLookup
     DNSLookup: Query TXT _agent.<domain>
     DNSLookup --> ParseTXT
-    ParseTXT: Parse v=aid1; ...
-    ParseTXT --> HasConfig{Has 'config' key?}
+    ParseTXT: Parse v=aid1
+    ParseTXT --> HasConfig{Has config key}
     HasConfig --> SimpleConnect: No
     SimpleConnect: Use uri/proto from TXT
     SimpleConnect --> Ready
