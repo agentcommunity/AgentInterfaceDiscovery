@@ -4,11 +4,11 @@ const { execSync } = require("node:child_process")
 const run = (cmd) => execSync(cmd, { stdio: "inherit", shell: true })
 
 try {
-  console.log("🛠️  Building @aid/core ...")
-  run("pnpm -F @aid/core run build")
+  console.log("🛠️  Building @agentcommunity/aid-core ...")
+  run("pnpm -F @agentcommunity/aid-core run build")
 
   console.log("🔄 Regenerating schema ...")
-  run("pnpm -F @aid/core run schema:generate")
+  run("pnpm run build:schema")
 
   console.log("🔍 Checking for drift in generated schema ...")
   run("git diff --exit-code -- packages/aid-schema/aid.schema.json")

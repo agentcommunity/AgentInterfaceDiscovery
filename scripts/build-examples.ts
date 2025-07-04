@@ -1,9 +1,9 @@
 import fs from "node:fs/promises"
 import path from "node:path"
-import { writeManifest, writeTxtSnippet } from "../src/generator"
-import type { AidGeneratorConfig, ImplementationConfig } from "../src/types"
+import { writeManifest, writeTxtSnippet } from "../packages/aid-core/src/generator"
+import type { AidGeneratorConfig, ImplementationConfig } from "../packages/aid-core/src/types"
 
-const rootDir = path.resolve(__dirname, "../../..")
+const rootDir = path.resolve(__dirname, "..")
 const examplesDir = path.resolve(rootDir, "packages/examples")
 const publicDir = path.resolve(examplesDir, "public")
 const samplesDir = path.resolve(rootDir, "packages/aid-web/public/samples")
