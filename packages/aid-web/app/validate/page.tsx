@@ -12,7 +12,8 @@ import { ArtefactSelector } from "@/components/validator/ArtefactSelector"
 import { DropZone } from "@/components/validator/DropZone"
 import { ValidationReport } from "@/components/validator/ValidationReport"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Shield, CheckCircle, Upload, FileText, Sparkles, Settings } from "lucide-react"
 import type { ValidationResult } from "@agentcommunity/aid-conformance"
 import type { AidGeneratorConfig, AidManifest } from "@agentcommunity/aid-core/browser"
 import { EditableCodeblock } from "@/components/validator/EditableCodeblock"
@@ -38,7 +39,7 @@ export default function ValidatePage() {
   const artefactPlaceholders: Record<ArtefactType, string> = {
     manifest: "Paste your manifest JSON (aid.json) here...",
     config: "Paste your generator config JSON (config.json) here...",
-    txt: "Paste your DNS TXT record here...",
+    txt: "Paste your DNS TXT record value here (e.g., 'v=aid1;uri=...')",
     pair: "Paste either your config.json or aid.json content here...",
   }
 
@@ -135,76 +136,153 @@ export default function ValidatePage() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-8">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold tracking-tight">AID Validator</h1>
-        <p className="text-muted-foreground mt-2">
-          Validate your Agent Interface Discovery artifacts instantly.
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/10">
+      {/* Header Section */}
+      <div className="relative py-6 md:py-8 border-b border-border/50 bg-background">
+        <div className="container mx-auto container-padding">
+          <div className="max-w-2xl mx-auto text-center space-y-3">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <div className="p-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                <Shield className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+              </div>
+              <Sparkles className="h-4 w-4 text-amber-500" />
+            </div>
+            
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+              AID <span className="text-muted-foreground">Validator</span>
+            </h1>
+            
+            <p className="text-muted-foreground max-w-lg mx-auto">
+              Validate your Agent Interface Discovery artifacts instantly against the official specification.
+            </p>
+            
+            <div className="flex items-center justify-center gap-4 pt-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <CheckCircle className="h-4 w-4" />
+                <span>Specification compliant</span>
+              </div>
+              <div className="w-1 h-1 bg-muted-foreground/30 rounded-full" />
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <FileText className="h-4 w-4" />
+                <span>Detailed reports</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <Card className="w-full max-w-4xl mx-auto">
-        <CardContent className="p-6">
-          <ArtefactSelector
-            value={artefactType}
-            onChange={(v) => handleArtefactChange(v as ArtefactType)}
-          />
-          <p className="text-sm text-muted-foreground mb-4 text-center">
-            {artefactDescriptions[artefactType]}
-          </p>
-
-          <Tabs defaultValue="paste" className="w-full">
-            <TabsList className="inline-flex space-x-2 mb-4">
-              <TabsTrigger value="paste">Paste Content</TabsTrigger>
-              <TabsTrigger value="upload">Upload File(s)</TabsTrigger>
-            </TabsList>
-            <TabsContent value="upload">
-              <div className="mt-4">
-                {artefactType === "pair" ? (
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <DropZone
-                      file={file1}
-                      onFileDrop={(f) => handleFileDrop(f, 1)}
-                      title={getDropZoneTitle(artefactType as Exclude<ArtefactType, "pair">)}
-                    />
-                    <DropZone
-                      file={file2}
-                      onFileDrop={(f) => handleFileDrop(f, 2)}
-                      title="Manifest File"
-                    />
-                  </div>
-                ) : (
-                  <DropZone
-                    file={file1}
-                    onFileDrop={(f) => handleFileDrop(f, 1)}
-                    title={getDropZoneTitle(artefactType)}
-                  />
-                )}
+      {/* Main Content */}
+      <div className="container mx-auto container-padding pb-24">
+        <Card className="w-full max-w-4xl mx-auto shadow-soft-lg">
+          <CardHeader className="pb-6">
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Validation Configuration
+            </CardTitle>
+            <CardDescription>
+              Select the type of artifact you want to validate and choose your input method.
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent className="space-y-8">
+            {/* Artifact Type Selector */}
+            <div className="space-y-4">
+              <ArtefactSelector
+                value={artefactType}
+                onChange={(v) => handleArtefactChange(v as ArtefactType)}
+              />
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">
+                  {artefactDescriptions[artefactType]}
+                </p>
               </div>
-            </TabsContent>
-            <TabsContent value="paste">
-              <div className="mt-4">
-                <EditableCodeblock
-                  value={pastedText}
-                  onChange={(val) => {
-                    resetState()
-                    setPastedText(val)
-                  }}
-                  placeholder={artefactPlaceholders[artefactType]}
-                />
-              </div>
-            </TabsContent>
-          </Tabs>
+            </div>
 
-          <div className="mt-6 flex justify-center">
-            <Button onClick={handleValidate} disabled={isLoading || (!file1 && !pastedText)}>
-              {isLoading ? "Validating..." : "Validate"}
-            </Button>
-          </div>
+            {/* Input Method Tabs */}
+            <Tabs defaultValue="paste" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
+                <TabsTrigger value="paste">Paste Content</TabsTrigger>
+                <TabsTrigger value="upload">Upload File(s)</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="upload" className="mt-8">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Upload className="h-5 w-5" />
+                      File Upload
+                    </CardTitle>
+                    <CardDescription>
+                      Drag and drop your files or click to browse.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {artefactType === "pair" ? (
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <DropZone
+                          file={file1}
+                          onFileDrop={(f) => handleFileDrop(f, 1)}
+                          title="Config File (config.json)"
+                        />
+                        <DropZone
+                          file={file2}
+                          onFileDrop={(f) => handleFileDrop(f, 2)}
+                          title="Manifest File (aid.json)"
+                        />
+                      </div>
+                    ) : (
+                      <DropZone
+                        file={file1}
+                        onFileDrop={(f) => handleFileDrop(f, 1)}
+                        title={getDropZoneTitle(artefactType)}
+                      />
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="paste" className="mt-8">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <FileText className="h-5 w-5" />
+                      Paste Content
+                    </CardTitle>
+                    <CardDescription>
+                      Paste your {artefactType} content directly into the editor.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <EditableCodeblock
+                      value={pastedText}
+                      onChange={(val) => {
+                        resetState()
+                        setPastedText(val)
+                      }}
+                      placeholder={artefactPlaceholders[artefactType]}
+                    />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
 
-          <ValidationReport result={result} content={validatedContent} />
-        </CardContent>
-      </Card>
-    </main>
+            {/* Validate Button */}
+            <div className="flex justify-center pt-4">
+              <Button 
+                onClick={handleValidate} 
+                disabled={isLoading || (!file1 && !pastedText)}
+                size="lg"
+                className="min-w-32"
+              >
+                {isLoading ? "Validating..." : "Validate"}
+              </Button>
+            </div>
+
+            {/* Validation Results */}
+            <ValidationReport result={result} content={validatedContent} />
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   )
 } 

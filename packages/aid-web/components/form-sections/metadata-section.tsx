@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input"
 import { UrlInput } from "@/components/ui/url-input"
 import type { AidGeneratorConfig } from "@agentcommunity/aid-core"
 import { cn } from "@/lib/utils"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { HelpCircle } from "lucide-react"
 
 export function MetadataSection() {
   const { control, formState: { errors } } = useFormContext<AidGeneratorConfig>()
@@ -24,12 +26,23 @@ export function MetadataSection() {
           name="metadata.contentVersion"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-1">
+              <FormLabel className="flex items-center gap-2">
                 Content Version
                 <span className="text-muted-foreground italic text-sm">(optional)</span>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>A version string for the manifest&apos;s content, used by clients for caching.</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Best practice: update this whenever you change the manifest (e.g., with the current date).
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
               </FormLabel>
               <FormControl>
-                <Input placeholder="YYYY-MM-DD (auto-filled if empty)" {...field} />
+                <Input placeholder="2025-06-25.1" {...field} value={field.value ?? ""} />
               </FormControl>
               <FormDescription>Version of your configuration (YYYY-MM-DD format recommended)</FormDescription>
               <FormMessage />

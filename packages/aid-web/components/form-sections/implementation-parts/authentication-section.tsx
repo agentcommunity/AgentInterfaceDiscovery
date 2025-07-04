@@ -320,58 +320,67 @@ export function AuthenticationSection({ index }: AuthenticationSectionProps) {
 
           {/* OAuth-specific fields */}
           {isOAuthScheme(authScheme) && (
-            <>
+            <div className="space-y-4 pb-4">
               <Separator />
-              <div className="space-y-4 pb-4">
-                <h4 className="text-sm font-medium text-muted-foreground">OAuth2 Configuration</h4>
-                <div className="space-y-4 rounded-md border p-4">
-                  <FormField
-                    control={control}
-                    name={`implementations.${index}.authentication.oauth.dynamicClientRegistration`}
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            id={`dynamic-client-${index}`}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel htmlFor={`dynamic-client-${index}`} className="flex items-center gap-2">
-                            Dynamic Client Registration
-                          </FormLabel>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name={`implementations.${index}.authentication.oauth.scopes`}
-                    render={({ field }) => {
-                      // Handle conversion between array and comma-separated string
-                      const value = Array.isArray(field.value) ? field.value.join(", ") : ""
-                      const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-                        const arr = e.target.value.split(",").map(s => s.trim()).filter(Boolean)
-                        field.onChange(arr)
-                      }
-                      return (
-                        <FormItem>
-                          <FormLabel className="flex items-center gap-2">
-                            Scopes
-                            <span className="text-muted-foreground italic text-sm">(optional)</span>
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea placeholder="read:*, write:users" value={value} onChange={onChange} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )
-                    }}
-                  />
-                </div>
+              <div className="flex items-center gap-2 pt-4">
+                <h4 className="text-sm font-medium text-muted-foreground">OAuth 2.0 Configuration</h4>
               </div>
-            </>
+
+              {/* Dynamic Client Registration Checkbox */}
+              <FormField
+                control={control}
+                name={`implementations.${index}.authentication.oauth.dynamicClientRegistration`}
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="flex items-center gap-2">
+                        Enable Dynamic Client Registration
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Allow clients to dynamically register with the auth server (RFC 7591).</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </FormLabel>
+                      <FormDescription>
+                        Signals that clients without a static `clientId` should attempt to register themselves.
+                      </FormDescription>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              {/* Scopes */}
+              <FormField
+                control={control}
+                name={`implementations.${index}.authentication.oauth.scopes`}
+                render={({ field }) => {
+                  // Handle conversion between array and comma-separated string
+                  const value = Array.isArray(field.value) ? field.value.join(", ") : ""
+                  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                    const arr = e.target.value.split(",").map(s => s.trim()).filter(Boolean)
+                    field.onChange(arr)
+                  }
+                  return (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        Scopes
+                        <span className="text-muted-foreground italic text-sm">(optional)</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="read:*, write:users" value={value} onChange={onChange} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )
+                }}
+              />
+            </div>
           )}
 
           {/* mTLS-specific fields */}

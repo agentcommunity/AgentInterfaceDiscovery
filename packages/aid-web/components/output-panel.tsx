@@ -66,7 +66,8 @@ export function OutputPanel() {
             </span>
           ) : (
             <span className="flex items-center gap-1.5 text-xs text-destructive">
-              <ShieldAlert className="h-4 w-4" /> {issues.length} Issues
+              <ShieldAlert className="h-4 w-4" />
+              <span className="font-semibold">{issues.length} Issues</span>
             </span>
           )}
         </div>
