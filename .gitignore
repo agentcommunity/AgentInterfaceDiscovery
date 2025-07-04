@@ -16,3 +16,6 @@ packages/core/src/spcification.md
 # Turborepo
 .turbo/
 **/*-turbo.log
+
+# Ignore TypeScript incremental build info files
+*.tsbuildinfo
