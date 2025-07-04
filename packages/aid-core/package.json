@@ -1,6 +1,7 @@
 {
   "name": "@agentcommunity/aid-core",
   "version": "1.0.1",
+  "packageManager": "pnpm@8.15.5",
   "description": "Core library for Agent Interface Discovery (AID) types, generators, and resolvers.",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
