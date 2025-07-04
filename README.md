@@ -56,9 +56,9 @@ A key design feature is the separation of browser-safe and Node.js-specific code
 
 To make changes to the AID manifest structure, follow this workflow:
 
-1.  **Modify the Schema:** Make your changes to the Zod schemas in [`packages/aid-core/src/schemas.ts`](./packages/aid-core/src/schemas.ts).
-2.  **Update Types:** The TypeScript types in [`packages/aid-core/src/types.ts`](./packages/aid-core/src/types.ts) will update automatically as they are inferred from the schemas. You may need to adjust code that uses these types.
-3.  **Regenerate the JSON Schema:** Run the generator script to create an updated `aid.schema.json`.
+1.  **Modify the Schema:** Make your changes to the Zod schemas in [`packages/core/src/schemas.ts`](./packages/core/src/schemas.ts).
+2.  **Update Types:** The TypeScript types in [`packages/core/src/types.ts`](./packages/core/src/types.ts) will update automatically as they are inferred from the schemas. You may need to adjust code that uses these types.
+3.  **Regenerate the JSON Schema:** Run the generator script from the project root to create an updated `aid.schema.json`.
     ```bash
     pnpm run build:schema
     ```
@@ -67,10 +67,14 @@ To make changes to the AID manifest structure, follow this workflow:
 
 ## Key Scripts
 
+All build and generation scripts are centralized in the root `scripts/` directory and can be run from the monorepo root.
+
 -   `pnpm install`: Install all dependencies.
 -   `pnpm build`: Build all packages in the monorepo.
--   `pnpm run build:schema`: Regenerate the canonical JSON schema.
--   `pnpm run build:examples`: Generate the hosted example artifacts (`aid.json`, `aid.txt`) in `packages/examples/public/` using the configs from the web UI's samples directory as the source of truth.
+-   `pnpm run build:schema`: Regenerate the canonical JSON schema from the Zod types in `aid-core`.
+-   `pnpm run build:examples`: Generate the hosted example artifacts (`aid.json`, `aid.txt`) in `packages/examples/public/`. This uses the configurations in `packages/aid-web/public/samples` as the source of truth.
+-   `pnpm run build:sdk`: Generate language-specific SDK models (Go, Python) from the JSON schema.
+-   `pnpm run schema:check`: A CI script to verify that the committed schema is in sync with the types.
 -   `pnpm -F @agentcommunity/aid-web dev`: Run the web UI in development mode.
 
 This script is used to generate the publicly hosted manifests that are used for testing the resolver. It reads all configurations from `packages/aid-web/public/samples`, resolves any template variables, and writes the final `aid.json` and `aid.txt` files to `packages/examples/public/`. This ensures our hosted examples are always in sync with the samples used in the web UI.
@@ -199,7 +203,7 @@ Note how the `platformOverrides` keys are `windows`, `linux`, and `macos` as per
 The resolver is an async generator that consumes a domain and yields the steps of the AID discovery process, from DNS lookup to manifest validation. This is ideal for building UIs that show the discovery process in real-time.
 
 ```typescript
-import { resolveDomain } from '@agentcommunity/aid-core';
+import { resolveDomain, getImplementations } from '@agentcommunity/aid-core';
 
 async function main() {
   const domain = "agentcommunity.org";
@@ -249,7 +253,10 @@ The canonical implementation is written in TypeScript and is the source from whi
   for await (const step of resolveDomain("agentcommunity.org")) {
     if (step.type === 'validation_success') {
       const implementations = getImplementations(step.data.manifest);
-      console.log(implementations);
+      // Example: Find the first usable implementation
+      if (implementations.length > 0) {
+        console.log(`First implementation: '${implementations[0].title}'`);
+      }
     }
   }
   ```
@@ -272,7 +279,13 @@ The Python SDK provides Pydantic V2 models and validation helpers.
   is_valid, error = validate_manifest(manifest_dict)
   if is_valid:
       manifest = AidManifest.model_validate(manifest_dict)
-      print(f"Validated manifest for '{manifest.service_name}'")
+      print(f"Validated manifest for '{manifest.name}'")
+      // Example: Find the first usable implementation
+      if manifest.implementations:
+          first_impl = manifest.implementations[0]
+          print(f"First implementation: '{first_impl.title}'")
+  else:
+    print(f"Validation error: {error}")
   ```
 
 ### Go
@@ -283,12 +296,33 @@ The Go SDK provides canonical structs and validation helpers.
 - **Installation:** `go get github.com/agentcommunity/AgentInterfaceDiscovery/packages/aid-core-go/aidcore`
 - **Usage:**
   ```go
-  import "github.com/agentcommunity/AgentInterfaceDiscovery/packages/aid-core-go/aidcore"
+  import (
+    "encoding/json"
+    "fmt"
+    "os"
+    "github.com/agentcommunity/AgentInterfaceDiscovery/packages/aid-core-go/aidcore"
+  )
 
-  manifestBytes, _ := os.ReadFile("path/to/your/aid.json")
-  isValid, err := aidcore.ValidateManifest(manifestBytes)
-  if isValid {
-	  fmt.Println("Manifest is valid!")
+  func main() {
+    manifestBytes, _ := os.ReadFile("path/to/your/aid.json")
+    isValid, err := aidcore.ValidateManifest(manifestBytes)
+
+    if err != nil {
+      fmt.Printf("Validation error: %v\n", err)
+      return
+    }
+
+    if isValid {
+      var manifest aidcore.AidManifest
+      json.Unmarshal(manifestBytes, &manifest)
+      fmt.Printf("Manifest for '%s' is valid!\n", manifest.Name)
+
+      // Example: Find the first usable implementation
+      if len(manifest.Implementations) > 0 {
+        firstImpl := manifest.Implementations[0]
+        fmt.Printf("First implementation: '%s'\n", firstImpl.Title)
+      }
+    }
   }
   ```
 

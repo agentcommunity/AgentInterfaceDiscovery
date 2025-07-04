@@ -52,16 +52,16 @@ AID is a protocol that uses DNS to discover agents. For simple cases, a single T
 
 * **Good‑bye manual setup** – Paste a domain, not a 200‑line config.
 * **Fewer docs, fewer errors** – The record is the source of truth, always up to date.
-* **Works with today's winners** – Designed around MCP while staying protocol‑agnostic.
+* **Works with today's winners** – Designed around the leading agent protocol (MCP) while staying agnostic for others (A2A, ACP, etc.).
 * **Agents find tools, too** – Your agents can now locate and chain the services they need on the fly – true autonomy.
 * **Zero lock‑in** – Uses plain DNS + HTTPS, so any provider can adopt it overnight.
 * **Local/Diff domain tooling** - Enables complex protocol discovery via standardized mechanisms.
 
 ## How it works (30-second version)
 
-1. **Simple Profile:** A client queries the `TXT _agent.<domain>` record. The record contains a `uri`, `proto`, and `auth` hint, allowing the client to connect immediately.
-2. **Extended Profile:** If the TXT record also contains a `config` key, the client knows to fetch the full `aid.json` manifest from that URL for more detailed instructions.
-3. **Process Manifest:** The client parses the rich manifest, chooses an implementation (e.g., remote API, local Docker), and follows its instructions to connect.
+1. **Simple Profile:** A client queries the `TXT _agent.<domain>` record. The record contains a `uri`, `proto`, and `auth` hint, allowing the client to connect immediately with no extra steps.
+2. **Extended Profile:** If the TXT record also contains a `config` key, the client knows to fetch the full `aid.json` manifest from that URL. This unlocks the full power of the Extended Profile.
+3. **Process Manifest:** The client parses the rich manifest, which can describe multiple ways to use the agent (**implementations**). It can list remote APIs, local packages (e.g., Docker, npx), detail complex authentication flows like OAuth 2.0, and specify required user configuration. The client chooses the best implementation it supports and follows the instructions to connect.
 
 That is the whole boot‑strap layer. The heavy lifting (auth flows, task calls) stays in MCP or whichever protocol you choose.
 
@@ -76,23 +76,25 @@ stateDiagram-v2
     [*] --> DNSLookup
     DNSLookup: Query TXT _agent.<domain>
     DNSLookup --> ParseTXT
-    ParseTXT: Parse v=aid1 uri=... proto=...
-    ParseTXT --> ConfigCheck
-    ConfigCheck: Has config key?
-    ConfigCheck --> ReadySimple: No – Simple Profile
-    ConfigCheck --> FetchManifest: Yes – Extended Profile
+    ParseTXT: Parse v=aid1; ...
+    ParseTXT --> HasConfig{Has 'config' key?}
+    HasConfig --> SimpleConnect: No
+    SimpleConnect: Use uri/proto from TXT
+    SimpleConnect --> Ready
+
+    HasConfig --> FetchManifest: Yes
     FetchManifest: GET /.well-known/aid.json
     FetchManifest --> ProcessManifest
-    ProcessManifest: Choose implementation
+    ProcessManifest: Choose best implementation (local vs remote)
     ProcessManifest --> GatherCreds
-    GatherCreds: Obtain auth credentials
-    GatherCreds --> ReadySimple
-    ReadySimple --> ProtocolChoice
-    ProtocolChoice: Select protocol
-    ProtocolChoice --> MCPSession: MCP
-    ProtocolChoice --> A2ASession: A2A
-    ProtocolChoice --> ACPSession: ACP
-    ProtocolChoice --> OtherSession: Other
+    GatherCreds: Prompt for config/auth (e.g. OAuth, PAT)
+    GatherCreds --> Ready
+
+    Ready --> ProtocolHandshake: Connect via chosen protocol
+    ProtocolHandshake --> MCPSession: MCP
+    ProtocolHandshake --> A2ASession: A2A
+    ProtocolHandshake --> ACPSession: ACP
+    ProtocolHandshake --> OtherSession: Other...
     MCPSession --> [*]
     A2ASession --> [*]
     ACPSession --> [*]

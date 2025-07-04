@@ -18,6 +18,7 @@ The library can validate a manifest from a file path or from a byte slice.
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -25,27 +26,24 @@ import (
 )
 
 func main() {
-	// Read the manifest file
-	manifestBytes, err := os.ReadFile("path/to/your/aid.json")
-	if err != nil {
-		panic(err)
-	}
+	manifestBytes, _ := os.ReadFile("path/to/your/aid.json")
+	isValid, err := aidcore.ValidateManifest(manifestBytes)
 
-	// Validate it
-	isValid, validationErr := aidcore.ValidateManifest(manifestBytes)
-	if validationErr != nil {
-		// This indicates a structural or schema validation error
-		fmt.Printf("Validation error: %v\n", validationErr)
+	if err != nil {
+		fmt.Printf("Validation error: %v\n", err)
 		return
 	}
 
 	if isValid {
-		fmt.Println("Manifest is valid!")
-		// You can now unmarshal the bytes into the generated structs
 		var manifest aidcore.AidManifest
-		// ... unmarshal logic ...
-	} else {
-		fmt.Println("Manifest is invalid.")
+		json.Unmarshal(manifestBytes, &manifest)
+		fmt.Printf("Manifest for '%s' is valid!\n", manifest.Name)
+
+		// Example: Find the first usable implementation
+		if len(manifest.Implementations) > 0 {
+			firstImpl := manifest.Implementations[0]
+			fmt.Printf("First implementation: '%s'\n", firstImpl.Title)
+		}
 	}
 }
 ```
