@@ -74,27 +74,30 @@ For those who like state charts, here's the exact handshake AID enables.
 ```mermaid
 stateDiagram-v2
     [*] --> DNSLookup
-    DNSLookup: Query TXT _agent.<domain>
+    DNSLookup: Query TXT _agent.domain
     DNSLookup --> ParseTXT
     ParseTXT: Parse v=aid1
-    ParseTXT --> HasConfig{Has config key}
-    HasConfig --> SimpleConnect: No
+    ParseTXT --> HasConfig
+    
+    state HasConfig <<choice>>
+    HasConfig --> SimpleConnect: No config key
     SimpleConnect: Use uri/proto from TXT
     SimpleConnect --> Ready
 
-    HasConfig --> FetchManifest: Yes
+    HasConfig --> FetchManifest: Has config key
     FetchManifest: GET /.well-known/aid.json
     FetchManifest --> ProcessManifest
-    ProcessManifest: Choose best implementation (local vs remote)
+    ProcessManifest: Choose best implementation
     ProcessManifest --> GatherCreds
-    GatherCreds: Prompt for config/auth (e.g. OAuth, PAT)
+    GatherCreds: Prompt for config/auth
     GatherCreds --> Ready
 
-    Ready --> ProtocolHandshake: Connect via chosen protocol
+    Ready --> ProtocolHandshake
+    ProtocolHandshake: Connect via chosen protocol
     ProtocolHandshake --> MCPSession: MCP
     ProtocolHandshake --> A2ASession: A2A
     ProtocolHandshake --> ACPSession: ACP
-    ProtocolHandshake --> OtherSession: Other...
+    ProtocolHandshake --> OtherSession: Other
     MCPSession --> [*]
     A2ASession --> [*]
     ACPSession --> [*]
