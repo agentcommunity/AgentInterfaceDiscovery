@@ -19,24 +19,19 @@ import json
 from aid_core_py import validate_manifest
 from aid_core_py.models import AidManifest
 
-# Load your manifest from a file
 with open("path/to/your/aid.json", "r") as f:
     manifest_dict = json.load(f)
 
-# Validate it
 is_valid, error = validate_manifest(manifest_dict)
-
-if error:
-    # This indicates a structural or schema validation error
-    print(f"Validation error: {error}")
-elif is_valid:
-    print("Manifest is valid!")
-    # You can now load the data into the Pydantic models
+if is_valid:
     manifest = AidManifest.model_validate(manifest_dict)
-    print(f"Validated manifest for '{manifest.service_name}'")
+    print(f"Validated manifest for '{manifest.name}'")
+    # Example: Find the first usable implementation
+    if manifest.implementations:
+        first_impl = manifest.implementations[0]
+        print(f"First implementation: '{first_impl.title}'")
 else:
-    print("Manifest is invalid.")
-
+  print(f"Validation error: {error}")
 ```
 
 The auto-generated Pydantic models are located in `aid_core_py/models.py` and the validation logic, which embeds the canonical schema, is in `aid_core_py/__init__.py`. 

@@ -1,8 +1,8 @@
 # AID Reference Examples & Hosting
 
-This directory contains canonical examples of `AidGeneratorConfig` files and serves as a standalone Vercel project for hosting their generated `aid.json` manifests.
+This directory is a Vercel project for hosting the generated `aid.json` manifests and `aid.txt` snippets for all canonical examples.
 
-Each subdirectory (e.g., `/auth0`, `/simple`) contains only a `config.json` file. All other artifacts (`aid.json`, `aid.txt`) are **generated automatically** by the `build:examples` script, which uses the canonical `@agentcommunity/aid-core` library.
+The artifacts here are **not the source of truth**. They are **generated automatically** by the `build:examples` script. The single source of truth for all example configurations are the JSON files located in `packages/aid-web/public/samples/`. This ensures that the hosted examples are always in sync with the templates used in the Web UI.
 
 ## Hosting Architecture
 
@@ -12,18 +12,17 @@ The `vercel.json` file in this directory is **generated automatically** by the `
 
 ## Generating Artifacts
 
-To regenerate all artifacts and the `vercel.json` routing file, run the following command from the root of the monorepo:
+To regenerate all hosted artifacts (`aid.json`, `aid.txt`) and the `vercel.json` routing file, run the following command from the root of the monorepo:
 
 ```bash
-pnpm --filter @agentcommunity/aid-core build:examples
+pnpm run build:examples
 ```
 
 This script will:
-1. Find all `config.json` files within `packages/examples`.
-2. Assemble the final configuration objects (including aggregating the `landing-mcp` profile).
-3. Call the canonical `buildManifest` and `buildTxtRecord` functions from `@agentcommunity/aid-core`.
-4. Place the generated files into `packages/examples/public/[example-name]/`.
-5. Automatically generate the `vercel.json` file.
+1. Read the `index.json` from `packages/aid-web/public/samples` to discover all example configs.
+2. For each config, generate the final manifest and DNS TXT record using the canonical functions from `@agentcommunity/aid-core`.
+3. Place the generated files into `packages/examples/public/[example-name]/`.
+4. Automatically generate the `vercel.json` file with the correct routing rules based on the `domain` in each config.
 
 ## Deployment
 
