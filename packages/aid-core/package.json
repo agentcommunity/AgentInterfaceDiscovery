@@ -1,6 +1,7 @@
 {
   "name": "@agentcommunity/aid-core",
   "version": "1.0.1",
+  "packageManager": "pnpm@8.15.5",
   "description": "Core library for Agent Interface Discovery (AID) types, generators, and resolvers.",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -21,11 +22,11 @@
     }
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "dev": "tsc --watch",
     "build:examples": "ts-node scripts/build-examples.ts",
     "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"No tests yet\"",
     "schema:generate": "ts-node ./scripts/generate-schema.ts",
     "build:schema": "pnpm run schema:generate"
   },

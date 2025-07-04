@@ -32,4 +32,4 @@ This directory is a Vercel-ready project. To deploy:
 1.  Create a new Vercel project pointing to the monorepo root.
 2.  Set the **Root Directory** in Vercel's settings to `packages/examples`.
 3.  Add your custom domains (e.g., `simple.aid.agentcommunity.org`) to the project.
-4.  Commit and push changes to trigger a deployment. 
+4.  Commit and push changes – Vercel will run `pnpm run build-examples` which regenerates `/public` before upload. 

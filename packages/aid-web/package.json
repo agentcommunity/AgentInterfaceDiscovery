@@ -1,6 +1,7 @@
 {
   "name": "@agentcommunity/aid-web",
   "version": "0.1.2",
+  "packageManager": "pnpm@8.15.5",
   "private": true,
   "type": "module",
   "scripts": {

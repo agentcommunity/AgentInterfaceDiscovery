@@ -76,11 +76,11 @@ export default function LandingPage() {
       {/* Problem Section */}
       <section className="space-y-6 mb-20 text-left w-full">
         <h2 className="text-3xl md:text-4xl font-bold">
-          If you've ever built or used an AI agent, this probably looks familiar...
+          If you&apos;ve ever built or used an AI agent, this probably looks familiar...
         </h2>
         <ul className="list-disc list-inside space-y-2 text-lg text-foreground">
           <li>Manually configuring API keys and authentication schemes for every new agent.</li>
-          <li>No standard way to discover an agent's capabilities or required configuration.</li>
+          <li>No standard way to discover an agent&apos;s capabilities or required configuration.</li>
           <li>Inconsistent and hard-to-validate setup instructions scattered across READMEs.</li>
           <li>Every integration is a custom, one-off project.</li>
         </ul>
@@ -95,7 +95,7 @@ export default function LandingPage() {
             <Globe className="h-8 w-8 mb-2" />
             <h3 className="font-semibold mb-1">Point Your Domain</h3>
             <p className="text-muted-foreground text-sm">
-              Add a single TXT record to your DNS. Clients can now resolve your agent's URI and authentication scheme directly.
+              Add a single TXT record to your DNS. Clients can now resolve your agent&apos;s URI and authentication scheme directly.
             </p>
           </div>
           {/* Manifest second */}
@@ -225,7 +225,7 @@ export default function LandingPage() {
           Official SDKs for other popular languages are on the way—first up: <strong>Python</strong> and <strong>Go</strong>.
         </p>
         <p className="text-lg text-foreground max-w-3xl mx-auto text-center">
-          Interested in building a library for your favorite language? We'd love your help!
+          Interested in building a library for your favorite language? We&apos;d love your help!
         </p>
         <div className="text-center">
           <Link
