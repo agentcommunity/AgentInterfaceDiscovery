@@ -129,11 +129,17 @@ export function ImplementationsSection() {
             <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
               <h3 className="text-lg font-medium text-gray-900">No implementations added</h3>
               <p className="mt-1 text-sm text-gray-500">
-                Click "+ Remote" or "+ Local" to add one.
+                Click &quot;+ Remote&quot; or &quot;+ Local&quot; to add one.
               </p>
             </div>
           )}
         </CollapsibleList>
+        <p className="text-sm text-muted-foreground">
+          A list of supported authentication flows (e.g.,{" "}
+          <code>&quot;type&quot;: &quot;oauth2&quot;</code>,{" "}
+          <code>&quot;type&quot;: &quot;apiKey&quot;</code>
+          ).
+        </p>
       </CardContent>
     </Card>
   )

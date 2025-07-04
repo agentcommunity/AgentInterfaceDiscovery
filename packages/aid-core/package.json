@@ -25,7 +25,7 @@
     "dev": "tsc --watch",
     "build:examples": "ts-node scripts/build-examples.ts",
     "lint": "eslint .",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"No tests yet\"",
     "schema:generate": "ts-node ./scripts/generate-schema.ts",
     "build:schema": "pnpm run schema:generate"
   },

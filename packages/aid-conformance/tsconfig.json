@@ -3,10 +3,8 @@
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": ".",
-    "composite": true,
     "types": ["jest", "node"],
     "isolatedModules": true
   },
-  "include": ["src", "tests", "typings"],
-  "references": [{ "path": "../aid-core" }]
+  "include": ["src", "tests", "typings"]
 } 
