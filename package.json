@@ -4,6 +4,9 @@
 	"private": true,
 	"description": "A monorepo for the Agent Interface Discovery (AID) specification and tools.",
 	"packageManager": "pnpm@8.15.5",
+	"workspaces": [
+		"packages/*"
+	],
 	"scripts": {
 		"build:schema": "pnpm -F @agentcommunity/aid-core run schema:generate",
 		"build": "turbo run build",
