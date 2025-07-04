@@ -51,7 +51,7 @@ This plan has been updated to reflect the completion of the initial package publ
 - **[ ] Documentation & Site:**
     - [x] Ensure MkDocs config uses `docs/aid` as the root for the spec pages.
     - [ ] Add quick-start snippets for the JS & Python CLIs to the README and a new "Languages" page.
-    - [ ] Create language-specific docs pages under `docs/aid/languages/` (Python, Go) detailing installation, validation helpers, and CLI usage.
+    - [x] Create language-specific docs pages under `docs/aid/languages/` (Python, Go) detailing installation, validation helpers, and CLI usage.
     - [ ] Update the root `README.md` with multi-language quick-start examples and links to the new docs.
     - **[ ] Hosting & CDN:**
         - [x] Configure Vercel CNAME (`aid.agentcommunity.org`) with route `/schema/aid/v1/aid.schema.json` serving the canonical schema.

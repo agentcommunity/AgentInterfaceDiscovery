@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ActionableImplementation } from '@/lib/resolver';
 import { AidManifest } from '@agentcommunity/aid-core';
-import { Terminal, ShieldCheck } from 'lucide-react';
+import { Terminal, ShieldCheck, Info } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ImplementationCard } from './ImplementationCard';
 import { ViewToggle, ViewMode } from './ViewToggle';
@@ -31,21 +31,32 @@ export function ActionableProfile({ domain, manifest, implementations }: Actiona
     }
 
     return (
-        <div className="prose prose-sm dark:prose-invert max-w-none">
-             <div className="mb-4 flex justify-between items-center">
+        <div className="space-y-4">
+            {/* Example Client Notice */}
+            <div className="text-xs text-muted-foreground bg-muted/30 border border-border/50 rounded-lg p-3 mb-4">
+                <div className="flex items-start gap-2">
+                    <Info className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                    <div>
+                        <p className="font-medium mb-1">Example Client Interface</p>
+                        <p>This shows how a real client would discover and connect to the agent. In a real implementation, you&apos;d enter your credentials and the client would execute automatically.</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Header */}
+            <div className="flex justify-between items-center pb-2 border-b border-border/50">
                 <div>
-                    <h2 className="text-lg font-bold flex items-center gap-2 m-0">
-                        <ShieldCheck size={20} /> Actionable Profile for <code className="text-lg">{domain}</code>
-                    </h2>
-                    <p className="text-muted-foreground m-0 p-0">
-                        Found {implementations.length} implementation(s).
-                    </p>
+                    <h3 className="text-base font-semibold flex items-center gap-2">
+                        <ShieldCheck className="h-4 w-4 text-green-600" /> 
+                        {implementations.length} implementation{implementations.length > 1 ? 's' : ''} found
+                    </h3>
+                    <p className="text-sm text-muted-foreground">Domain: <code className="text-xs">{domain}</code></p>
                 </div>
                 <ViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
             </div>
 
             {viewMode === 'preview' ? (
-                 <div className="space-y-6">
+                <div className="space-y-3">
                     {implementations.map((impl, index) => (
                         <ImplementationCard 
                             key={index} 
@@ -58,6 +69,7 @@ export function ActionableProfile({ domain, manifest, implementations }: Actiona
                 <Codeblock
                     title="Raw Manifest"
                     content={JSON.stringify(manifest || implementations, null, 2)}
+                    variant="inline"
                 />
             )}
         </div>

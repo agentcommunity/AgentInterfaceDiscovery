@@ -12,6 +12,7 @@ import { TagsSection } from "./form-sections/implementation-parts/tags-section"
 import { LocalPackageSection } from "./form-sections/implementation-parts/local-package-section"
 import { AuthenticationSection } from "./form-sections/implementation-parts/authentication-section"
 import { ConfigVariablesSection } from "./form-sections/implementation-parts/config-variables-section"
+import { Input } from "@/components/ui/input"
 
 interface ImplementationFormProps {
   index: number

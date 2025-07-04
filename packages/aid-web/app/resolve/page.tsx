@@ -80,12 +80,20 @@ function ResolverPageContent() {
                     node = (
                         <div key={key}>
                             <p className="m-0">✅ Found TXT Record:</p>
-                            <Codeblock content={step.data.txtRecord} />
+                            <Codeblock content={step.data.txtRecord} variant="inline" />
                         </div>
                     );
                     break;
                 case 'dns_error':
-                    node = <p key={key} className="m-0 text-red-500">❌ DNS Error: {step.error}</p>;
+                    node = (
+                        <div key={key} className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-lg">
+                            <span className="text-red-600 dark:text-red-400 text-lg">❌</span>
+                            <div>
+                                <p className="text-red-700 dark:text-red-300 font-medium text-sm m-0">DNS Resolution Failed</p>
+                                <p className="text-red-600 dark:text-red-400 text-sm m-0 mt-1">{step.error}</p>
+                            </div>
+                        </div>
+                    );
                     break;
                 case 'manifest_fetch':
                     node = <p key={key} className="m-0">Fetching manifest from <code>{step.data.manifestUrl}</code>...</p>;
@@ -94,7 +102,15 @@ function ResolverPageContent() {
                     node = <p key={key} className="m-0">✅ Manifest received.</p>;
                     break;
                 case 'manifest_error':
-                    node = <p key={key} className="m-0 text-red-500">❌ Manifest Error: {step.error}</p>;
+                    node = (
+                        <div key={key} className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-lg">
+                            <span className="text-red-600 dark:text-red-400 text-lg">❌</span>
+                            <div>
+                                <p className="text-red-700 dark:text-red-300 font-medium text-sm m-0">Manifest Fetch Failed</p>
+                                <p className="text-red-600 dark:text-red-400 text-sm m-0 mt-1">{step.error}</p>
+                            </div>
+                        </div>
+                    );
                     break;
                 case 'validation_start':
                     node = <p key={key} className="m-0">Validating manifest against schema...</p>;
@@ -105,10 +121,16 @@ function ResolverPageContent() {
                     break;
                 case 'validation_error':
                     const validationErrorNode = (
-                        <div key={key}>
-                            <p className="m-0 text-red-500">❌ Validation Error: {step.error}</p>
+                        <div key={key} className="space-y-3">
+                            <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-lg">
+                                <span className="text-red-600 dark:text-red-400 text-lg">❌</span>
+                                <div>
+                                    <p className="text-red-700 dark:text-red-300 font-medium text-sm m-0">Validation Failed</p>
+                                    <p className="text-red-600 dark:text-red-400 text-sm m-0 mt-1">{step.error}</p>
+                                </div>
+                            </div>
                             {step.data?.manifestContent && (
-                                <Codeblock title="Invalid Manifest Source" content={step.data.manifestContent} />
+                                <Codeblock title="Invalid Manifest Source" content={step.data.manifestContent} variant="inline" />
                             )}
                         </div>
                     );
@@ -124,7 +146,8 @@ function ResolverPageContent() {
             if (node) {
                  addAssistantNode(node);
             }
-            await new Promise(resolve => setTimeout(resolve, 150));
+            // More natural streaming timing
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
 
         if (tempManifest) {
@@ -152,30 +175,43 @@ function ResolverPageContent() {
     };
 
     return (
-        <div className="flex flex-col h-[calc(100vh-80px)] bg-background text-foreground">
+        <div className="min-h-screen bg-background">
             <ResolverHeader hasStarted={hasStarted} onReset={handleReset} />
-            <main className="flex flex-col flex-grow w-full items-center">
+            <main className="flex flex-col w-full items-center">
                 <div className={cn(
-                    "w-full flex-grow overflow-y-auto p-4 md:p-6",
-                    !hasStarted && "flex flex-col justify-center items-center"
+                    "w-full flex-grow overflow-y-auto px-4 py-6 md:px-6",
+                    !hasStarted && "flex flex-col justify-center items-center min-h-[60vh]"
                 )}>
                     <AnimatePresence>
                         {!hasStarted && <WelcomeScreen />}
                     </AnimatePresence>
                     {hasStarted && (
-                        <div className="w-full max-w-3xl mx-auto space-y-4">
+                        <div className="w-full max-w-4xl mx-auto space-y-3">
                             {chatHistory.map((msg, index) => (
                                 <ChatMessage key={index} role={msg.role} content={msg.content} />
                             ))}
+                            {isStreaming && (
+                                <div className="w-full flex justify-start px-2 md:px-0">
+                                    <div className="bg-muted/50 border border-border/50 rounded-lg px-3 md:px-4 py-2.5 md:py-3 mr-4 md:mr-8">
+                                        <div className="flex items-center gap-1">
+                                            <div className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                                            <div className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                                            <div className="w-2 h-2 bg-muted-foreground/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                             {finalImplementations && finalDomain && (
-                                <ActionableProfile domain={finalDomain} manifest={finalManifest} implementations={finalImplementations} />
+                                <div className="pt-2">
+                                    <ActionableProfile domain={finalDomain} manifest={finalManifest} implementations={finalImplementations} />
+                                </div>
                             )}
                             <div ref={chatEndRef} />
                         </div>
                     )}
                 </div>
                 
-                <div className="sticky bottom-0 pb-4 w-full flex flex-col items-center bg-background/80 backdrop-blur-sm pt-2">
+                <div className="sticky bottom-0 w-full flex flex-col items-center bg-background/95 backdrop-blur-sm border-t border-border/50 py-4">
                     <ResolverInput 
                         inputValue={inputValue}
                         setInputValue={setInputValue}

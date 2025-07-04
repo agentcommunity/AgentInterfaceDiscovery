@@ -136,13 +136,12 @@ export function LocalPackageSection({ index }: LocalPackageSectionProps) {
                       <HelpCircle className="h-4 w-4 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>SHA256 digest for package verification and security</p>
-                      <p className="text-xs text-muted-foreground mt-1">Example: sha256:abc123...</p>
+                      <p>An optional content digest (e.g., &apos;sha256:...&apos;) for verifying the package integrity.</p>
                     </TooltipContent>
                   </Tooltip>
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="sha256:..." {...field} />
+                  <Input placeholder="sha256:..." {...field} value={field.value ?? ""} />
                 </FormControl>
                 <FormDescription>SHA256 digest for package verification</FormDescription>
                 <FormMessage />
