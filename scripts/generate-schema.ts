@@ -1,10 +1,10 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { aidManifestSchema } from "../src/schemas";
+import { aidManifestSchema } from "../packages/aid-core/src/schemas";
 
 const schemaName = "aid.schema.json";
-const outDir = path.resolve(__dirname, "../../../packages/aid-schema");
+const outDir = path.resolve(__dirname, "../packages/aid-schema");
 
 async function generateJsonSchema() {
   console.log("Generating AID manifest JSON schema...");

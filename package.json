@@ -8,9 +8,10 @@
 		"packages/*"
 	],
 	"scripts": {
-		"build:schema": "pnpm -F @agentcommunity/aid-core run schema:generate",
+		"build:schema": "ts-node scripts/generate-schema.ts",
 		"build": "turbo run build",
 		"dev": "turbo run dev",
+		"build:examples": "ts-node scripts/build-examples.ts",
 		"lint": "turbo run lint",
 		"lint:fix": "eslint . --ext .ts,.tsx,.js,.mjs --fix",
 		"schema:check": "node scripts/schema-check.js",
@@ -30,7 +31,8 @@
 		"prettier": "^3.2.5",
 		"quicktype-core": "^23.2.6",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.3.3"
+		"typescript": "^5.3.3",
+		"zod-to-json-schema": "^3.24.5"
 	},
 	"keywords": [
 		"ai",

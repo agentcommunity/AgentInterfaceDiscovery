@@ -81,7 +81,7 @@ const osExecutionSchema = z.object({
   digest: z.string().optional().describe("An optional content digest for a platform-specific package."),
 })
 
-export const executionConfigSchema: z.ZodType<ExecutionConfig> = z.object({
+export const executionConfigSchema = z.object({
   command: z.string().min(1, "Command is required"),
   args: z.array(z.string()),
   platformOverrides: z.object({
@@ -138,7 +138,7 @@ export const baseImplementationSchema = z.object({
   requiredPaths: z.array(requiredPathItemSchema).optional(),
 }).strict()
 
-export const implementationConfigSchema: z.ZodType<ImplementationConfig> = z
+export const implementationConfigSchema = z
   .discriminatedUnion("type", [
     baseImplementationSchema.extend({
       type: z.literal("remote"),
