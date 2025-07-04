@@ -303,6 +303,8 @@ This allows vendors and developers to:
 
 For more details on its usage and test strategies, please see the [conformance package's dedicated README](./packages/aid-conformance/README.md).
 
+> Need a quick check? Skip cloning the repo and run `npx @agentcommunity/aid-conformance aid-validate ./aid.json` directly.
+
 ## Quick-start for the conformance CLI
 
 1. Build workspace (only needed after code changes):
@@ -330,6 +332,10 @@ pnpm exec aid-validate pair path/to/generator.json path/to/aid.json
 ```
 
 Hint: the example files under `packages/examples/public/**/aid.txt` are DNS TXT samples; for them use the `txt` sub-command.
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines, dev workflow and how to add a new language SDK.
 
 ## License
 
