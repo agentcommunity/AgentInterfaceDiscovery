@@ -4,7 +4,7 @@ import { AidGeneratorConfig, AidManifest } from "./types";
  * 1. Convert dev-friendly config => strict manifest                *
  * --------------------------------------------------------------- */
 export function buildManifest(cfg: Partial<AidGeneratorConfig>): AidManifest {
-  const { serviceName, domain, metadata = {}, implementations, schemaVersion, ...rest } = cfg;
+  const { serviceName, metadata = {}, implementations, schemaVersion, ...rest } = cfg;
 
   const metaWithVersion = {
     contentVersion: metadata.contentVersion ?? new Date().toISOString().slice(0, 10),
@@ -40,9 +40,9 @@ export function buildManifest(cfg: Partial<AidGeneratorConfig>): AidManifest {
   };
 
   // Recursively clean the object to remove empty/null values
-  const cleanedManifest = removeEmptyKeys(orderedManifest);
+  const cleanedManifest = removeEmptyKeys(orderedManifest) as AidManifest | undefined;
 
-  return cleanedManifest;
+  return cleanedManifest ?? orderedManifest;
 }
 
 /**
@@ -51,31 +51,33 @@ export function buildManifest(cfg: Partial<AidGeneratorConfig>): AidManifest {
  * @param obj The object to clean.
  * @returns A new object with empty keys removed.
  */
-function removeEmptyKeys(obj: any): any {
+function removeEmptyKeys<T>(obj: T): T | undefined {
   if (obj === null || obj === undefined) {
     return undefined;
   }
 
   if (Array.isArray(obj)) {
-    const newArr = obj.map(removeEmptyKeys).filter(item => item !== undefined);
-    return newArr.length > 0 ? newArr : undefined;
+    const newArr = (obj as unknown[])
+      .map((item) => removeEmptyKeys(item))
+      .filter((item): item is NonNullable<typeof item> => item !== undefined);
+    return (newArr.length > 0 ? (newArr as unknown as T) : undefined);
   }
 
   if (typeof obj === 'object') {
-    const newObj: { [key: string]: any } = {};
-    for (const key in obj) {
+    const newObj: Record<string, unknown> = {};
+    for (const key in obj as Record<string, unknown>) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        const cleanedValue = removeEmptyKeys(obj[key]);
+        const cleanedValue = removeEmptyKeys((obj as Record<string, unknown>)[key]);
 
         const isEmptyArray = Array.isArray(cleanedValue) && cleanedValue.length === 0;
         const isEmptyString = typeof cleanedValue === 'string' && cleanedValue.trim() === '';
         
         if (cleanedValue !== undefined && !isEmptyArray && !isEmptyString) {
-            newObj[key] = cleanedValue;
+          newObj[key] = cleanedValue;
         }
       }
     }
-    return Object.keys(newObj).length > 0 ? newObj : undefined;
+    return (Object.keys(newObj).length > 0 ? (newObj as unknown as T) : undefined);
   }
 
   return obj;
@@ -101,15 +103,18 @@ export function buildTxtRecord(
 
   // An extended profile is needed if there's more than one implementation,
   // or if the single implementation is complex (local, or remote with extra config).
-  const isComplex =
-    implementations.length > 1 ||
-    (implementations.length === 1 && implementations[0].type === "local") ||
-    (implementations.length === 1 && (
-        (implementations[0] as any).requiredConfig ||
-        (implementations[0] as any).requiredPaths ||
-        (implementations[0] as any).certificate ||
-        (implementations[0] as any).platformOverrides
-    ));
+  const isComplex = implementations.some((impl) => {
+    if (implementations.length > 1) return true; // multi-implementation manifest
+
+    if (impl.type === "local") return true;
+
+    // Remote implementation with extra config hints
+    return (
+      'requiredConfig' in impl && !!impl.requiredConfig?.length ||
+      'requiredPaths' in impl && !!impl.requiredPaths?.length ||
+      'certificate' in impl && impl.certificate !== undefined
+    );
+  });
 
   // Find a primary remote implementation to use for TXT hints.
   const primaryRemote = implementations.find(
