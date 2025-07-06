@@ -1,5 +1,13 @@
 # @aid/web
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [7f440e4]
+  - @agentcommunity/aid-core@1.0.2
+  - @agentcommunity/aid-conformance@1.0.2
+
 ## 0.1.2
 
 ### Patch Changes
