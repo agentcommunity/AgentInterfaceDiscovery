@@ -20,6 +20,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn(GeistSans.variable, GeistMono.variable)}>
       <body>
+        <div style={{
+          padding: '1rem',
+          backgroundColor: '#fefcbf', // a light yellow
+          color: '#5d520a',
+          textAlign: 'center',
+          borderBottom: '1px solid #e7e4a8'
+        }}>
+          This project is deprecated and has been archived. The official AID v1 specification has moved to a new, simpler standard. Visit <a href="https://aid.agentcommunity.org" style={{textDecoration: 'underline'}}>aid.agentcommunity.org</a> for the latest version.
+        </div>
         <TooltipProvider>
           <div className="flex min-h-screen flex-col">
             <Header />
