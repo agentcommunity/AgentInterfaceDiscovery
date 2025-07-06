@@ -1,5 +1,7 @@
 # AID Project Roadmap & Priorities
 
+**NOTICE: This roadmap is now obsolete. The project has been deprecated in favor of a new, simpler specification. This file is preserved for archival purposes.**
+
 This document outlines the execution plan for maturing the Agent Interface Discovery project into a suite of clean, public, and maintainable NPM packages.
 
 **Priorities:**
