@@ -1,5 +1,13 @@
 # @agentcommunity/aid-schema
 
+## 1.0.2
+
+### Patch Changes
+
+- 7f440e4: chore: Deprecate packages
+
+  This release marks all packages as deprecated. Please migrate to the new official resources. See the root README.md for more details.
+
 ## 1.0.1
 
 ### Patch Changes

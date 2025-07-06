@@ -1,6 +1,6 @@
 {
   "name": "@agentcommunity/aid-conformance",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "packageManager": "pnpm@8.15.5",
   "private": false,
   "description": "Conformance test suite for Agent Interface Discovery (AID) specifications.",
